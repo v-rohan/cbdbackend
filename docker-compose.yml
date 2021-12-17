@@ -1,0 +1,27 @@
+version: '3.7'
+
+services:
+  api:
+    build:
+      context: .
+      target: builder-dev
+    links:
+      - db
+    volumes:
+      - /usr/src/app/node_modules
+      - .:/usr/src/app
+    depends_on:
+      - db
+    env_file:
+      - .env
+    environment:
+      PG_HOST: db
+    restart: always
+
+  db:
+    image: 'postgres:11-alpine'
+    env_file:
+      - .env
+    volumes:
+      - ./pg-init:/docker-entrypoint-initdb.d
+    restart: always
