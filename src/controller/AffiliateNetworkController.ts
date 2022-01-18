@@ -2,60 +2,68 @@ import { Request, Response } from "express";
 import { getRepository } from "typeorm";
 import { AffiliateNetwork } from "../entity/AffiliateNetwork";
 
-export class AffiliateNetworkController {
-  private networkRepository = getRepository(AffiliateNetwork);
+const getAllNetworks = async (req: Request, res: Response) => {
+  const networks = await getRepository(AffiliateNetwork).find();
+  return res.status(200).json(networks);
+};
 
-  async getAllNetworks(req: Request, res: Response) {
-    const networks = await this.networkRepository.find();
-    return networks;
+const getNetworkById = async (req: Request, res: Response) => {
+  try {
+    const network = await getRepository(AffiliateNetwork).findOneOrFail({
+      where: { id: Number(req.params.id) },
+    });
+    return res.status(200).json(network);
+  } catch (error) {
+    return res.status(404).json({ error: "Affiliate Network not found" });
   }
+};
 
-  async getNetworkById(req: Request, res: Response) {
-    try {
-      const network = await this.networkRepository.findOneOrFail({
-        where: { id: Number(req.params.id) },
-      });
-      return network;
-    } catch (error) {
-      return { error };
+const createNetwork = async (req: Request, res: Response) => {
+  try {
+    let network = new AffiliateNetwork();
+    network = { ...req.body };
+    await getRepository(AffiliateNetwork).save(network);
+    return res.status(201).json(network);
+  } catch (error) {
+    return res.status(400).json(error);
+  }
+};
+
+const updateNetworkById = async (req: Request, res: Response) => {
+  try {
+    const network = await getRepository(AffiliateNetwork).findOne({
+      where: { id: Number(req.params.id) },
+    });
+    if (network) {
+      getRepository(AffiliateNetwork).merge(network, { ...req.body });
+      const updatedNetwork = await getRepository(AffiliateNetwork).save(
+        network
+      );
+      return res.status(200).json(updatedNetwork);
     }
+  } catch (err) {
+    return res.status(400).json(err);
   }
+};
 
-  async createNetwork(req: Request, res: Response) {
-    try {
-      let network = new AffiliateNetwork();
-      network = { ...req.body };
-      await this.networkRepository.save(network);
-      return network;
-    } catch (error) {
-      return { error };
-    }
+const deleteNetworkById = async (req: Request, res: Response) => {
+  try {
+    const network = await getRepository(AffiliateNetwork).findOneOrFail({
+      where: { id: Number(req.params.id) },
+    });
+    await getRepository(AffiliateNetwork).remove(network);
+    return res
+      .status(204)
+      .json({ message: "Network has been deleted successfully" });
+  } catch (err) {
+    return res.status(400).json(err);
   }
+};
 
-  async updateNetworkById(req: Request, res: Response) {
-    try {
-      const network = await this.networkRepository.findOne({
-        where: { id: Number(req.params.id) },
-      });
-      if (network) {
-        this.networkRepository.merge(network, { ...req.body });
-        const updatedNetwork = await this.networkRepository.save(network);
-        return updatedNetwork;
-      }
-    } catch (err) {
-      return err;
-    }
-  }
-
-  async deleteNetworkById(req: Request, res: Response) {
-    try {
-      const network = await this.networkRepository.findOneOrFail({
-        where: { id: Number(req.params.id) },
-      });
-      await this.networkRepository.remove(network);
-      return { res: "Network has been deleted successfully" };
-    } catch (err) {
-      return { err };
-    }
-  }
-}
+export {
+  getAllNetworks,
+  getNetworkById,
+  createNetwork,
+  updateNetworkById,
+  deleteNetworkById,
+};
