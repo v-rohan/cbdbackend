@@ -176,8 +176,8 @@ export class CashbackTxn {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne( () => User )
-    @JoinColumn([{ name: 'user', referencedColumnName: 'id' }])
+    @ManyToOne( () => User , {onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+    @JoinColumn([{ name: 'user', referencedColumnName: 'email' }])
     user: User;
 
     @Column({ nullable: true })
@@ -236,8 +236,8 @@ export class BonusTxn {
      @PrimaryGeneratedColumn()
      id: number;
 
-     @ManyToOne( () => User )
-     @JoinColumn([{ name: 'user', referencedColumnName: 'id' }])
+     @ManyToOne( () => User , {onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+     @JoinColumn([{ name: 'user', referencedColumnName: 'email' }])
      user: User;
 
      @Column({ nullable: true })
@@ -296,13 +296,13 @@ export class ReferrerTxns {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne( () => User )
-    @JoinColumn([{ name: 'user', referencedColumnName: 'id' }])
+    @ManyToOne( () => User , {onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+    @JoinColumn([{ name: 'user', referencedColumnName: 'email' }])
     user: User;
 
 
-    @ManyToOne( () => User )
-    @JoinColumn([{ name: 'shopper', referencedColumnName: 'id' }])
+    @ManyToOne( () => User , {onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+    @JoinColumn([{ name: 'shopper', referencedColumnName: 'email' }])
     shopper: User;
 
     @Column({ nullable: true })
