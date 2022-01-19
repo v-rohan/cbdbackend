@@ -1,76 +1,92 @@
+import * as fs from "fs";
+import * as path from "path";
 import { NextFunction, Request, Response, Express } from "express";
 import { getRepository } from "typeorm";
-import { BonusTxn, CashbackTxn, MockTxn, ReferrerTxns, SalesTxn } from "../entity/CashbackTxn";
 import * as express from "express";
-import * as fs from 'fs';
-import * as path from 'path';
-// import * as csv from 'fast-csv';
-import { parseStream } from 'fast-csv';
+import { parseStream } from "fast-csv";
+import multer = require("multer");
+import { BonusTxn, CashbackTxn, MockTxn, ReferrerTxns, SalesTxn } from "../entity/CashbackTxn";
+import { IGetUserAuthInfoRequest } from "./userRoutes";
 
-var router = express.Router();
+module.exports = (app: Express, passport: any) => {
 
-import multer = require('multer');
-const storage = multer.diskStorage({
-    destination: (request: Request, file: any, cb: any) => {
-        cb(null, './mockTxns/')
-    },
-    filename: (request: Request, file: any, cb: any) => {
-        const suffix = Date.now();
-        cb(null, file.fieldname + '-' + suffix + '.csv')
-    }
-})
-const upload = multer({ storage: storage })
+    require("../passport/jwt")(passport);
+    require("../passport/google")(passport);
 
 
-const rowProcessor = (row: Object) => {
-    var newRow = {
-        networkId: row['network_id'],
-        networkCampId: row['network_campaign_id'],
-        txnId: row['transaction_id'],
-        commissionId: row['commission_id'],
-        orderId: row['order_id'],
-        saleDate: row['sale_date'].split("-").reverse().join("-"),
-        saleAmount: Number(row['sale_amount']),
-        baseCommission: Number(row['base_commission']),
-        currency: row['currency'],
-        status: row['status'],
-        affSub1: row['aff_sub1'],
-        affSub2: row['aff_sub2'],
-        affSub3: row['aff_sub3'],
-        affSub4: row['aff_sub4'],
-        affSub5: row['aff_sub5'],
-        exInfo: row['extra_information'],
+    var router = express.Router();
+
+    const adminCheck = (request: IGetUserAuthInfoRequest, response: Response, next: NextFunction) => {
+        console.log(request.user);
+        if(request.isAuthenticated() && request.user.role === "admin") {
+            next();
+        } else {
+            response.status(401).send('Unauthorized');
+        }
     };
-    return newRow;
-}
 
-const csvProcessor = (filePath: string) => {
-    return new Promise((resolve, reject) => {
-        const MockTxnRepo = getRepository(MockTxn);
-        var errorLog = [];
-        var rowCnt = 0;
-        var data = [];
-        const stream = fs.createReadStream(path.resolve(filePath));
+    router.use(passport.authenticate('jwt', { session: false }));
+    router.use(adminCheck);
 
-        parseStream(stream, { headers: true })
-            .on('error', error => console.error(error))
-            .on('data', async (row) => {
-                try {
-                    delete row['id'];
-                    delete row['created_at'];
-                    delete row['updated_at'];
-                } catch (err) {;}
-                data.push(rowProcessor(row));
-            })
-            .on('end', () => {
-                resolve(data);
-            });
+    const storage = multer.diskStorage({
+        destination: (request: Request, file: any, cb: any) => {
+            cb(null, './mockTxns/')
+        },
+        filename: (request: Request, file: any, cb: any) => {
+            const suffix = Date.now();
+            cb(null, file.fieldname + '-' + suffix + '.csv')
+        }
     })
-}
+    const upload = multer({ storage: storage })
 
 
-// MockTxn Routes
-router.route('/mock')
+    const mockTxnRowProcessor = (row: Object) => {
+        return {
+            networkId: row['network_id'],
+            networkCampId: row['network_campaign_id'],
+            txnId: row['transaction_id'],
+            commissionId: row['commission_id'],
+            orderId: row['order_id'],
+            saleDate: row['sale_date'].split("-").reverse().join("-"),
+            saleAmount: Number(row['sale_amount']),
+            baseCommission: Number(row['base_commission']),
+            currency: row['currency'],
+            status: row['status'],
+            affSub1: row['aff_sub1'],
+            affSub2: row['aff_sub2'],
+            affSub3: row['aff_sub3'],
+            affSub4: row['aff_sub4'],
+            affSub5: row['aff_sub5'],
+            exInfo: row['extra_information'],
+        };
+    }
+
+    const csvProcessor = (filePath: string) => {
+        return new Promise((resolve, reject) => {
+            const MockTxnRepo = getRepository(MockTxn);
+            var errorLog = [];
+            var rowCnt = 0;
+            var data = [];
+            const stream = fs.createReadStream(path.resolve(filePath));
+
+            parseStream(stream, { headers: true })
+                .on('error', error => console.error(error))
+                .on('data', async (row) => {
+                    try {
+                        delete row['id'];
+                        delete row['created_at'];
+                        delete row['updated_at'];
+                    } catch (err) {;}
+                    data.push(mockTxnRowProcessor(row));
+                })
+                .on('end', () => {
+                    resolve(data);
+                });
+        })
+    }
+
+    // MockTxn Routes
+    router.route('/mock')
     .get(async (request: Request, response: Response, next: NextFunction) => {
         var txns = await getRepository(MockTxn).find();
         response.status(200).json(txns);
@@ -82,7 +98,7 @@ router.route('/mock')
     })
 
 
-router.post('/mockupload', upload.single('csv'), async (request: Request, response: Response, next: NextFunction) => {
+    router.post('/mockupload', upload.single('csv'), async (request: Request, response: Response, next: NextFunction) => {
     var data: any = await csvProcessor(request.file.path);
     var errorLog = [];
     for (var i = 0; i < data.length; i++) {
@@ -99,10 +115,10 @@ router.post('/mockupload', upload.single('csv'), async (request: Request, respon
     } else {
         response.status(200).json({});
     }
-})
+    })
 
 
-router.route('/mock/:id')
+    router.route('/mock/:id')
     .get(async (request: Request, response: Response, next: NextFunction) => {
         var txn = await getRepository(MockTxn).findOne(request.params.id);
         response.status(200).json(txn);
@@ -135,8 +151,8 @@ router.route('/mock/:id')
     })
 
 
-// SalesTxn Routes
-router.route('sales')
+    // SalesTxn Routes
+    router.route('sales')
     .get(async (request: Request, response: Response, next: NextFunction) => {
         var txns = await getRepository(SalesTxn).find();
         response.status(200).json(txns);
@@ -148,7 +164,7 @@ router.route('sales')
     })
 
 
-router.route('sales/:id')
+    router.route('sales/:id')
     .get(async (request: Request, response: Response, next: NextFunction) => {
         var txn = await getRepository(SalesTxn).findOne(request.params.id);
         response.status(200).json(txn);
@@ -182,8 +198,8 @@ router.route('sales/:id')
     })
 
 
-// CashbackTxn Routes
-router.route('/cashback')
+    // CashbackTxn Routes
+    router.route('/cashback')
     .get(async (request: Request, response: Response, next: NextFunction) => {
         var txns = await getRepository(CashbackTxn).find();
         response.status(200).json(txns);
@@ -195,7 +211,7 @@ router.route('/cashback')
     })
 
 
-router.route('/cashback/:id')
+    router.route('/cashback/:id')
     .get(async (request: Request, response: Response, next: NextFunction) => {
         var txn = await getRepository(CashbackTxn).findOne(request.params.id);
         response.status(200).json(txn);
@@ -222,8 +238,8 @@ router.route('/cashback/:id')
     })
 
 
-// BonusTxn Routes
-router.route('/bonus')
+    // BonusTxn Routes
+    router.route('/bonus')
     .get(async (request: Request, response: Response, next: NextFunction) => {
         var txns = await getRepository(BonusTxn).find();
         response.status(200).json(txns);
@@ -235,7 +251,7 @@ router.route('/bonus')
     })
 
 
-router.route('/bonus/:id')
+    router.route('/bonus/:id')
     .get(async (request: Request, response: Response, next: NextFunction) => {
         var txn = await getRepository(BonusTxn).findOne(request.params.id);
         response.status(200).json(txn);
@@ -262,8 +278,8 @@ router.route('/bonus/:id')
     })
 
 
-// ReferrerTxns Routes
-router.route('/referrer')
+    // ReferrerTxns Routes
+    router.route('/referrer')
     .get(async (request: Request, response: Response, next: NextFunction) => {
         var txns = await getRepository(ReferrerTxns).find();
         response.status(200).json(txns);
@@ -275,7 +291,7 @@ router.route('/referrer')
     })
 
 
-router.route('/referrer/:id')
+    router.route('/referrer/:id')
     .get(async (request: Request, response: Response, next: NextFunction) => {
         var txn = await getRepository(ReferrerTxns).findOne(request.params.id);
         response.status(200).json(txn);
@@ -298,4 +314,7 @@ router.route('/referrer/:id')
         response.status(204).send();
     })
 
-module.exports = router;
+
+    return router;
+
+}

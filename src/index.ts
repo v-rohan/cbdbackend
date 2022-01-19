@@ -44,7 +44,7 @@ createConnection()
     app.use("/logs", require("./routes/postbackLogRoutes")(app, passport));
     app.use("/stores", require("./routes/storeRoutes")(app, passport));
     app.use("/cashbackRates", require("./routes/cashbackRatesRoutes")(app, passport));
-    app.use('/txn', require("./routes/txnRoutes"));
+    app.use('/txn', require('./routes/txnRoutes')(app, passport));
     // app.use(handleError);
 
     // setup express app here
