@@ -1,2 +1,10 @@
+.idea
+.vscode
+
 .env
+
 node_modules/
+
+mockTxns/*
+src/migration
+dbData

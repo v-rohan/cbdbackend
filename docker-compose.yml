@@ -5,9 +5,26 @@ services:
       POSTGRES_USER: test
       POSTGRES_PASSWORD: test
       POSTGRES_DB: test
-    ports:
-      - "5432:5432"
     restart: always
+    volumes:
+      - ./dbData:/var/lib/postgresql/data
+
+
+  node:
+    build: .
+    command: yarn run dev
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    depends_on:
+      - postgres
 
 volumes:
   db-data:
+    # driver: local
+    # driver_opts:
+    #   mountpoint: ./db-data
+    #   label: db-data
