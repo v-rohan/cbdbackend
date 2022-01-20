@@ -7,7 +7,6 @@ import * as morgan from "morgan";
 
 import { User } from "./entity/User";
 import { port, secretOrKey } from "./config";
-import affiliateNetworkRoutes from "./routes/affiliateNetworkRoutes";
 
 var session = require("express-session");
 var passport = require("passport");
@@ -37,7 +36,12 @@ createConnection()
 
     // register express routes from defined application routes
     require("./routes/userRoutes")(app, passport);
-    app.use("/", affiliateNetworkRoutes);
+    app.use(
+      "/networks",
+      require("./routes/affiliateNetworkRoutes")(app, passport)
+    );
+
+    app.use("/logs", require("./routes/postbackLogRoutes")(app, passport));
     // app.use(handleError);
 
     // setup express app here

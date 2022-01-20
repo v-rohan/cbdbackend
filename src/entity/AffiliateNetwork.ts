@@ -2,9 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { PostbackLog } from "./PostbackLog";
 
 export enum SaleStatus {
   PENDING = "pending",
@@ -32,7 +34,7 @@ export class AffiliateNetwork {
   namespace: string;
 
   @Column({ nullable: true })
-  affiliateId: number;
+  affiliateId: string;
 
   @Column({ nullable: true })
   websiteId: number;
@@ -49,26 +51,26 @@ export class AffiliateNetwork {
   @Column({ nullable: true })
   directMerchant: string;
 
-  @Column({ nullable: true })
-  campaignStatuses: string;
+  @Column({ type: "json", nullable: true })
+  campaignStatuses: any;
 
   @Column({ nullable: true })
   campaignInfoUrl: string;
 
-  @Column({ type: "enum", enum: SaleStatus, default: SaleStatus.PENDING })
-  saleStatus: SaleStatus;
+  @Column({ type: "json" })
+  saleStatuses: any;
 
-  @Column({ nullable: true })
-  columnsUpdate: string;
+  @Column({ type: "json", nullable: true })
+  columnsUpdate: any;
 
   @Column({ nullable: true })
   apiKey: string;
 
-  @Column({ nullable: true })
-  authTokens: string;
+  @Column({ type: "json", nullable: true })
+  authTokens: any;
 
-  @Column({ nullable: true })
-  credentials: string;
+  @Column({ type: "json", nullable: true })
+  credentials: any;
 
   @Column({ nullable: true })
   networkPlatform: string;
@@ -76,8 +78,11 @@ export class AffiliateNetwork {
   @Column({ nullable: true })
   Subids: string;
 
-  @Column({ nullable: true })
-  networkSubids: string;
+  @Column({ type: "json", nullable: true })
+  networkSubids: any;
+
+  @OneToMany(() => PostbackLog, (postbackLog) => postbackLog.affiliateNetwork)
+  postbackLogs: PostbackLog[];
 
   @CreateDateColumn()
   createdAt: Date;
