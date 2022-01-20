@@ -2,14 +2,12 @@ import { getRepository } from "typeorm";
 import { NextFunction, Request, Response, Express } from "express";
 import { User } from "../entity/User";
 import { secretOrKey } from "../config";
+import { IGetUserAuthInfoRequest } from "../types";
+
 
 var jwt = require("jsonwebtoken");
 
 var bcrypt = require('bcryptjs');
-
-export interface IGetUserAuthInfoRequest extends Request {
-    user: any // or any other type
-  }
 
 module.exports = (app: Express, passport) => {
 
@@ -66,14 +64,12 @@ module.exports = (app: Express, passport) => {
 
     })
 
-
     app.get(
         "/google",
         passport.authenticate("google", {
             scope: ["email", "profile"],
         })
     );
-
 
     app.get(
         "/google/callback",
@@ -88,14 +84,11 @@ module.exports = (app: Express, passport) => {
             response.status(200).json({
                 token: "Bearer " + token,
             })
-            
+
         })
 
     app.get('/user', passport.authenticate("jwt", { session: false }), (request: IGetUserAuthInfoRequest, response: Response) => {
         response.status(200).json(request.user);
     })
-
-
-
 
 }

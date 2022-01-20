@@ -37,6 +37,7 @@ createConnection().then(async connection => {
 
     // register express routes from defined application routes
     require("./routes/userRoutes")(app, passport);
+    require("./routes/userInfo")(app, passport);
     // app.use(handleError);
 
     // setup express app here
