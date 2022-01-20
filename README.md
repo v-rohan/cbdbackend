@@ -1,4 +1,4 @@
-# Awesome Project Build with TypeORM
+# Cashback Duniya Backend
 
 Steps to run this project:
 
@@ -8,12 +8,12 @@ Steps to run this project:
 
 ## To generate a new Migration
 
-```
-npm run typeorm migration:generate -- -n migrationName
+```bash
+npm run typeorm migration:generate -n migrationName
 ```
 
 ## To apply migrations
 
-```
+```bash
 npm run typeorm migration:run
 ```

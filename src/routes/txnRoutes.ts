@@ -34,7 +34,15 @@ module.exports = (app: Express, passport: any) => {
         },
         filename: (request: Request, file: any, cb: any) => {
             const suffix = Date.now();
-            cb(null, file.fieldname + '-' + suffix + '.csv')
+            console.log(file);
+            cb(
+                null,
+                (
+                    file.originalname
+                    .substring(0, file.originalname.length - 4)
+                    + '-' + suffix + '.csv'
+                )
+            )
         }
     })
     const upload = multer({ storage: storage })
@@ -73,6 +81,7 @@ module.exports = (app: Express, passport: any) => {
                 .on('error', error => console.error(error))
                 .on('data', async (row) => {
                     try {
+                        // Delete rows that are given by the database
                         delete row['id'];
                         delete row['created_at'];
                         delete row['updated_at'];
@@ -80,6 +89,12 @@ module.exports = (app: Express, passport: any) => {
                     data.push(mockTxnRowProcessor(row));
                 })
                 .on('end', () => {
+                    // delete the file
+                    fs.unlink(filePath, (err) => {
+                        if (err) {
+                            console.log(err);
+                        }
+                    });
                     resolve(data);
                 });
         })
@@ -98,7 +113,7 @@ module.exports = (app: Express, passport: any) => {
     })
 
 
-    router.post('/mockupload', upload.single('csv'), async (request: Request, response: Response, next: NextFunction) => {
+    router.post('/mockUpload', upload.single('csv'), async (request: Request, response: Response, next: NextFunction) => {
     var data: any = await csvProcessor(request.file.path);
     var errorLog = [];
     for (var i = 0; i < data.length; i++) {
@@ -124,8 +139,8 @@ module.exports = (app: Express, passport: any) => {
         response.status(200).json(txn);
     })
     .post(async (request: Request, response: Response, next: NextFunction) => {
-        const SalesTxnRepo = getRepository(SalesTxn);
-        var txn = await SalesTxnRepo.findOne(request.params.id);
+        const MockTxnRepo = getRepository(MockTxn);
+        var txn = await MockTxnRepo.findOne(request.params.id);
         txn.networkId = request.body.networkId;
         txn.networkCampId = request.body.networkCampId;
         txn.txnId = request.body.txnId;
@@ -142,7 +157,7 @@ module.exports = (app: Express, passport: any) => {
         txn.affSub4 = request.body.affSub4;
         txn.affSub5 = request.body.affSub5; 
         txn.exInfo = request.body.exInfo;
-        await SalesTxnRepo.save(txn);
+        await MockTxnRepo.save(txn);
         response.status(201).json(txn);
     })
     .delete(async (request: Request, response: Response, next: NextFunction) => {
@@ -176,9 +191,11 @@ module.exports = (app: Express, passport: any) => {
         txn.txnId = request.body.txnId;
         txn.commissionId = request.body.commissionId;
         txn.orderId = request.body.orderId;
+        txn.clickDate = request.body.clickDate;
         txn.saleDate = request.body.saleDate;
         txn.saleAmount = request.body.saleAmount;
         txn.baseCommission = request.body.baseCommission;
+        txn.saleUpdTime = request.body.saleUpdTime;
         txn.currency = request.body.currency;
         txn.status = request.body.status;
         txn.affSub1 = request.body.affSub1;
@@ -186,9 +203,8 @@ module.exports = (app: Express, passport: any) => {
         txn.affSub3 = request.body.affSub3;
         txn.affSub4 = request.body.affSub4;
         txn.affSub5 = request.body.affSub5;
+        txn.batchId = request.body.batchId;
         txn.exInfo = request.body.exInfo;
-        txn.createdAt = request.body.createdAt;
-        txn.updatedAt = request.body.updatedAt;
         await getRepository(SalesTxn).save(txn);
         response.status(201).json(txn);
     })
@@ -258,17 +274,11 @@ module.exports = (app: Express, passport: any) => {
     })
     .post(async (request: Request, response: Response, next: NextFunction) => {
         var txn = await getRepository(BonusTxn).findOne(request.params.id);
-        txn.saleId = request.body.saleId;
-        txn.networkId = request.body.networkId;
-        txn.orderId = request.body.orderId;
-        txn.store = request.body.store;
-        txn.clickId = request.body.clickId;
-        txn.saleAmount = request.body.saleAmount;
-        txn.cashback = request.body.bonus;
-        txn.currency = request.body.currency;
+        txn.bonusCode = request.body.bonusCode;
+        txn.amount = request.body.amount;
+        txn.awardedOn = request.body.awardedOn;
+        txn.expiresOn = request.body.expiresOn;
         txn.status = request.body.status;
-        txn.txnDateTime = request.body.txnDateTime;
-        txn.mailSent = request.body.mailSent;
         await getRepository(BonusTxn).save(txn);
         response.status(201).json(txn);
     })
@@ -298,7 +308,6 @@ module.exports = (app: Express, passport: any) => {
     })
     .post(async (request: Request, response: Response, next: NextFunction) => {
         var txn = await getRepository(ReferrerTxns).findOne(request.params.id);
-        txn.saleId = request.body.saleId;
         txn.store = request.body.store;
         txn.refAmount = request.body.clickId;
         txn.saleAmount = request.body.saleAmount;

@@ -10,6 +10,18 @@ class ColumnNumericTransformer {
     }
 }
 
+export enum StatusOpts {
+    PENDING = "pending",
+    CONFIRMED = "confirmed",
+    DECLINED = "declined",
+    DELAYED = "delayed"
+}
+
+export enum AcceptedStatusOpts {
+    PENDING = "pending",
+    CONFIRMED = "confirmed",
+    DECLINED = "declined"
+}
 
 @Entity()
 export class MockTxn {
@@ -52,8 +64,12 @@ export class MockTxn {
     @Column()
     currency: string;
 
-    @Column()
-    status: string;
+    @Column({
+        type: "enum",
+        enum: StatusOpts,
+        default: StatusOpts.PENDING
+    })
+    status: StatusOpts;
 
     @Column({ nullable: true })
     affSub1: string;
@@ -135,8 +151,12 @@ export class SalesTxn {
     @Column()
     saleStatus: string;
 
-    @Column()
-    status: string;
+    @Column({
+        type: "enum",
+        enum: StatusOpts,
+        default: StatusOpts.PENDING
+    })
+    status: StatusOpts;
 
     @Column({ type: 'timestamp', nullable: true })
     saleUpdTime: Date;
@@ -213,8 +233,12 @@ export class CashbackTxn {
     @Column({ nullable: true })
     currency: string;
 
-    @Column()
-    status: string;
+    @Column({
+        type: "enum",
+        enum: AcceptedStatusOpts,
+        default: AcceptedStatusOpts.PENDING
+    })
+    status: AcceptedStatusOpts;
 
     @Column({ type: 'timestamp', nullable: true })
     txnDateTime: Date;
@@ -233,64 +257,40 @@ export class CashbackTxn {
  @Entity()
 export class BonusTxn {
 
-     @PrimaryGeneratedColumn()
-     id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-     @ManyToOne( () => User , {onDelete: 'CASCADE', onUpdate: 'CASCADE'})
-     @JoinColumn([{ name: 'user', referencedColumnName: 'email' }])
-     user: User;
+    @ManyToOne( () => User , {onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+    @JoinColumn([{ name: 'user', referencedColumnName: 'email' }])
+    user: User;
 
-     @Column({ nullable: true })
-     saleId: string;
+    @Column()
+    bonusCode: string;
 
-     @Column({ nullable: true })
-     networkId: string;
+    @Column('numeric', {
+        scale: 2,
+        nullable: true,
+        transformer: new ColumnNumericTransformer()
+    })
+    amount: Number;
 
-     @Column({ nullable: true })
-     orderId: string;
+    @Column({ type: 'timestamp', nullable: true })
+    awardedOn: Date;
 
-     @Column({ nullable: true })
-     store: string
+    @Column({ type: 'timestamp', nullable: true })
+    expiresOn: Date;
 
-     @Column({ nullable: true })
-     clickId: string;
+    @Column({
+        type: "enum",
+        enum: AcceptedStatusOpts,
+        default: AcceptedStatusOpts.PENDING
+    })
+    status: AcceptedStatusOpts;
 
-     @Column('numeric', {
-         scale: 2,
-         nullable: true,
-         transformer: new ColumnNumericTransformer()
-     })
-     saleAmount: number;
-
-     @Column('numeric', {
-         scale: 2,
-         nullable: true,
-         transformer: new ColumnNumericTransformer()
-     })
-     cashback: number;
-
-     @Column({ nullable: true })
-     currency: string;
-
-     @Column()
-     status: string;
-
-     @Column({ type: 'timestamp', nullable: true })
-     txnDateTime: Date;
-
-     @Column({ type: 'boolean', nullable: true })
-     mailSent: boolean;
-
-     @CreateDateColumn()
-     createdAt: string;
-
-     @UpdateDateColumn()
-     updatedAt: string;
-
- }
+}
 
 
- @Entity()
+@Entity()
 export class ReferrerTxns {
 
     @PrimaryGeneratedColumn()
@@ -331,8 +331,12 @@ export class ReferrerTxns {
     @Column({ nullable: true })
     currency: string;
 
-    @Column()
-    status: string;
+    @Column({
+        type: "enum",
+        enum: AcceptedStatusOpts,
+        default: AcceptedStatusOpts.PENDING
+    })
+    status: AcceptedStatusOpts;
 
     @Column({ type: 'boolean', nullable: true })
     mailSent: boolean;

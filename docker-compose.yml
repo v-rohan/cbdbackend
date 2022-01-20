@@ -1,4 +1,5 @@
 services:
+
   postgres:
     image: postgres
     environment:
@@ -8,7 +9,6 @@ services:
     restart: always
     volumes:
       - ./dbData:/var/lib/postgresql/data
-
 
   node:
     build: .
@@ -22,9 +22,6 @@ services:
     depends_on:
       - postgres
 
+
 volumes:
   db-data:
-    # driver: local
-    # driver_opts:
-    #   mountpoint: ./db-data
-    #   label: db-data
