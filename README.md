@@ -1,6 +1,8 @@
 # Cashback Duniya Backend
 
-Steps to run this project:
+Before running create a folder in project root named `mockTxns`.
+
+Build and Run:
 
 1. Run `npm i` command
 2. Setup database settings inside `ormconfig.json` file
