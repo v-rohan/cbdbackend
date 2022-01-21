@@ -7,6 +7,7 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from "typeorm";
+import { AffiliateNetwork } from "../AffiliateNetwork";
 import { User } from "../User";
 import { ColumnNumericTransformer, AcceptedStatusOpts } from "./Common";
 
@@ -24,7 +25,8 @@ export class CashbackTxn {
     @Column({ nullable: true })
     saleId: string;
 
-    @Column({ nullable: true })
+    @ManyToOne(() => AffiliateNetwork, {onDelete: "CASCADE", onUpdate: "CASCADE"})
+    @JoinColumn([{ name: "affiliateNetwork", referencedColumnName: "name" }])
     networkId: string;
 
     @Column({ nullable: true })

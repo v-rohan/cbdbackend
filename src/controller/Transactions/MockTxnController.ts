@@ -62,7 +62,11 @@ const getMockTxns = async (request: Request, response: Response, next: NextFunct
 
 const postMockTxns = async (request: Request, response: Response, next: NextFunction) => {
     var newTxn = request.body;
-    await getRepository(MockTxn).save(newTxn);
+    try {
+        await getRepository(MockTxn).save(newTxn);
+    } catch (err) {
+        response.status(400).json(err);
+    }
     response.status(201).json(newTxn);
 }
 
@@ -109,7 +113,11 @@ const postMockTxn = async (request: Request, response: Response, next: NextFunct
     txn.affSub4 = request.body.affSub4;
     txn.affSub5 = request.body.affSub5; 
     txn.exInfo = request.body.exInfo;
-    await MockTxnRepo.save(txn);
+    try {
+        await MockTxnRepo.save(txn);
+    } catch (err) {
+        response.status(400).json(err);
+    }
     response.status(201).json(txn);
 }
 

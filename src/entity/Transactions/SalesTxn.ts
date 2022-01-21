@@ -2,9 +2,12 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    JoinColumn,
+    ManyToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from "typeorm";
+import { AffiliateNetwork } from "../AffiliateNetwork";
 import { ColumnNumericTransformer, StatusOpts } from "./Common";
 
 @Entity()
@@ -13,7 +16,8 @@ export class SalesTxn {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ nullable: true })
+    @ManyToOne(() => AffiliateNetwork, {onDelete: "CASCADE", onUpdate: "CASCADE"})
+    @JoinColumn([{ name: "affiliateNetwork", referencedColumnName: "name" }])
     networkId: string;
 
     @Column({ nullable: true })
