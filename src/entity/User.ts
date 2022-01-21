@@ -1,4 +1,5 @@
-import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+import { SnE } from "./SnE";
 
 
 export enum UserRole {
@@ -18,7 +19,7 @@ export class User {
     @Column({ nullable: true })
     lastName: string;
 
-    @Column({unique: true})
+    @Column({ unique: true })
     email: string;
 
     @Column()
@@ -30,4 +31,7 @@ export class User {
         default: UserRole.USER
     })
     role: UserRole
+
+    @OneToMany(() => SnE, (SnE) => SnE.user)
+    snelinks: SnE[];
 }

@@ -1,4 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import {
+    Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne
+} from "typeorm";
+import { User } from "./User";
 
 @Entity()
 export class SnE {
@@ -18,7 +21,17 @@ export class SnE {
     @Column({ default: 0 })
     earning: number;
 
-    @Column('timestamp with time zone', { nullable: false, default: () => 'CURRENT_TIMESTAMP' })
-    created: Date;
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
+
+    @ManyToOne(
+        () => User,
+        (user: User) => user.snelinks,
+        { onDelete: "NO ACTION", onUpdate: "NO ACTION" }
+    )
+    user: User;
 
 }
