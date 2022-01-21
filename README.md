@@ -2,20 +2,36 @@
 
 Before running create a folder in project root named `mockTxns`.
 
-Build and Run:
+## Build and Run:
 
-1. Run `npm i` command
+1. Run `yarn` command
 2. Setup database settings inside `ormconfig.json` file
-3. Run `npm start` command
+3. Run `yarn start` command
 
-## To generate a new Migration
-
-```bash
-npm run typeorm migration:generate -n migrationName
-```
-
-## To apply migrations
+### To generate a new Migration
 
 ```bash
-npm run typeorm migration:run
+yarn run typeorm migration:generate -n migrationName
 ```
+
+### To apply migrations
+
+```bash
+yarn run typeorm migration:run
+```
+
+
+## Run using Docker
+
+1. Run the containers:
+
+   ```bash
+   docker-compose up
+   ```
+
+2. Run migrations:
+
+   ```bash
+   docker exec -it <container_name> yarn run typeorm migration:generate -n migrationName
+   docker exec -it <container_name> yarn run typeorm migration:run
+   ```
