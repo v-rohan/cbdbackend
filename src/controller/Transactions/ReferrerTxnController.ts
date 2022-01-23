@@ -3,7 +3,7 @@ import { getRepository } from "typeorm";
 import { ReferrerTxns } from "../../entity/Transactions/ReferrerTxn";
 
 const getReferrerTxns = async (request: Request, response: Response, next: NextFunction) => {
-    var txns = await getRepository(ReferrerTxns).find();
+    var txns = await getRepository(ReferrerTxns).find({ relations: ["store"] });
     response.status(200).json(txns);
 }
 
@@ -14,7 +14,10 @@ const postReferrerTxns = async (request: Request, response: Response, next: Next
 }
 
 const getReferrerTxn = async (request: Request, response: Response, next: NextFunction) => {
-    var txn = await getRepository(ReferrerTxns).findOne(request.params.id);
+    var txn = await getRepository(ReferrerTxns).findOne(
+        request.params.id,
+        { relations: ["store"] }
+    );
     response.status(200).json(txn);
 }
 

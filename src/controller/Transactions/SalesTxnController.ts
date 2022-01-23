@@ -3,7 +3,7 @@ import { getRepository } from "typeorm";
 import { SalesTxn } from "../../entity/Transactions/SalesTxn";
 
 const getSalesTxns = async (request: Request, response: Response, next: NextFunction) => {
-    var txns = await getRepository(SalesTxn).find();
+    var txns = await getRepository(SalesTxn).find({ relations: ["network"] });
     response.status(200).json(txns);
 }
 
@@ -14,7 +14,10 @@ const postSalesTxns = async (request: Request, response: Response, next: NextFun
 }
 
 const getSalesTxn = async (request: Request, response: Response, next: NextFunction) => {
-    var txn = await getRepository(SalesTxn).findOne(request.params.id);
+    var txn = await getRepository(SalesTxn).findOne(
+        request.params.id,
+        { relations: ["network"] }
+    );
     response.status(200).json(txn);
 }
 

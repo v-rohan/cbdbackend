@@ -2,7 +2,6 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    JoinColumn,
     ManyToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn
@@ -16,9 +15,8 @@ export class SalesTxn {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => AffiliateNetwork, {onDelete: "CASCADE", onUpdate: "CASCADE"})
-    @JoinColumn([{ name: "affiliateNetwork", referencedColumnName: "name" }])
-    networkId: string;
+    @ManyToOne(() => AffiliateNetwork, (affNet) => affNet.salesTxns ,{onDelete: "NO ACTION", onUpdate: "CASCADE"})
+    networkId: AffiliateNetwork;
 
     @Column({ nullable: true })
     networkCampId: string;

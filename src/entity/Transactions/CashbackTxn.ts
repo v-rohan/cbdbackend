@@ -8,6 +8,7 @@ import {
     UpdateDateColumn
 } from "typeorm";
 import { AffiliateNetwork } from "../AffiliateNetwork";
+import { Store } from "../Store";
 import { User } from "../User";
 import { ColumnNumericTransformer, AcceptedStatusOpts } from "./Common";
 
@@ -18,22 +19,25 @@ export class CashbackTxn {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => User , {onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+    @ManyToOne(() => User , {onDelete: 'NO ACTION', onUpdate: 'CASCADE'})
     @JoinColumn([{ name: 'user', referencedColumnName: 'email' }])
     user: User;
 
     @Column({ nullable: true })
     saleId: string;
 
-    @ManyToOne(() => AffiliateNetwork, {onDelete: "CASCADE", onUpdate: "CASCADE"})
-    @JoinColumn([{ name: "affiliateNetwork", referencedColumnName: "name" }])
-    networkId: string;
+    @ManyToOne(() => AffiliateNetwork, (affNet) => affNet.cashbackTxns,
+        {onDelete: "NO ACTION", onUpdate: "CASCADE"}
+    )
+    networkId: AffiliateNetwork;
 
     @Column({ nullable: true })
     orderId: string;
 
-    @Column({ nullable: true })
-    store: string
+    @ManyToOne(() => Store, (store) => store.cashbackTxns,
+        {onDelete: "NO ACTION", onUpdate: "NO ACTION"}
+    )
+    store: Store;
 
     @Column({ nullable: true })
     clickId: string;

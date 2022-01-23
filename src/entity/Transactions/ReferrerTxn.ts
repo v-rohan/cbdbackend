@@ -1,3 +1,4 @@
+import { Store } from "../Store";
 import {
     Column,
     CreateDateColumn,
@@ -17,20 +18,20 @@ export class ReferrerTxns {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => User , {onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+    @ManyToOne(() => User , {onDelete: 'NO ACTION', onUpdate: 'CASCADE'})
     @JoinColumn([{ name: 'user', referencedColumnName: 'email' }])
     user: User;
 
 
-    @ManyToOne(() => User , {onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+    @ManyToOne(() => User , {onDelete: 'NO ACTION', onUpdate: 'CASCADE'})
     @JoinColumn([{ name: 'shopper', referencedColumnName: 'email' }])
     shopper: User;
 
     @Column({ nullable: true })
     saleId: string;
 
-    @Column({ nullable: true })
-    store: string;
+    @ManyToOne(() => Store, (store) => store.refTxns, {onDelete: "NO ACTION", onUpdate: "CASCADE"})
+    store: Store;
 
     @Column('numeric', {
         scale: 2,

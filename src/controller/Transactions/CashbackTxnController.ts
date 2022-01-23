@@ -4,7 +4,7 @@ import { CashbackTxn } from "../../entity/Transactions/CashbackTxn";
 
 
 const getCashbackTxns = async (request: Request, response: Response, next: NextFunction) => {
-    var txns = await getRepository(CashbackTxn).find();
+    var txns = await getRepository(CashbackTxn).find({ relations : ["user", "store", "networkId"] });
     response.status(200).json(txns);
 }
 
@@ -15,7 +15,10 @@ const postCashbackTxns = async (request: Request, response: Response, next: Next
 }
 
 const getCashbackTxn = async (request: Request, response: Response, next: NextFunction) => {
-    var txn = await getRepository(CashbackTxn).findOne(request.params.id);
+    var txn = await getRepository(CashbackTxn).findOne(
+        request.params.id,
+        { relations : ["store", "networkId"] }
+    );
     response.status(200).json(txn);
 }
 

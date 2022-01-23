@@ -8,6 +8,8 @@ import {
 } from "typeorm";
 import { PostbackLog } from "./PostbackLog";
 import { Store } from "./Store";
+import { CashbackTxn } from "./Transactions/CashbackTxn";
+import { SalesTxn } from "./Transactions/SalesTxn";
 
 export enum SaleStatus {
   PENDING = "pending",
@@ -87,6 +89,16 @@ export class AffiliateNetwork {
 
   @OneToMany(() => Store, (store) => store.network)
   stores: Store[];
+
+  @OneToMany(() => CashbackTxn, (cashbackTxn) => cashbackTxn.networkId,
+    {onDelete: 'CASCADE', onUpdate: 'CASCADE', eager: true}
+  )
+  cashbackTxns: CashbackTxn[];
+
+  @OneToMany(() => CashbackTxn, (salesTxn) => salesTxn.networkId,
+    {onDelete: 'CASCADE', onUpdate: 'CASCADE', eager: true}
+  )
+  salesTxns: SalesTxn[];
 
   @CreateDateColumn()
   createdAt: Date;
