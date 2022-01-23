@@ -38,63 +38,36 @@ module.exports = (app: Express, passport) => {
   );
 
 
-    app.post('/login', async (request: Request, response: Response, next: NextFunction) => {
-        var email = request.body.email;
-        var password = request.body.password;
-        try {
-            var user = await getRepository(User).findOne({ email: email });
-            console.log(user);
-            bcrypt.compare(password, user.password, function (err, result) {
-                if (result) {
-                    const payload = {
-                        id: user.id,
-                        email: user.email,
-                        role: user.role,
-                    };
+  app.post('/login', async (request: Request, response: Response, next: NextFunction) => {
+    var email = request.body.email;
+    var password = request.body.password;
+    try {
+      var user = await getRepository(User).findOne({ email: email });
+      console.log(user);
+      bcrypt.compare(password, user.password, function (err, result) {
+        if (result) {
+          const payload = {
+            id: user.id,
+            email: user.email,
+            role: user.role,
+          };
 
-                    var token = jwt.sign(payload, secretOrKey, {
-                        expiresIn: 600000,
-                    });
+          var token = jwt.sign(payload, secretOrKey, {
+            expiresIn: 600000,
+          });
 
-                    response.status(200).json({
-                        token: "Bearer " + token,
-                    })
-                } else response.status(403).send("Invalid email or password");
+          response.status(200).json({
+            token: "Bearer " + token,
+          })
+        } else response.status(403).send("Invalid email or password");
 
-            })
-        }
-        catch (error) {
-            response.status(500).send(error);
-        }
+      })
+    }
+    catch (error) {
+      response.status(500).send(error);
+    }
 
-    })
-
-    app.get(
-        "/google",
-        passport.authenticate("google", {
-            scope: ["email", "profile"],
-        })
-    );
-
-    app.get(
-        "/google/callback",
-        passport.authenticate("google"),
-        (request: IGetUserAuthInfoRequest, response: Response) => {
-            const payload = {
-              id: request.user.id,
-              email: request.user.email,
-              role: request.user.role,
-            };
-
-            var token = jwt.sign(payload, secretOrKey, {
-              expiresIn: 600000,
-            });
-
-            response.status(200).json({
-                token: "Bearer " + token,
-            })
-
-        })
+  })
 
   app.get(
     "/google",
@@ -102,5 +75,30 @@ module.exports = (app: Express, passport) => {
       scope: ["email", "profile"],
     })
   );
+
+  app.get(
+    "/google/callback",
+    passport.authenticate("google"),
+    (request: IGetUserAuthInfoRequest, response: Response) => {
+      const payload = {
+        id: request.user.id,
+        email: request.user.email,
+        role: request.user.role,
+      };
+
+      var token = jwt.sign(payload, secretOrKey, {
+        expiresIn: 600000,
+      });
+
+      response.status(200).json({
+        token: "Bearer " + token,
+      })
+
+    })
+
+  app.get('/user', passport.authenticate("jwt", { session: false }),  (request: IGetUserAuthInfoRequest, response: Response, next: NextFunction) => {
+    response.status(200).json(request.user);
+  })
+
 
 }

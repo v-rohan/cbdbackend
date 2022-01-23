@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+import { PaymentMode } from "./PaymentMode";
 import { SnE } from "./SnE";
 
 
@@ -34,4 +35,7 @@ export class User {
 
     @OneToMany(() => SnE, (SnE) => SnE.user)
     snelinks: SnE[];
+
+    @OneToMany(() => PaymentMode, (PaymentMode) => PaymentMode.user)
+    paymentmodes: PaymentMode[];
 }
