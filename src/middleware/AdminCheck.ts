@@ -1,5 +1,5 @@
 import { NextFunction, Response } from "express";
-import { IGetUserAuthInfoRequest } from "../routes/userRoutes";
+import { IGetUserAuthInfoRequest } from "../types";
 
 const AdminCheck = (request: IGetUserAuthInfoRequest, response: Response, next: NextFunction) => {
     if(request.isAuthenticated() && request.user.role === "admin") {
