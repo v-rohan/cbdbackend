@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { PostbackLog } from "./PostbackLog";
+import { Store } from "./Store";
 
 export enum SaleStatus {
   PENDING = "pending",
@@ -83,6 +84,9 @@ export class AffiliateNetwork {
 
   @OneToMany(() => PostbackLog, (postbackLog) => postbackLog.affiliateNetwork)
   postbackLogs: PostbackLog[];
+
+  @OneToMany(() => Store, (store) => store.network)
+  stores: Store[];
 
   @CreateDateColumn()
   createdAt: Date;
