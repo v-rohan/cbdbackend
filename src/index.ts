@@ -37,6 +37,7 @@ createConnection()
     // register express routes from defined application routes
     require("./routes/userRoutes")(app, passport);
     require("./routes/sneRoutes")(app, passport);
+    require("./routes/paymentModes")(app, passport);
     app.use(
       "/networks",
       require("./routes/affiliateNetworkRoutes")(app, passport)

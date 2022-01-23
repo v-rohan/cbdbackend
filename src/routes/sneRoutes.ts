@@ -71,15 +71,16 @@ module.exports = (app: Express, passport) => {
         })
     })
 
-    app.get('/links/my', passport.authenticate("jwt", { session: false }), async (request: IGetUserAuthInfoRequest, response: Response) => {
+    app.get('/mylinks', passport.authenticate("jwt", { session: false }), async (request: IGetUserAuthInfoRequest, response: Response) => {
         await getRepository(SnE).find({
             where: { user: request.user }, order: {
                 createdAt: "DESC"
             }
         },
         ).then(links => {
-            response.send(links);
+           response.send(links);
         }).catch(error => {
+            console.log(error);
             response.status(401).send(error);
         })
     })
