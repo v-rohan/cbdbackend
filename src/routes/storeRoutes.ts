@@ -1,11 +1,11 @@
 import { Express, Router } from "express";
 import {
-  createNetwork,
-  getAllNetworks,
-  getNetworkById,
-  updateNetworkById,
-  deleteNetworkById,
-} from "../controller/affiliateNetworkController";
+  createStore,
+  getAllStores,
+  getStoreById,
+  updateStoreById,
+  deleteStoreById,
+} from "../controller/storeController";
 
 import AdminCheck from "../middleware/AdminCheck";
 
@@ -19,12 +19,8 @@ module.exports = (app: Express, passport: any) => {
   router.use(AdminCheck);
 
   // AffiliateNetwork Routes
-  router.route("/").get(getAllNetworks).post(createNetwork);
-  router
-    .route("/:id")
-    .get(getNetworkById)
-    .put(updateNetworkById)
-    .delete(deleteNetworkById);
+  router.route("/").get(getAllStores).post(createStore);
+  router.route("/:id").get(getStoreById).put(updateStoreById).delete(deleteStoreById);
 
   return router;
 };

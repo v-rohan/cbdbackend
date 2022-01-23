@@ -1,3 +1,11 @@
+.idea
+.vscode
+thunder-tests/thunderEnvironment.db
+
 .env
+
 node_modules/
-.vscode/
+
+mockTxns/*
+src/migration
+dbData

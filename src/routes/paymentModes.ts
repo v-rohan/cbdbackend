@@ -3,7 +3,7 @@ import { NextFunction, Request, Response, Express } from "express";
 import { IGetUserAuthInfoRequest } from "../types";
 import { Mode, PaymentMode } from "../entity/PaymentMode";
 import e = require("express");
-import AdminCheck from "../middleware/authMiddleware";
+import AdminCheck from "../middleware/AdminCheck";
 
 
 

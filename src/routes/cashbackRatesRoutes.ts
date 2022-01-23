@@ -1,12 +1,10 @@
 import { Express, Router } from "express";
 import {
-  createPostbackLog,
-  deleteLogById,
-  getAllLogs,
-  getLogById,
-  getLogsByNetworkId,
-  updateLogById,
-} from "../controller/postbackLogController";
+  createCashbackRate,
+  deleteCashbackRateById,
+  getCashbackRatesByStoreId,
+  updateCashbackRateById
+} from "../controller/cashbackRatesController";
 
 import AdminCheck from "../middleware/AdminCheck";
 
@@ -20,9 +18,9 @@ module.exports = (app: Express, passport: any) => {
   router.use(AdminCheck);
 
   // Postback log Routes
-  router.route("/").get(getAllLogs).post(createPostbackLog);
-  router.route("/:id").get(getLogById).put(updateLogById).delete(deleteLogById);
-  router.route("/network/:id").get(getLogsByNetworkId);
+  router.route("/").post(createCashbackRate);
+  router.route("/:id").put(updateCashbackRateById).delete(deleteCashbackRateById);
+  router.route("/store/:id").get(getCashbackRatesByStoreId);
 
   return router;
 };
