@@ -9,6 +9,7 @@ import {
 import { PostbackLog } from "./PostbackLog";
 import { Store } from "./Store";
 import { CashbackTxn } from "./Transactions/CashbackTxn";
+import { MockTxn } from "./Transactions/MockTxn";
 import { SalesTxn } from "./Transactions/SalesTxn";
 
 export enum SaleStatus {
@@ -99,6 +100,13 @@ export class AffiliateNetwork {
     {onDelete: 'CASCADE', onUpdate: 'CASCADE', eager: true}
   )
   salesTxns: SalesTxn[];
+
+  @OneToMany(() => MockTxn, (mockTxn) => mockTxn.networkId, {
+    onDelete: "NO ACTION",
+    onUpdate: "CASCADE",
+    eager: true,
+  })
+  mockTxns: MockTxn[];
 
   @CreateDateColumn()
   createdAt: Date;

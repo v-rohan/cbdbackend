@@ -56,7 +56,7 @@ const csvProcessor = (filePath: string) => {
 }
 
 const getMockTxns = async (request: Request, response: Response, next: NextFunction) => {
-    var txns = await getRepository(MockTxn).find();
+    var txns = await getRepository(MockTxn).find({ relations: ["networkId"] });
     response.status(200).json(txns);
 }
 
@@ -90,7 +90,10 @@ const mockTxnUploadCsv = async (request: Request, response: Response, next: Next
 }
 
 const getMockTxn = async (request: Request, response: Response, next: NextFunction) => {
-    var txn = await getRepository(MockTxn).findOne(request.params.id);
+    var txn = await getRepository(MockTxn).findOne(
+        request.params.id,
+        { relations: ["networkId"] }
+    );
     response.status(200).json(txn);
 }
 

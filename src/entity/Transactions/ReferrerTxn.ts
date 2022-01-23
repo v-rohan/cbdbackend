@@ -13,7 +13,7 @@ import { ColumnNumericTransformer, AcceptedStatusOpts } from "./Common";
 
 
 @Entity()
-export class ReferrerTxns {
+export class ReferrerTxn {
 
     @PrimaryGeneratedColumn()
     id: number;

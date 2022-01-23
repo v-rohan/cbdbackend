@@ -78,7 +78,7 @@ module.exports = (app: Express, passport: any) => {
     router.route('/bonus').get(getBonusTxns).post(postBonusTxns)
     router.route('/bonus/:id').get(getBonusTxns).post(postBonusTxn).delete(deleteBonusTxn)
 
-    // ReferrerTxns Routes
+    // ReferrerTxn Routes
     router.route('/referrer').get(getReferrerTxns).post(postReferrerTxns)
     router.route('/referrer/:id').get(getReferrerTxn).post(postReferrerTxn).delete(deleteReferrerTxn)
 

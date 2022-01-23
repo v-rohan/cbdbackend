@@ -2,7 +2,6 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    JoinColumn,
     ManyToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn
@@ -17,8 +16,7 @@ export class MockTxn {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => AffiliateNetwork, {onDelete: "CASCADE", onUpdate: "CASCADE"})
-    @JoinColumn([{ name: "affiliateNetwork", referencedColumnName: "name" }])
+    @ManyToOne(() => AffiliateNetwork, (affNet) => affNet.mockTxns , {onDelete: "CASCADE", onUpdate: "CASCADE"})
     networkId: string;
 
     @Column({ nullable: true })

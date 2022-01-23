@@ -10,7 +10,7 @@ import {
 import { AffiliateNetwork } from "./AffiliateNetwork";
 import { CashbackRates } from "./CashbackRates";
 import { CashbackTxn } from "./Transactions/CashbackTxn";
-import { ReferrerTxns } from "./Transactions/ReferrerTxn";
+import { ReferrerTxn } from "./Transactions/ReferrerTxn";
 
 export enum CashbackType {
   CASHBACK = "Cashback",
@@ -74,8 +74,8 @@ export class Store {
   @OneToMany(() => CashbackTxn, (cashbackTxn) => cashbackTxn.store, { eager : true })
   cashbackTxns: CashbackTxn[];
 
-  @OneToMany(() => ReferrerTxns, (refTxn) => refTxn.store, { eager : true })
-  refTxns: ReferrerTxns[];
+  @OneToMany(() => ReferrerTxn, (refTxn) => refTxn.store, { eager : true })
+  refTxns: ReferrerTxn[];
 
   @CreateDateColumn()
   createdAt: Date;
