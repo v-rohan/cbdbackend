@@ -7,7 +7,7 @@ import {
   deleteStoreById,
 } from "../controller/storeController";
 
-import AdminCheck from "../middleware/authMiddleware";
+import AdminCheck from "../middleware/AdminCheck";
 
 module.exports = (app: Express, passport: any) => {
   require("../passport/jwt")(passport);

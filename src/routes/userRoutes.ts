@@ -22,8 +22,8 @@ module.exports = (app: Express, passport) => {
       await bcrypt.genSalt(10, function (err: Error, salt: string) {
         bcrypt.hash(request.body.password, salt, function (err, hash) {
           newUser.password = hash;
-          // Uncomment to create admin
-           newUser.role = UserRole.ADMIN;
+        //   Uncomment to create admin
+        //   newUser.role = UserRole.ADMIN;
           getRepository(User)
             .save(newUser)
             .then((user) => {

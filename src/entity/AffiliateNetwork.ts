@@ -8,6 +8,9 @@ import {
 } from "typeorm";
 import { PostbackLog } from "./PostbackLog";
 import { Store } from "./Store";
+import { CashbackTxn } from "./Transactions/CashbackTxn";
+import { MockTxn } from "./Transactions/MockTxn";
+import { SalesTxn } from "./Transactions/SalesTxn";
 
 export enum SaleStatus {
   PENDING = "pending",
@@ -25,7 +28,7 @@ export class AffiliateNetwork {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: false })
+  @Column({ unique: true, nullable: false })
   name: string;
 
   @Column({ nullable: false })
@@ -87,6 +90,23 @@ export class AffiliateNetwork {
 
   @OneToMany(() => Store, (store) => store.network)
   stores: Store[];
+
+  @OneToMany(() => CashbackTxn, (cashbackTxn) => cashbackTxn.networkId,
+    {onDelete: 'CASCADE', onUpdate: 'CASCADE', eager: true}
+  )
+  cashbackTxns: CashbackTxn[];
+
+  @OneToMany(() => CashbackTxn, (salesTxn) => salesTxn.networkId,
+    {onDelete: 'CASCADE', onUpdate: 'CASCADE', eager: true}
+  )
+  salesTxns: SalesTxn[];
+
+  @OneToMany(() => MockTxn, (mockTxn) => mockTxn.networkId, {
+    onDelete: "NO ACTION",
+    onUpdate: "CASCADE",
+    eager: true,
+  })
+  mockTxns: MockTxn[];
 
   @CreateDateColumn()
   createdAt: Date;

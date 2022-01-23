@@ -9,6 +9,8 @@ import {
 } from "typeorm";
 import { AffiliateNetwork } from "./AffiliateNetwork";
 import { CashbackRates } from "./CashbackRates";
+import { CashbackTxn } from "./Transactions/CashbackTxn";
+import { ReferrerTxn } from "./Transactions/ReferrerTxn";
 
 export enum CashbackType {
   CASHBACK = "Cashback",
@@ -32,6 +34,7 @@ export class Store {
   @ManyToOne(() => AffiliateNetwork, (network: AffiliateNetwork) => network.stores, {
     onDelete: "CASCADE",
     onUpdate: "NO ACTION",
+    eager : true
   })
   network: AffiliateNetwork;
 
@@ -65,8 +68,14 @@ export class Store {
   @Column({ nullable: true, type: "text" })
   tips: string;
 
-  @OneToMany(() => CashbackRates, (cashbackRate) => cashbackRate.store)
+  @OneToMany(() => CashbackRates, (cashbackRate) => cashbackRate.store, { eager : true })
   cashbackRates: CashbackRates[];
+
+  @OneToMany(() => CashbackTxn, (cashbackTxn) => cashbackTxn.store, { eager : true })
+  cashbackTxns: CashbackTxn[];
+
+  @OneToMany(() => ReferrerTxn, (refTxn) => refTxn.store, { eager : true })
+  refTxns: ReferrerTxn[];
 
   @CreateDateColumn()
   createdAt: Date;

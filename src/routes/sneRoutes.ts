@@ -3,7 +3,7 @@ import { Request, Response, Express } from "express";
 import { generateLink } from "../services";
 import { SnE } from "../entity/SnE";
 import { IGetUserAuthInfoRequest } from "../types";
-import AdminCheck from "../middleware/authMiddleware";
+import AdminCheck from "../middleware/AdminCheck";
 import { request } from "http";
 
 module.exports = (app: Express, passport) => {
