@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { Clicks } from "./Clicks";
 import { PostbackLog } from "./PostbackLog";
 import { Store } from "./Store";
 import { CashbackTxn } from "./Transactions/CashbackTxn";
@@ -107,6 +108,12 @@ export class AffiliateNetwork {
     eager: true,
   })
   mockTxns: MockTxn[];
+
+  @OneToMany(() => Clicks, (clicks) => clicks.network, {
+    onDelete: "NO ACTION",
+    onUpdate: "NO ACTION",
+  })
+  clicks: Clicks[];
 
   @CreateDateColumn()
   createdAt: Date;
