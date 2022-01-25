@@ -1,6 +1,7 @@
 import {
     Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne
 } from "typeorm";
+import { Store } from "./Store";
 import { User } from "./User";
 
 @Entity()
@@ -30,8 +31,15 @@ export class SnE {
     @ManyToOne(
         () => User,
         (user: User) => user.snelinks,
-        { onDelete: "NO ACTION", onUpdate: "NO ACTION" }
+        { onDelete: "NO ACTION", onUpdate: "NO ACTION", nullable: false },
     )
     user: User;
+
+    @ManyToOne(
+        () => Store,
+        (store: Store) => store.snelinks,
+        { onDelete: "NO ACTION", onUpdate: "NO ACTION", nullable: false },
+    )
+    store: Store;
 
 }

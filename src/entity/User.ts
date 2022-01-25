@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+import { Clicks } from "./Clicks";
 import { PaymentMode } from "./PaymentMode";
 import { SnE } from "./SnE";
 
@@ -33,9 +34,12 @@ export class User {
     })
     role: UserRole
 
-    @OneToMany(() => SnE, (SnE) => SnE.user)
+    @OneToMany(() => SnE, (SnE) => SnE.user, {eager: true})
     snelinks: SnE[];
 
-    @OneToMany(() => PaymentMode, (PaymentMode) => PaymentMode.user)
+    @OneToMany(() => PaymentMode, (PaymentMode) => PaymentMode.user, {eager: true})
     paymentmodes: PaymentMode[];
+
+    @OneToMany(() => Clicks, (Clicks) => Clicks.user, {eager: true})
+    clicks: Clicks[];
 }

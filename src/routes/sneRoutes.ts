@@ -5,6 +5,7 @@ import { SnE } from "../entity/SnE";
 import { IGetUserAuthInfoRequest } from "../types";
 import AdminCheck from "../middleware/AdminCheck";
 import { request } from "http";
+import { Store } from "../entity/Store";
 
 module.exports = (app: Express, passport) => {
 
@@ -13,9 +14,14 @@ module.exports = (app: Express, passport) => {
         var sne = new SnE();
         sne.user = request.user;
         sne.shortlink = link;
-        sne.link = request.body.link;
-        getRepository(SnE).save(sne).then(sne => {
-            response.status(201).send(sne);
+        getRepository(Store).findOne({ id: request.body.storeId }).then(store => {
+            sne.link = request.body.link;
+            sne.store = store;
+            getRepository(SnE).save(sne).then(sne => {
+                response.status(201).send(sne);
+            }).catch(error => {
+                response.status(401).send(error);
+            })
         }).catch(error => {
             response.status(401).send(error);
         })
@@ -37,7 +43,7 @@ module.exports = (app: Express, passport) => {
     })
 
     app.get('/links', passport.authenticate("jwt", { session: false }), AdminCheck, async (request: IGetUserAuthInfoRequest, response: Response) => {
-        await getRepository(SnE).find({ relations: ["user"], order: { createdAt: "DESC" } }).then(links => {
+        await getRepository(SnE).find({ relations: ["user", "store"], order: { createdAt: "DESC" } }).then(links => {
             response.send(links);
         }).catch(error => {
             response.status(401).send(error);
@@ -45,7 +51,7 @@ module.exports = (app: Express, passport) => {
     })
 
     app.get('/links/:id', passport.authenticate("jwt", { session: false }), AdminCheck, async (request: IGetUserAuthInfoRequest, response: Response) => {
-        await getRepository(SnE).findOneOrFail({ relations: ["user"], order: { createdAt: "DESC" }, where: { id: Number(request.params.id) } }).then(link => {
+        await getRepository(SnE).findOneOrFail({ relations: ["user", "store"], order: { createdAt: "DESC" }, where: { id: Number(request.params.id) } }).then(link => {
             response.send(link);
         }).catch(error => {
             response.status(401).send(error);
@@ -73,12 +79,14 @@ module.exports = (app: Express, passport) => {
 
     app.get('/mylinks', passport.authenticate("jwt", { session: false }), async (request: IGetUserAuthInfoRequest, response: Response) => {
         await getRepository(SnE).find({
-            where: { user: request.user }, order: {
+            relations: ["store"],
+            where: { user: request.user },
+            order: {
                 createdAt: "DESC"
             }
         },
         ).then(links => {
-           response.send(links);
+            response.send(links);
         }).catch(error => {
             console.log(error);
             response.status(401).send(error);

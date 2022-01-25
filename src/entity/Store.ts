@@ -9,6 +9,8 @@ import {
 } from "typeorm";
 import { AffiliateNetwork } from "./AffiliateNetwork";
 import { CashbackRates } from "./CashbackRates";
+import { Clicks } from "./Clicks";
+import { SnE } from "./SnE";
 import { CashbackTxn } from "./Transactions/CashbackTxn";
 import { ReferrerTxn } from "./Transactions/ReferrerTxn";
 
@@ -34,7 +36,7 @@ export class Store {
   @ManyToOne(() => AffiliateNetwork, (network: AffiliateNetwork) => network.stores, {
     onDelete: "CASCADE",
     onUpdate: "NO ACTION",
-    eager : true
+    eager: true
   })
   network: AffiliateNetwork;
 
@@ -68,18 +70,24 @@ export class Store {
   @Column({ nullable: true, type: "text" })
   tips: string;
 
-  @OneToMany(() => CashbackRates, (cashbackRate) => cashbackRate.store, { eager : true })
+  @OneToMany(() => CashbackRates, (cashbackRate) => cashbackRate.store, { eager: true })
   cashbackRates: CashbackRates[];
 
-  @OneToMany(() => CashbackTxn, (cashbackTxn) => cashbackTxn.store, { eager : true })
+  @OneToMany(() => CashbackTxn, (cashbackTxn) => cashbackTxn.store, { eager: true })
   cashbackTxns: CashbackTxn[];
 
-  @OneToMany(() => ReferrerTxn, (refTxn) => refTxn.store, { eager : true })
+  @OneToMany(() => ReferrerTxn, (refTxn) => refTxn.store, { eager: true })
   refTxns: ReferrerTxn[];
+
+  @OneToMany(() => SnE, (SnE) => SnE.store, { eager: true })
+  snelinks: SnE[];
 
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToMany(() => Clicks, (Clicks) => Clicks.store)
+  clicks: Clicks[];
 }

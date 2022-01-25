@@ -45,7 +45,7 @@ module.exports = (app: Express, passport) => {
                 response.status(401).send(error);
             })
         }
-        else {
+        else if(request.user.role === 'user') {
             await getRepository(PaymentMode).find({ relations: ['user'], order: { createdAt: "DESC" }, where: { user: request.user } }).then(modes => {
                 console.log(modes);
                 console.log(request.user);
@@ -54,6 +54,9 @@ module.exports = (app: Express, passport) => {
                 console.log(error);
                 response.status(403).send(error);
             })
+        }
+        else{
+            response.status(401).send('Unauthorized');
         }
     })
 
