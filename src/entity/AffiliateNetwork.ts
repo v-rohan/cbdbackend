@@ -102,7 +102,7 @@ export class AffiliateNetwork {
   )
   salesTxns: SalesTxn[];
 
-  @OneToMany(() => MockTxn, (mockTxn) => mockTxn.networkId, {
+  @OneToMany(() => MockTxn, (mockTxn) => mockTxn.network_id, {
     onDelete: "NO ACTION",
     onUpdate: "CASCADE",
     eager: true,

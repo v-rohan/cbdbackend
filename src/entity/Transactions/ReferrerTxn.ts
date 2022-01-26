@@ -9,7 +9,7 @@ import {
     UpdateDateColumn
 } from "typeorm";
 import { User } from "../User";
-import { ColumnNumericTransformer, AcceptedStatusOpts } from "./Common";
+import { AcceptedStatusOpts } from "./Common";
 
 
 @Entity()
@@ -28,27 +28,19 @@ export class ReferrerTxn {
     shopper: User;
 
     @Column({ nullable: true })
-    saleId: string;
+    sale_id: string;
 
     @ManyToOne(() => Store, (store) => store.refTxns, {onDelete: "NO ACTION", onUpdate: "CASCADE"})
     store: Store;
 
-    @Column('numeric', {
-        scale: 2,
-        nullable: true,
-        transformer: new ColumnNumericTransformer()
-    })
-    saleAmount: number;
+    @Column({ type: "decimal", nullable: false })
+    sale_amount: number;
 
     @Column({ type: 'timestamp' })
-    txnDateTime: Date;
+    txn_date_time: Date;
 
-    @Column('numeric', {
-        scale: 2,
-        nullable: true,
-        transformer: new ColumnNumericTransformer()
-    })
-    refAmount: number;
+    @Column({ type: "decimal", nullable: false })
+    referrer_mount: number;
 
     @Column({ nullable: true })
     currency: string;
@@ -61,12 +53,12 @@ export class ReferrerTxn {
     status: AcceptedStatusOpts;
 
     @Column({ type: 'boolean', nullable: true })
-    mailSent: boolean;
+    mail_sent: boolean;
 
     @CreateDateColumn()
-    createdAt: string;
+    created_at: string;
 
     @UpdateDateColumn()
-    updatedAt: string;
+    updated_at: string;
 
 }

@@ -21,10 +21,10 @@ const getBonusTxn = async (request: Request, response: Response, next: NextFunct
 
 const postBonusTxn = async (request: Request, response: Response, next: NextFunction) => {
     var txn = await getRepository(BonusTxn).findOne(request.params.id);
-    txn.bonusCode = request.body.bonusCode;
+    txn.bonus_code = request.body.bonusCode;
     txn.amount = request.body.amount;
-    txn.awardedOn = request.body.awardedOn;
-    txn.expiresOn = request.body.expiresOn;
+    txn.awarded_on = request.body.awardedOn;
+    txn.expires_on = request.body.expiresOn;
     txn.status = request.body.status;
     await getRepository(BonusTxn).save(txn);
     response.status(201).json(txn);

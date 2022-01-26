@@ -1,12 +1,3 @@
-class ColumnNumericTransformer {
-    to(data: number): number {
-        return data;
-    }
-    from(data: string): number {
-        return parseFloat(data);
-    }
-}
-
 enum StatusOpts {
     PENDING = "pending",
     CONFIRMED = "confirmed",
@@ -21,7 +12,6 @@ enum AcceptedStatusOpts {
 }
 
 export {
-    ColumnNumericTransformer,
     StatusOpts,
     AcceptedStatusOpts
 }

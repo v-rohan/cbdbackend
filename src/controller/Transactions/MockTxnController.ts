@@ -40,7 +40,7 @@ const csvProcessor = (filePath: string) => {
                     delete row['id'];
                     delete row['created_at'];
                     delete row['updated_at'];
-                } catch (err) {;}
+                } catch (err) { ; }
                 data.push(mockTxnRowProcessor(row));
             })
             .on('end', () => {
@@ -80,7 +80,7 @@ const mockTxnUploadCsv = async (request: Request, response: Response, next: Next
             errorLog.push(`${i + 2}`);
         }
     }
-    if(errorLog.length > 0) {
+    if (errorLog.length > 0) {
         response.status(200).json({
             error: `Error at lines: ${errorLog}`
         });
@@ -100,22 +100,7 @@ const getMockTxn = async (request: Request, response: Response, next: NextFuncti
 const postMockTxn = async (request: Request, response: Response, next: NextFunction) => {
     const MockTxnRepo = getRepository(MockTxn);
     var txn = await MockTxnRepo.findOne(request.params.id);
-    txn.networkId = request.body.networkId;
-    txn.networkCampId = request.body.networkCampId;
-    txn.txnId = request.body.txnId;
-    txn.commissionId = request.body.commissionId;
-    txn.orderId = request.body.orderId;
-    txn.saleAmount = request.body.saleAmount;
-    txn.saleDate = request.body.saleDate;
-    txn.baseCommission = request.body.baseCommission;
-    txn.currency = request.body.currency;
-    txn.status = request.body.status;
-    txn.affSub1 = request.body.affSub1;
-    txn.affSub2 = request.body.affSub2;
-    txn.affSub3 = request.body.affSub3;
-    txn.affSub4 = request.body.affSub4;
-    txn.affSub5 = request.body.affSub5; 
-    txn.exInfo = request.body.exInfo;
+    txn = { ...txn, ...request.body };
     try {
         await MockTxnRepo.save(txn);
     } catch (err) {

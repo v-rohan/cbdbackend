@@ -2,10 +2,8 @@ services:
 
   postgres:
     image: postgres
-    environment:
-      POSTGRES_USER: test
-      POSTGRES_PASSWORD: test
-      POSTGRES_DB: test
+    env_file:
+      - .env
     restart: always
     ports:
       - "5432:5432"
