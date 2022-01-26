@@ -86,18 +86,18 @@ export class AffiliateNetwork {
   @Column({ type: "json", nullable: true })
   networkSubids: any;
 
-  @OneToMany(() => PostbackLog, (postbackLog) => postbackLog.affiliateNetwork)
+  @OneToMany(() => PostbackLog, (postbackLog) => postbackLog.network_id)
   postbackLogs: PostbackLog[];
 
   @OneToMany(() => Store, (store) => store.network)
   stores: Store[];
 
-  @OneToMany(() => CashbackTxn, (cashbackTxn) => cashbackTxn.networkId,
+  @OneToMany(() => CashbackTxn, (cashbackTxn) => cashbackTxn.network_id,
     {onDelete: 'CASCADE', onUpdate: 'CASCADE', eager: true}
   )
   cashbackTxns: CashbackTxn[];
 
-  @OneToMany(() => CashbackTxn, (salesTxn) => salesTxn.networkId,
+  @OneToMany(() => CashbackTxn, (salesTxn) => salesTxn.network_id,
     {onDelete: 'CASCADE', onUpdate: 'CASCADE', eager: true}
   )
   salesTxns: SalesTxn[];

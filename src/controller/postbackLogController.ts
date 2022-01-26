@@ -1,18 +1,63 @@
 import { Request, Response } from "express";
 import { getRepository } from "typeorm";
 import { PostbackLog } from "../entity/PostbackLog";
+import { getManager } from "typeorm";
+import { SalesTxn } from "../entity/Transactions/SalesTxn";
+import { CashbackTxn } from "../entity/Transactions/CashbackTxn";
+import { Clicks } from "../entity/Clicks";
 
 const getAllLogs = async (req: Request, res: Response) => {
   const logs = await getRepository(PostbackLog).find();
   return res.status(200).json(logs);
 };
 
-const createPostbackLog = async (req: Request, res: Response) => {
+const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
   try {
-    let log = new PostbackLog();
-    log = { ...req.body };
-    await getRepository(PostbackLog).save(log);
-    return res.status(201).json(log);
+
+    let log: PostbackLog = await getRepository(PostbackLog).findOne({ aff_sub1: Number(req.query.aff_sub1) });
+    if (!log)
+      log = new PostbackLog();
+
+    let salesTxn: SalesTxn = await getRepository(SalesTxn).findOne({ aff_sub1: Number(req.query.aff_sub1) });
+    if (!salesTxn)
+      salesTxn = new SalesTxn();
+
+    let cashbackTxn: CashbackTxn = await getRepository(CashbackTxn).findOne({ click_id: Number(req.query.aff_sub1) });
+    if (!cashbackTxn)
+      cashbackTxn = new CashbackTxn();
+
+    let dbObjects = []
+    dbObjects.push(log, salesTxn, cashbackTxn)
+
+    await getManager().transaction(async transactionalEntityManager => {
+      log = { ...log, ...req.query };
+
+      await transactionalEntityManager.save(log);
+
+      Object.keys(salesTxn).filter(key => key in req.query).forEach(key => {
+        salesTxn[key] = req.query[key]
+      })
+
+      salesTxn.commission_amount = salesTxn.base_commission
+
+      await transactionalEntityManager.save(salesTxn);
+
+      Object.keys(cashbackTxn).filter(key => key in req.query).forEach(key => {
+        cashbackTxn[key] = req.query[key]
+      })
+
+      getRepository(Clicks).findOneOrFail({ id: Number(req.query.aff_sub1) }).then(click => {
+        cashbackTxn.user = click.user;
+        cashbackTxn.store = click.store;
+        cashbackTxn.click_id = click.id;
+      })
+
+      await transactionalEntityManager.save(cashbackTxn);
+
+    }).then(async () => {
+      return res.status(201).json({ message: "Postback Log created successfully" });
+    })
+
   } catch (error) {
     return res.status(400).json(error);
   }
@@ -72,7 +117,7 @@ const deleteLogById = async (req: Request, res: Response) => {
 
 export {
   getAllLogs,
-  createPostbackLog,
+  createOrUpdatePostbackLog,
   getLogById,
   getLogsByNetworkId,
   updateLogById,

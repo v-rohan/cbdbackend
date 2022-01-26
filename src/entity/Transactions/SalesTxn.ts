@@ -16,52 +16,52 @@ export class SalesTxn {
     id: number;
 
     @ManyToOne(() => AffiliateNetwork, (affNet) => affNet.salesTxns ,{onDelete: "NO ACTION", onUpdate: "CASCADE"})
-    networkId: AffiliateNetwork;
+    network_id: AffiliateNetwork;
 
     @Column({ nullable: true })
-    networkCampId: string;
+    network_campaign_id: string;
 
     @Column()
-    txnId: string;
+    transaction_id: string;
 
     @Column({ nullable: true })
-    commissionId: string;
+    commission_id: string;
 
     @Column()
-    orderId: string;
+    order_id: string;
     
     @Column({ type: "date", nullable: true })
-    clickDate: string;
+    click_date: string;
 
     @Column({ type: "date", nullable: true })
-    saleDate: string;
+    sale_date: string;
 
     @Column('numeric', {
         scale: 2, 
         nullable: true,
         transformer: new ColumnNumericTransformer()
     })
-    saleAmount: number;
+    sale_amount: number;
 
     @Column('numeric', {
         scale: 2, 
         nullable: true,
         transformer: new ColumnNumericTransformer()
     })
-    baseCommission: number;
+    base_commission: number;
 
     @Column('numeric', {
         scale: 2, 
         nullable: true,
         transformer: new ColumnNumericTransformer()
     })
-    commissionAmt: number;
+    commission_amount: number;
 
     @Column()
     currency: string;
 
     @Column()
-    saleStatus: string;
+    sale_status: string;
 
     @Column({
         type: "enum",
@@ -71,33 +71,33 @@ export class SalesTxn {
     status: StatusOpts;
 
     @Column({ type: 'timestamp', nullable: true })
-    saleUpdTime: Date;
+    sale_update_time: Date;
 
     @Column({ nullable: true })
-    affSub1: string;
+    aff_sub1: Number;
 
     @Column({ nullable: true })
-    affSub2: string;
+    aff_sub2: string;
     
     @Column({ nullable: true })
-    affSub3: string;
+    aff_sub3: string;
 
     @Column({ nullable: true })
-    affSub4: string;
+    aff_sub4: string;
 
     @Column({ nullable: true })
-    affSub5: string;
+    aff_sub5: string;
 
     @Column({ type: 'text', nullable: true })
-    exInfo: string;
+    ex_info: string;
 
     @Column({ nullable: true })
-    batchId: string;
+    batch_id: string;
 
     @CreateDateColumn()
-    createdAt: string;
+    created_at: string;
 
     @UpdateDateColumn()
-    updatedAt: string;
+    updated_at: string;
 
 }

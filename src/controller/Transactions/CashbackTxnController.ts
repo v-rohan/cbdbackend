@@ -4,7 +4,7 @@ import { CashbackTxn } from "../../entity/Transactions/CashbackTxn";
 
 
 const getCashbackTxns = async (request: Request, response: Response, next: NextFunction) => {
-    var txns = await getRepository(CashbackTxn).find({ relations : ["user", "store", "networkId"] });
+    var txns = await getRepository(CashbackTxn).find({ relations: ["user", "store", "networkId"] });
     response.status(200).json(txns);
 }
 
@@ -17,26 +17,26 @@ const postCashbackTxns = async (request: Request, response: Response, next: Next
 const getCashbackTxn = async (request: Request, response: Response, next: NextFunction) => {
     var txn = await getRepository(CashbackTxn).findOne(
         request.params.id,
-        { relations : ["store", "networkId"] }
+        { relations: ["store", "networkId"] }
     );
     response.status(200).json(txn);
 }
 
 const postCashbackTxn = async (request: Request, response: Response, next: NextFunction) => {
     var txn = await getRepository(CashbackTxn).findOne(request.params.id);
-    txn.saleId = request.body.saleId;
-    txn.networkId = request.body.networkId;
-    txn.orderId = request.body.orderId;
-    txn.store = request.body.store;
-    txn.clickId = request.body.clickId;
-    txn.saleAmount = request.body.saleAmount;
-    txn.cashback = request.body.cashback;
-    txn.currency = request.body.currency;
-    txn.status = request.body.status;
-    txn.txnDateTime = request.body.txnDateTime;
-    txn.mailSent = request.body.mailSent;
+    txn = {...txn, ...request.body};
     await getRepository(CashbackTxn).save(txn);
     response.status(201).json(txn);
+}
+
+const createorUpdateCashbackTxn = async (data: any) => {
+    try {
+        var cashnackTxn = new CashbackTxn();
+        await getRepository(CashbackTxn).save(cashnackTxn);
+    } catch (e) {
+        console.log(e);
+        throw e
+    }
 }
 
 const deleteCashbackTxn = async (request: Request, response: Response, next: NextFunction) => {
@@ -47,6 +47,7 @@ const deleteCashbackTxn = async (request: Request, response: Response, next: Nex
 export {
     getCashbackTxns,
     postCashbackTxns,
+    createorUpdateCashbackTxn,
     getCashbackTxn,
     postCashbackTxn,
     deleteCashbackTxn

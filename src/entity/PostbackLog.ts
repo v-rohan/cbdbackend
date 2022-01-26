@@ -18,59 +18,59 @@ export class PostbackLog {
     (affiliateNetwork) => affiliateNetwork.postbackLogs,
     { onDelete: "NO ACTION", onUpdate: "NO ACTION" }
   )
-  affiliateNetwork: AffiliateNetwork;
+  network_id: AffiliateNetwork;
 
   @Column({ nullable: false })
-  networkCampaignId: string;
+  network_campaign_id: string;
 
   @Column({ nullable: false, unique: true })
-  transactionId: string;
+  transaction_id: string;
 
   @Column({ nullable: true })
-  commissionId: string;
+  commission_id: string;
 
-  @Column({ nullable: false, unique: true })
-  orderId: string;
+  @Column({ nullable: true})
+  order_id: string;
 
   @Column({ type: "timestamptz", nullable: false })
-  saleDate: Date;
+  sale_date: Date;
 
   @Column({ type: "decimal", nullable: false })
-  saleAmount: number;
+  sale_amount: number;
 
   @Column({ type: "decimal", nullable: false })
-  baseCommission: number;
+  base_commission: number;
 
   @Column({ nullable: false })
   currency: string;
 
   @Column({ nullable: false })
-  saleStatus: string;
+  status: string;
 
-  @Column()
-  affSub1: string;
-
-  @Column({ nullable: true })
-  affSub2: string;
+  @Column({unique: true})
+  aff_sub1: Number;
 
   @Column({ nullable: true })
-  affSub3: string;
+  aff_sub2: string;
 
   @Column({ nullable: true })
-  affSub4: string;
+  aff_sub3: string;
 
   @Column({ nullable: true })
-  affSub5: string;
+  aff_sub4: string;
+
+  @Column({ nullable: true })
+  aff_sub5: string;
 
   @Column({ nullable: false, unique: true })
-  SaleId: string;
+  sale_id: string;
 
   @Column({ nullable: true })
-  Exception: string;
+  exception: string;
 
   @CreateDateColumn()
-  createdAt: Date;
+  created_at: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updated_at: Date;
 }
