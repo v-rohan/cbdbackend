@@ -31,6 +31,8 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
 
     await getManager().transaction(async transactionalEntityManager => {
       log = { ...log, ...req.query };
+      
+
 
       await transactionalEntityManager.save(log);
 
@@ -50,6 +52,8 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
         cashbackTxn.user = click.user;
         cashbackTxn.store = click.store;
         cashbackTxn.click_id = String(click.id);
+        cashbackTxn.cashback = cashbackTxn.sale_amount * click.store.cashbackPercent / 100;
+        cashbackTxn.txn_date_time = (new Date());
       })
 
       await transactionalEntityManager.save(cashbackTxn);
