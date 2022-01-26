@@ -43,7 +43,7 @@ const MigrateMockTxns = async () => {
             );
             for (const key in affNet.saleStatuses) {
                 if (affNet.saleStatuses[key] === salesTxn.status) {
-                    salesTxn.sale_status = key;
+                    salesTxn.sale_status = key
                 }
             }
 
@@ -51,10 +51,10 @@ const MigrateMockTxns = async () => {
             var click = (await getRepository(Clicks).findOneOrFail(
                 {where: {id: Number(cashbackTxn.click_id)}}
             ))
-            cashbackTxn.store = click.store;
-            cashbackTxn.cashback = cashbackTxn.sale_amount * click.store.cashbackPercent / 100;
-            cashbackTxn.txn_date_time = (new Date());
             cashbackTxn.user = click.user;
+            cashbackTxn.store = click.store;
+            cashbackTxn.cashback = cashbackTxn.sale_amount * click.store.cashbackPercent / 100
+            cashbackTxn.txn_date_time = (new Date());
 
             await getManager().transaction(async (transaction) => {
                 await transaction.save(salesTxn);
