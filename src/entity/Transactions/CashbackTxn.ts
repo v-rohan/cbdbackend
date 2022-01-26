@@ -40,7 +40,7 @@ export class CashbackTxn {
     store: Store;
 
     @Column({ nullable: true })
-    click_id: Number;
+    click_id: string;
 
     @Column({ type: "decimal", nullable: false })
     sale_amount: number;

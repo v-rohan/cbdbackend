@@ -62,7 +62,7 @@ export class SalesTxn {
     sale_update_time: Date;
 
     @Column({ nullable: true })
-    aff_sub1: Number;
+    aff_sub1: string;
 
     @Column({ nullable: true })
     aff_sub2: string;

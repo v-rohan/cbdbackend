@@ -93,19 +93,18 @@ export class AffiliateNetwork {
   stores: Store[];
 
   @OneToMany(() => CashbackTxn, (cashbackTxn) => cashbackTxn.network_id,
-    {onDelete: 'CASCADE', onUpdate: 'CASCADE', eager: true}
+    {onDelete: 'CASCADE', onUpdate: 'CASCADE'}
   )
   cashbackTxns: CashbackTxn[];
 
   @OneToMany(() => CashbackTxn, (salesTxn) => salesTxn.network_id,
-    {onDelete: 'CASCADE', onUpdate: 'CASCADE', eager: true}
+    {onDelete: 'CASCADE', onUpdate: 'CASCADE'}
   )
   salesTxns: SalesTxn[];
 
   @OneToMany(() => MockTxn, (mockTxn) => mockTxn.network_id, {
     onDelete: "NO ACTION",
     onUpdate: "CASCADE",
-    eager: true,
   })
   mockTxns: MockTxn[];
 

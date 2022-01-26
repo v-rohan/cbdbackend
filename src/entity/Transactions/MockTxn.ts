@@ -17,7 +17,7 @@ export class MockTxn {
     id: number;
 
     @ManyToOne(() => AffiliateNetwork, (affNet) => affNet.mockTxns , {onDelete: "CASCADE", onUpdate: "CASCADE"})
-    network_id: string;
+    network_id: number;
 
     @Column({ nullable: true })
     network_campaign_id: string;
