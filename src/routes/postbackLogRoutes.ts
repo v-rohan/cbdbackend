@@ -1,6 +1,6 @@
 import { Express, Router } from "express";
 import {
-  createPostbackLog,
+  createOrUpdatePostbackLog,
   deleteLogById,
   getAllLogs,
   getLogById,
@@ -20,7 +20,7 @@ module.exports = (app: Express, passport: any) => {
   router.use(AdminCheck);
 
   // Postback log Routes
-  router.route("/").get(getAllLogs).post(createPostbackLog);
+  router.route("/").get(getAllLogs).post(createOrUpdatePostbackLog);
   router.route("/:id").get(getLogById).put(updateLogById).delete(deleteLogById);
   router.route("/network/:id").get(getLogsByNetworkId);
 

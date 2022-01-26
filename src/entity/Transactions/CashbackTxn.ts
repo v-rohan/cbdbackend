@@ -20,19 +20,19 @@ export class CashbackTxn {
     id: number;
 
     @ManyToOne(() => User , {onDelete: 'NO ACTION', onUpdate: 'CASCADE'})
-    @JoinColumn([{ name: 'user', referencedColumnName: 'email' }])
+    @JoinColumn([{ name: 'user', referencedColumnName: 'id' }])
     user: User;
 
     @Column({ nullable: true })
-    saleId: string;
+    sale_id: string;
 
     @ManyToOne(() => AffiliateNetwork, (affNet) => affNet.cashbackTxns,
         {onDelete: "NO ACTION", onUpdate: "CASCADE"}
     )
-    networkId: AffiliateNetwork;
+    network_id: AffiliateNetwork;
 
     @Column({ nullable: true })
-    orderId: string;
+    order_id: string;
 
     @ManyToOne(() => Store, (store) => store.cashbackTxns,
         {onDelete: "NO ACTION", onUpdate: "NO ACTION"}
@@ -40,7 +40,7 @@ export class CashbackTxn {
     store: Store;
 
     @Column({ nullable: true })
-    clickId: string;
+    click_id: Number;
 
     @Column('numeric', {
         // precision: 2,
@@ -48,7 +48,7 @@ export class CashbackTxn {
         nullable: true,
         transformer: new ColumnNumericTransformer()
     })
-    saleAmount: number;
+    sale_amount: number;
 
     @Column('numeric', {
         scale: 2,
@@ -68,15 +68,15 @@ export class CashbackTxn {
     status: AcceptedStatusOpts;
 
     @Column({ type: 'timestamp', nullable: true })
-    txnDateTime: Date;
+    txn_date_time: Date;
 
     @Column({ type: 'boolean', nullable: true })
-    mailSent: boolean;
+    mail_sent: boolean;
 
     @CreateDateColumn()
-    createdAt: string;
+    created_at: string;
 
     @UpdateDateColumn()
-    updatedAt: string;
+    updated_at: string;
 
 }
