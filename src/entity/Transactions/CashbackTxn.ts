@@ -10,7 +10,7 @@ import {
 import { AffiliateNetwork } from "../AffiliateNetwork";
 import { Store } from "../Store";
 import { User } from "../User";
-import { ColumnNumericTransformer, AcceptedStatusOpts } from "./Common";
+import { AcceptedStatusOpts } from "./Common";
 
 
 @Entity()
@@ -40,21 +40,12 @@ export class CashbackTxn {
     store: Store;
 
     @Column({ nullable: true })
-    click_id: Number;
+    click_id: string;
 
-    @Column('numeric', {
-        // precision: 2,
-        scale: 2,
-        nullable: true,
-        transformer: new ColumnNumericTransformer()
-    })
+    @Column({ type: "decimal", nullable: false })
     sale_amount: number;
 
-    @Column('numeric', {
-        scale: 2,
-        nullable: true,
-        transformer: new ColumnNumericTransformer()
-    })
+    @Column({ type: "decimal", nullable: false })
     cashback: number;
 
     @Column({ nullable: true })

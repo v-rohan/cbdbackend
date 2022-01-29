@@ -7,7 +7,7 @@ import {
     UpdateDateColumn
 } from "typeorm";
 import { AffiliateNetwork } from "../AffiliateNetwork";
-import { ColumnNumericTransformer, StatusOpts } from "./Common";
+import { StatusOpts } from "./Common";
 
 @Entity()
 export class SalesTxn {
@@ -36,25 +36,13 @@ export class SalesTxn {
     @Column({ type: "date", nullable: true })
     sale_date: string;
 
-    @Column('numeric', {
-        scale: 2, 
-        nullable: true,
-        transformer: new ColumnNumericTransformer()
-    })
+    @Column({ type: "decimal", nullable: false })
     sale_amount: number;
 
-    @Column('numeric', {
-        scale: 2, 
-        nullable: true,
-        transformer: new ColumnNumericTransformer()
-    })
+    @Column({ type: "decimal", nullable: false })
     base_commission: number;
 
-    @Column('numeric', {
-        scale: 2, 
-        nullable: true,
-        transformer: new ColumnNumericTransformer()
-    })
+    @Column({ type: "decimal", nullable: false })
     commission_amount: number;
 
     @Column()
@@ -74,7 +62,7 @@ export class SalesTxn {
     sale_update_time: Date;
 
     @Column({ nullable: true })
-    aff_sub1: Number;
+    aff_sub1: string;
 
     @Column({ nullable: true })
     aff_sub2: string;

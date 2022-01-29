@@ -56,7 +56,7 @@ createConnection()
     // insert new users for test
 
     console.log(
-      `Express server has started on port ${port}. Open http://localhost:${port}/users to see results`
+      `Express server has started on port ${port}. Open http://localhost:${port}/ to see results`
     );
   })
   .catch((error) => console.log(error));

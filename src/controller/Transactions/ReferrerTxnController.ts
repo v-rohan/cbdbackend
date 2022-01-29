@@ -23,13 +23,7 @@ const getReferrerTxn = async (request: Request, response: Response, next: NextFu
 
 const postReferrerTxn = async (request: Request, response: Response, next: NextFunction) => {
     var txn = await getRepository(ReferrerTxn).findOne(request.params.id);
-    txn.store = request.body.store;
-    txn.refAmount = request.body.clickId;
-    txn.saleAmount = request.body.saleAmount;
-    txn.currency = request.body.currency;
-    txn.status = request.body.status;
-    txn.txnDateTime = request.body.txnDateTime;
-    txn.mailSent = request.body.mailSent;
+    txn = { ...txn, ...request.body };
     await getRepository(ReferrerTxn).save(txn);
     response.status(201).json(txn);
 }

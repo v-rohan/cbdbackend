@@ -6,7 +6,7 @@ import {
     PrimaryGeneratedColumn,
 } from "typeorm";
 import { User } from "../User";
-import { ColumnNumericTransformer, AcceptedStatusOpts } from "./Common";
+import { AcceptedStatusOpts } from "./Common";
 
 @Entity()
 export class BonusTxn {
@@ -19,20 +19,16 @@ export class BonusTxn {
     user: User;
 
     @Column()
-    bonusCode: string;
+    bonus_code: string;
 
-    @Column('numeric', {
-        scale: 2,
-        nullable: true,
-        transformer: new ColumnNumericTransformer()
-    })
+    @Column({ type: "decimal", nullable: false })
     amount: Number;
 
     @Column({ type: 'timestamp', nullable: true })
-    awardedOn: Date;
+    awarded_on: Date;
 
     @Column({ type: 'timestamp', nullable: true })
-    expiresOn: Date;
+    expires_on: Date;
 
     @Column({
         type: "enum",

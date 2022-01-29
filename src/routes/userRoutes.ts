@@ -23,7 +23,7 @@ module.exports = (app: Express, passport) => {
         bcrypt.hash(request.body.password, salt, function (err, hash) {
           newUser.password = hash;
         //   Uncomment to create admin
-        //   newUser.role = UserRole.ADMIN;
+          newUser.role = UserRole.ADMIN;
           getRepository(User)
             .save(newUser)
             .then((user) => {

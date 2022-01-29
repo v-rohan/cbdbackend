@@ -7,7 +7,7 @@ import {
     UpdateDateColumn
 } from "typeorm";
 import { AffiliateNetwork } from "../AffiliateNetwork";
-import { ColumnNumericTransformer, StatusOpts } from "./Common";
+import { StatusOpts } from "./Common";
 
 
 @Entity()
@@ -17,36 +17,28 @@ export class MockTxn {
     id: number;
 
     @ManyToOne(() => AffiliateNetwork, (affNet) => affNet.mockTxns , {onDelete: "CASCADE", onUpdate: "CASCADE"})
-    networkId: string;
+    network_id: number;
 
     @Column({ nullable: true })
-    networkCampId: string;
+    network_campaign_id: string;
 
     @Column()
-    txnId: string;
+    transaction_id: string;
 
     @Column({ nullable: true })
-    commissionId: string;
+    commission_id: string;
 
     @Column()
-    orderId: string;
+    order_id: string;
     
     @Column({ type: "date", nullable: true })
-    saleDate: string;
+    sale_date: string;
 
-    @Column('numeric', {
-        scale: 2, 
-        nullable: true,
-        transformer: new ColumnNumericTransformer()
-    })
-    saleAmount: number;
+    @Column({ type: "decimal", nullable: false })
+    sale_amount: number;
 
-    @Column('numeric', {
-        scale: 2, 
-        nullable: true,
-        transformer: new ColumnNumericTransformer()
-    })
-    baseCommission: number;
+    @Column({ type: "decimal", nullable: false })
+    base_commission: number;
 
     @Column()
     currency: string;
@@ -59,27 +51,27 @@ export class MockTxn {
     status: StatusOpts;
 
     @Column({ nullable: true })
-    affSub1: string;
+    aff_sub1: string;
 
     @Column({ nullable: true })
-    affSub2: string;
+    aff_sub2: string;
     
     @Column({ nullable: true })
-    affSub3: string;
+    aff_sub3: string;
 
     @Column({ nullable: true })
-    affSub4: string;
+    aff_sub4: string;
 
     @Column({ nullable: true })
-    affSub5: string;
+    aff_sub5: string;
 
     @Column({ type: 'text', nullable: true })
-    exInfo: string;
+    extra_information: string;
 
     @CreateDateColumn()
-    createdAt: string;
+    created_at: string;
 
     @UpdateDateColumn()
-    updatedAt: string;
+    updated_at: string;
 
 }

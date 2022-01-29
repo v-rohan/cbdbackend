@@ -14,15 +14,15 @@ const getAllLogs = async (req: Request, res: Response) => {
 const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
   try {
 
-    let log: PostbackLog = await getRepository(PostbackLog).findOne({ aff_sub1: Number(req.query.aff_sub1) });
+    let log: PostbackLog = await getRepository(PostbackLog).findOne({ aff_sub1: (req.query.aff_sub1) });
     if (!log)
       log = new PostbackLog();
 
-    let salesTxn: SalesTxn = await getRepository(SalesTxn).findOne({ aff_sub1: Number(req.query.aff_sub1) });
+    let salesTxn: SalesTxn = await getRepository(SalesTxn).findOne({ aff_sub1: String(req.query.aff_sub1) });
     if (!salesTxn)
       salesTxn = new SalesTxn();
 
-    let cashbackTxn: CashbackTxn = await getRepository(CashbackTxn).findOne({ click_id: Number(req.query.aff_sub1) });
+    let cashbackTxn: CashbackTxn = await getRepository(CashbackTxn).findOne({ click_id: String(req.query.aff_sub1) });
     if (!cashbackTxn)
       cashbackTxn = new CashbackTxn();
 
@@ -31,6 +31,8 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
 
     await getManager().transaction(async transactionalEntityManager => {
       log = { ...log, ...req.query };
+      
+
 
       await transactionalEntityManager.save(log);
 
@@ -49,7 +51,9 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
       getRepository(Clicks).findOneOrFail({ id: Number(req.query.aff_sub1) }).then(click => {
         cashbackTxn.user = click.user;
         cashbackTxn.store = click.store;
-        cashbackTxn.click_id = click.id;
+        cashbackTxn.click_id = String(click.id);
+        cashbackTxn.cashback = cashbackTxn.sale_amount * click.store.cashbackPercent / 100;
+        cashbackTxn.txn_date_time = (new Date());
       })
 
       await transactionalEntityManager.save(cashbackTxn);
