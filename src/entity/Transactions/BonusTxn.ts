@@ -33,7 +33,7 @@ export class BonusTxn {
     @Column({
         type: "enum",
         enum: AcceptedStatusOpts,
-        default: AcceptedStatusOpts.PENDING
+        default: AcceptedStatusOpts.pending
     })
     status: AcceptedStatusOpts;
 

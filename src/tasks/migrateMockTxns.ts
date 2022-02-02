@@ -4,6 +4,7 @@ import { CashbackTxn } from "../entity/Transactions/CashbackTxn";
 import { MockTxn } from "../entity/Transactions/MockTxn";
 import { SalesTxn } from "../entity/Transactions/SalesTxn";
 import { Clicks } from "../entity/Clicks";
+import { StatusOpts, AcceptedStatusOpts } from "../entity/Transactions/Common";
 
 const MigrateMockTxns = async () => {
     const mockTxns = await getRepository(MockTxn).find({
@@ -18,7 +19,7 @@ const MigrateMockTxns = async () => {
                     where: { aff_sub1: mockTxn.aff_sub1 },
                 });
                 cashbackTxn = await getRepository(CashbackTxn).findOneOrFail({
-                    where: { aff_sub1: mockTxn.aff_sub1 },
+                    where: { click_id: mockTxn.aff_sub1 },
                 });
             } catch (err) {
                 salesTxn = new SalesTxn();
@@ -26,41 +27,47 @@ const MigrateMockTxns = async () => {
             }
 
             let newMockTxn = { ...mockTxn };
-            delete newMockTxn['id'];
-            delete newMockTxn['created_at'];
-            delete newMockTxn['updated_at'];
+            delete newMockTxn["id"];
+            delete newMockTxn["created_at"];
+            delete newMockTxn["updated_at"];
 
-            Object.keys(salesTxn).filter(key => key in newMockTxn).forEach(key => {
-                salesTxn[key] = newMockTxn[key]
-            })
-            Object.keys(cashbackTxn).filter(key => key in newMockTxn).forEach(key => {
-                cashbackTxn[key] = newMockTxn[key]
-            })
+            Object.keys(salesTxn)
+                .filter((key) => key in newMockTxn)
+                .forEach((key) => {
+                    salesTxn[key] = newMockTxn[key];
+                });
+            Object.keys(cashbackTxn)
+                .filter((key) => key in newMockTxn)
+                .forEach((key) => {
+                    cashbackTxn[key] = newMockTxn[key];
+                });
 
             salesTxn.commission_amount = salesTxn.base_commission;
-            let affNet = await getRepository(AffiliateNetwork).findOneOrFail(
-                {where: {id: salesTxn.network_id}}
-            );
-            for (const key in affNet.saleStatuses) {
-                if (affNet.saleStatuses[key] === salesTxn.status) {
-                    salesTxn.sale_status = key
-                }
+            let affNet = await getRepository(AffiliateNetwork).findOneOrFail({
+                where: { id: salesTxn.network_id },
+            });
+
+            salesTxn.status = newMockTxn.status;
+            if (newMockTxn.status == StatusOpts.delayed) {
+                cashbackTxn.status = AcceptedStatusOpts.pending;
+            } else {
+                cashbackTxn.status = AcceptedStatusOpts[newMockTxn.status];
             }
 
             cashbackTxn.click_id = mockTxn.aff_sub1;
-            var click = (await getRepository(Clicks).findOneOrFail(
-                {where: {id: Number(cashbackTxn.click_id)}}
-            ))
+            var click = await getRepository(Clicks).findOneOrFail({
+                where: { id: Number(cashbackTxn.click_id) },
+            });
             cashbackTxn.user = click.user;
             cashbackTxn.store = click.store;
-            cashbackTxn.cashback = cashbackTxn.sale_amount * click.store.cashbackPercent / 100
-            cashbackTxn.txn_date_time = (new Date());
+            cashbackTxn.cashback =
+                (cashbackTxn.sale_amount * click.store.cashbackPercent) / 100;
+            cashbackTxn.txn_date_time = new Date();
 
             await getManager().transaction(async (transaction) => {
                 await transaction.save(salesTxn);
                 await transaction.save(cashbackTxn);
             });
-
         } catch (err) {
             return err;
         }

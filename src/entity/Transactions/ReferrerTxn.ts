@@ -48,7 +48,7 @@ export class ReferrerTxn {
     @Column({
         type: "enum",
         enum: AcceptedStatusOpts,
-        default: AcceptedStatusOpts.PENDING
+        default: AcceptedStatusOpts.pending
     })
     status: AcceptedStatusOpts;
 
