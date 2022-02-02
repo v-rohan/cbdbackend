@@ -79,14 +79,17 @@ const mockTxnUploadCsv = async (
         for (var i = 0; i < data.length; i++) {
             try {
                 let txn: Array<MockTxn> = await MockTxnRepo.find({
-                    where: { aff_sub1: data[i]["aff_sub1"], transaction_id: data[i]["transaction_id"] },
+                    where: {
+                        aff_sub1: data[i]["aff_sub1"],
+                        transaction_id: data[i]["transaction_id"],
+                    },
                 });
                 let network = await getRepository(AffiliateNetwork).findOne({
                     where: { name: data[i]["network_id"] },
                 });
                 data[i]["network_id"] = network.id;
-                let status = network.saleStatuses
-                for(var key in status) {
+                let status = network.saleStatuses;
+                for (var key in status) {
                     if (status[key] == data[i]["status"]) {
                         data[i]["status"] = key;
                     }

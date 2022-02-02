@@ -43,9 +43,6 @@ const MigrateMockTxns = async () => {
                 });
 
             salesTxn.commission_amount = salesTxn.base_commission;
-            let affNet = await getRepository(AffiliateNetwork).findOneOrFail({
-                where: { id: salesTxn.network_id },
-            });
 
             salesTxn.status = newMockTxn.status;
             if (newMockTxn.status == StatusOpts.delayed) {

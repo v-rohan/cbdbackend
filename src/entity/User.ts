@@ -1,17 +1,15 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 import { Clicks } from "./Clicks";
-import { PaymentMode } from "./PaymentMode";
+import { PaymentMode } from "./Payment/PaymentMode";
 import { SnE } from "./SnE";
-
 
 export enum UserRole {
     ADMIN = "admin",
-    USER = "user"
+    USER = "user",
 }
 
 @Entity()
 export class User {
-
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -30,9 +28,9 @@ export class User {
     @Column({
         type: "enum",
         enum: UserRole,
-        default: UserRole.USER
+        default: UserRole.USER,
     })
-    role: UserRole
+    role: UserRole;
 
     @OneToMany(() => SnE, (SnE) => SnE.user)
     snelinks: SnE[];

@@ -4,18 +4,20 @@ import {
     Entity,
     ManyToOne,
     PrimaryGeneratedColumn,
-    UpdateDateColumn
+    UpdateDateColumn,
 } from "typeorm";
 import { AffiliateNetwork } from "../AffiliateNetwork";
 import { StatusOpts } from "./Common";
 
 @Entity()
 export class SalesTxn {
-
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => AffiliateNetwork, (affNet) => affNet.salesTxns ,{onDelete: "NO ACTION", onUpdate: "CASCADE"})
+    @ManyToOne(() => AffiliateNetwork, (affNet) => affNet.salesTxns, {
+        onDelete: "NO ACTION",
+        onUpdate: "CASCADE",
+    })
     network_id: AffiliateNetwork;
 
     @Column({ nullable: true })
@@ -29,7 +31,7 @@ export class SalesTxn {
 
     @Column()
     order_id: string;
-    
+
     @Column({ type: "date", nullable: true })
     click_date: string;
 
@@ -54,11 +56,11 @@ export class SalesTxn {
     @Column({
         type: "enum",
         enum: StatusOpts,
-        default: StatusOpts.pending
+        default: StatusOpts.pending,
     })
     status: StatusOpts;
 
-    @Column({ type: 'timestamp', nullable: true })
+    @Column({ type: "timestamp", nullable: true })
     sale_update_time: Date;
 
     @Column({ nullable: true })
@@ -66,7 +68,7 @@ export class SalesTxn {
 
     @Column({ nullable: true })
     aff_sub2: string;
-    
+
     @Column({ nullable: true })
     aff_sub3: string;
 
@@ -76,7 +78,7 @@ export class SalesTxn {
     @Column({ nullable: true })
     aff_sub5: string;
 
-    @Column({ type: 'text', nullable: true })
+    @Column({ type: "text", nullable: true })
     ex_info: string;
 
     @Column({ nullable: true })
@@ -87,5 +89,4 @@ export class SalesTxn {
 
     @UpdateDateColumn()
     updated_at: string;
-
 }

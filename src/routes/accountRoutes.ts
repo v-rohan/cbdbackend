@@ -1,6 +1,6 @@
 import { Request, Express } from "express";
 import * as express from "express";
-import { getAllTxns } from "../controller/accountController";
+import { getAllTxns, getAmountStatus } from "../controller/accountController";
 
 module.exports = (app: Express, passport: any) => {
     require("../passport/jwt")(passport);
@@ -11,5 +11,5 @@ module.exports = (app: Express, passport: any) => {
     router.use(passport.authenticate("jwt", { session: false }));
 
     router.route("/alltxns").get(getAllTxns);
-    
+    router.route("/walletDetails").get(getAmountStatus);
 };
