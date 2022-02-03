@@ -31,8 +31,8 @@ const postCashbackTxn = async (request: Request, response: Response, next: NextF
 
 const createorUpdateCashbackTxn = async (data: any) => {
     try {
-        var cashnackTxn = new CashbackTxn();
-        await getRepository(CashbackTxn).save(cashnackTxn);
+        var cashbackTxn = new CashbackTxn();
+        await getRepository(CashbackTxn).save(cashbackTxn);
     } catch (e) {
         console.log(e);
         throw e

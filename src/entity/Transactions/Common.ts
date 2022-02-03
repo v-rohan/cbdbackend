@@ -1,14 +1,14 @@
 enum StatusOpts {
-    PENDING = "pending",
-    CONFIRMED = "confirmed",
-    DECLINED = "declined",
-    DELAYED = "delayed"
+    pending = "pending",
+    confirmed = "confirmed",
+    declined = "declined",
+    delayed = "delayed"
 }
 
 enum AcceptedStatusOpts {
-    PENDING = "pending",
-    CONFIRMED = "confirmed",
-    DECLINED = "declined"
+    pending = "pending",
+    confirmed = "confirmed",
+    declined = "declined"
 }
 
 export {

@@ -5,6 +5,7 @@ import { getRepository } from "typeorm";
 import { parseStream } from "fast-csv";
 import { MockTxn } from "../../entity/Transactions/MockTxn";
 import { AffiliateNetwork } from "../../entity/AffiliateNetwork";
+import MigrateMockTxns from "../../tasks/migrateMockTxns";
 
 const mockTxnRowProcessor = (row: Object) => {
     // let networkId = await getRepository(AffiliateNetwork).findOne({ where: { name: row['network_id'] } });
@@ -78,12 +79,18 @@ const mockTxnUploadCsv = async (
         for (var i = 0; i < data.length; i++) {
             try {
                 let txn: Array<MockTxn> = await MockTxnRepo.find({
-                    where: { transaction_id: data[i]["transaction_id"] },
+                    where: { aff_sub1: data[i]["aff_sub1"], transaction_id: data[i]["transaction_id"] },
                 });
                 let network = await getRepository(AffiliateNetwork).findOne({
                     where: { name: data[i]["network_id"] },
                 });
                 data[i]["network_id"] = network.id;
+                let status = network.saleStatuses
+                for(var key in status) {
+                    if (status[key] == data[i]["status"]) {
+                        data[i]["status"] = key;
+                    }
+                }
                 var newTxn: MockTxn = new MockTxn();
                 if (txn.length === 1)
                     newTxn = { ...newTxn, ...txn[0], ...data[i] };
@@ -139,10 +146,17 @@ const deleteMockTxn = async (
     response.status(204).send();
 };
 
-const transferMockTxns = async () => {
-    const MockTxnRepo = getRepository(MockTxn);
-    const txns = await MockTxnRepo.find();
-    console.log(txns);
+const transferMockTxns = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+) => {
+    try {
+        await MigrateMockTxns();
+        response.status(200);
+    } catch (err) {
+        response.status(400).json(err);
+    }
 };
 
 export {
@@ -152,4 +166,5 @@ export {
     getMockTxn,
     postMockTxn,
     deleteMockTxn,
+    transferMockTxns,
 };
