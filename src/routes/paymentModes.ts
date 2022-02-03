@@ -22,11 +22,11 @@ module.exports = (app: Express, passport) => {
             newMode.user = request.user;
             newMode = { ...request.body, ...newMode };
             switch (request.body.platform) {
-                case "PAYTM":
-                    newMode.method_code = Mode.PAYTM;
+                case "paytm":
+                    newMode.method_code = Mode.paytm;
                     break;
-                case "BANK":
-                    newMode.method_code = Mode.BANK;
+                case "bank":
+                    newMode.method_code = Mode.bank;
                     break;
                 default:
                     break;

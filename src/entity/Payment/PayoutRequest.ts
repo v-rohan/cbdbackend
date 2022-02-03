@@ -10,7 +10,7 @@ import {
 import { User } from "../User";
 import { PaymentMode } from "./PaymentMode";
 
-enum StatusOpts {
+export enum StatusOpts {
     created = "created",
     processing = "processing",
     completed = "completed",
@@ -54,7 +54,7 @@ export class PayoutRequest {
     @Column({ type: "json", nullable: true })
     api_response: any;
 
-    @Column({ nullable: true })
+    @Column({ type: "text", nullable: true })
     note: string;
 
     @Column({ nullable: true })

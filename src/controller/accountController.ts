@@ -1,5 +1,6 @@
-import { NextFunction, response, Response } from "express";
+import { NextFunction, Response } from "express";
 import { getRepository } from "typeorm";
+import { PaymentMode } from "../entity/Payment/PaymentMode";
 import { PayoutRequest } from "../entity/Payment/PayoutRequest";
 import { CashbackTxn } from "../entity/Transactions/CashbackTxn";
 import { IGetUserAuthInfoRequest } from "../types";
@@ -48,9 +49,9 @@ const calculateWallet = async (
         relations: ["user"],
     });
 
-    let payoutAmount = 0;
+    let payoutAmount = 0; // Amount Already Paid to user
     payouts.forEach((payout) => {
-        payoutAmount += payout.reward_amount + payout.cashback_amount;
+        payoutAmount += payout.cashback_amount;
     });
 
     const walletAmount = comfirmedAmount - payoutAmount;
@@ -62,17 +63,25 @@ const getAmountStatus = async (req: IGetUserAuthInfoRequest, res: Response) => {
     return res.status(200).json(await calculateWallet(req.user.id));
 };
 
-// const withdraw = async (req: IGetUserAuthInfoRequest, res: Response) => {
-//     var paymentModeId = req.body.payment_mode;
-//     const { walletAmount } = await calculateWallet(req.user.id);
-//     var amountToWithdraw = req.body.amount;
-//     if (amountToWithdraw > walletAmount) {
-//         return res.status(400).json({
-//             message: "Insufficient funds",
-//         });
-//     }
-//     var payoutRequest = new PayoutRequest();
-//     payoutRequest.user_id = req.user;
-// };
+const withdraw = async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const paymentModeId = req.body.payment_mode;
+    const { walletAmount } = await calculateWallet(req.user.id);
+    // TODO Calculation for rewards to be done
+    var amountToWithdraw = req.body.amount;
+    if (amountToWithdraw > walletAmount) {
+        return res.status(400).json({ message: "Insufficient funds" });
+    }
+    var payout = new PayoutRequest();
+    payout.user_id = req.user;
+    payout.payment_mode = await getRepository(PaymentMode).findOneOrFail({
+        where: { id: paymentModeId },
+    });
+    payout.cashback_amount = amountToWithdraw;
+    var date = new Date();
+    payout.payment_id = date.getTime().toString(36);
 
-export { getAllTxns, getAmountStatus };
+    await getRepository(PayoutRequest).save(payout);
+    return res.status(200).json({ message: "Payout request sent" });
+};
+
+export { getAllTxns, getAmountStatus, withdraw };

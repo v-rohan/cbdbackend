@@ -10,8 +10,8 @@ import {
 import { User } from "../User";
 
 export enum Mode {
-    PAYTM = "paytm",
-    BANK = "bank",
+    paytm = "paytm",
+    bank = "bank",
 }
 
 @Entity()

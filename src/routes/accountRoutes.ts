@@ -1,6 +1,10 @@
 import { Request, Express } from "express";
 import * as express from "express";
-import { getAllTxns, getAmountStatus } from "../controller/accountController";
+import {
+    getAllTxns,
+    getAmountStatus,
+    withdraw,
+} from "../controller/accountController";
 
 module.exports = (app: Express, passport: any) => {
     require("../passport/jwt")(passport);
@@ -12,4 +16,5 @@ module.exports = (app: Express, passport: any) => {
 
     router.route("/alltxns").get(getAllTxns);
     router.route("/walletDetails").get(getAmountStatus);
+    router.route("/withdraw").get(withdraw);
 };
