@@ -31,7 +31,7 @@ export class Clicks {
     @Column({ nullable: false })
     ipAddress: string;
 
-    @Column({ nullable: false })
+    @Column({ nullable: true })
     httpReferer: string;
 
     @ManyToOne(
@@ -41,7 +41,7 @@ export class Clicks {
     )
     network: AffiliateNetwork;
 
-    @Column({ nullable: false })
+    @Column({ nullable: true })
     sourceType: string;
 
 }

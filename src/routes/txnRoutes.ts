@@ -24,9 +24,10 @@ import {
 } from "../controller/Transactions/CashbackTxnController";
 import {
     deleteBonusTxn,
+    getBonusTxn,
     getBonusTxns,
     postBonusTxn,
-    postBonusTxns
+    updateBonusTxn
 } from "../controller/Transactions/BonusTxnController";
 import {
     deleteReferrerTxn,
@@ -75,8 +76,8 @@ module.exports = (app: Express, passport: any) => {
     router.route('/cashback/:id').get(getCashbackTxn).post(postCashbackTxn).delete(deleteCashbackTxn)
 
     // BonusTxn Routes
-    router.route('/bonus').get(getBonusTxns).post(postBonusTxns)
-    router.route('/bonus/:id').get(getBonusTxns).post(postBonusTxn).delete(deleteBonusTxn)
+    router.route('/bonus').get(getBonusTxns).post(postBonusTxn)
+    router.route('/bonus/:id').get(getBonusTxn).post(updateBonusTxn).delete(deleteBonusTxn)
 
     // ReferrerTxn Routes
     router.route('/referrer').get(getReferrerTxns).post(postReferrerTxns)

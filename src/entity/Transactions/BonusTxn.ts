@@ -1,5 +1,6 @@
 import {
     Column,
+    CreateDateColumn,
     Entity,
     JoinColumn,
     ManyToOne,
@@ -14,7 +15,7 @@ export class BonusTxn {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => User , {onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+    @ManyToOne(() => User, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
     @JoinColumn([{ name: 'user', referencedColumnName: 'email' }])
     user: User;
 
@@ -24,7 +25,7 @@ export class BonusTxn {
     @Column({ type: "decimal", nullable: false })
     amount: Number;
 
-    @Column({ type: 'timestamp', nullable: true })
+    @CreateDateColumn()
     awarded_on: Date;
 
     @Column({ type: 'timestamp', nullable: true })

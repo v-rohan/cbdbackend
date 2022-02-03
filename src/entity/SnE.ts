@@ -13,9 +13,6 @@ export class SnE {
     @Column({ unique: true })
     shortlink: string;
 
-    @Column()
-    link: string;
-
     @Column({ default: 0 })
     clicks: number;
 

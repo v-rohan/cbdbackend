@@ -3,6 +3,7 @@ import { NextFunction, Request, Response, Express } from "express";
 import { User, UserRole } from "../entity/User";
 import { secretOrKey } from "../config";
 import { IGetUserAuthInfoRequest } from "../types";
+import { generateLink } from "../services";
 
 
 var jwt = require("jsonwebtoken");
@@ -22,8 +23,9 @@ module.exports = (app: Express, passport) => {
       await bcrypt.genSalt(10, function (err: Error, salt: string) {
         bcrypt.hash(request.body.password, salt, function (err, hash) {
           newUser.password = hash;
-        //   Uncomment to create admin
-          newUser.role = UserRole.ADMIN;
+         //   Uncomment to create admin
+         // newUser.role = UserRole.ADMIN;
+          newUser.referralLink = generateLink();
           getRepository(User)
             .save(newUser)
             .then((user) => {

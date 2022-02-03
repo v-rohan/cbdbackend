@@ -36,7 +36,6 @@ export class Store {
   @ManyToOne(() => AffiliateNetwork, (network: AffiliateNetwork) => network.stores, {
     onDelete: "CASCADE",
     onUpdate: "NO ACTION",
-    eager: true
   })
   network: AffiliateNetwork;
 
@@ -70,16 +69,16 @@ export class Store {
   @Column({ nullable: true, type: "text" })
   tips: string;
 
-  @OneToMany(() => CashbackRates, (cashbackRate) => cashbackRate.store, { eager: true })
+  @OneToMany(() => CashbackRates, (cashbackRate) => cashbackRate.store)
   cashbackRates: CashbackRates[];
 
-  @OneToMany(() => CashbackTxn, (cashbackTxn) => cashbackTxn.store, { eager: true })
+  @OneToMany(() => CashbackTxn, (cashbackTxn) => cashbackTxn.store)
   cashbackTxns: CashbackTxn[];
 
-  @OneToMany(() => ReferrerTxn, (refTxn) => refTxn.store, { eager: true })
+  @OneToMany(() => ReferrerTxn, (refTxn) => refTxn.store)
   refTxns: ReferrerTxn[];
 
-  @OneToMany(() => SnE, (SnE) => SnE.store, { eager: true })
+  @OneToMany(() => SnE, (SnE) => SnE.store)
   snelinks: SnE[];
 
   @CreateDateColumn()
