@@ -1,5 +1,5 @@
 # pull official base image
-FROM node:14
+FROM node:12-alpine
 
 RUN mkdir /app
 

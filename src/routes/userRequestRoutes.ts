@@ -8,7 +8,7 @@ import {
     deletePayoutRequestById,
     getBankPayouts,
     getPaytmWalletPayouts,
-} from "../controller/UserRequestController";
+} from "../controller/userRequestController";
 import AdminCheck from "../middleware/AdminCheck";
 
 module.exports = (app: Express, passport: any) => {
@@ -29,4 +29,6 @@ module.exports = (app: Express, passport: any) => {
     router.post("/bulkTransfer", bulkTransfer);
     router.route("/bankpayouts").get(getBankPayouts);
     router.route("/paytmwalletpayouts").get(getPaytmWalletPayouts);
+
+    return router;
 };

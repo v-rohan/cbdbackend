@@ -66,7 +66,7 @@ const getAmountStatus = async (req: IGetUserAuthInfoRequest, res: Response) => {
 const withdraw = async (req: IGetUserAuthInfoRequest, res: Response) => {
     const paymentModeId = req.body.payment_mode;
     const { walletAmount } = await calculateWallet(req.user.id);
-    // TODO Calculation for rewards to be done
+    // TODO: Calculation for rewards to be done
     var amountToWithdraw = req.body.amount;
     if (amountToWithdraw > walletAmount) {
         return res.status(400).json({ message: "Insufficient funds" });
