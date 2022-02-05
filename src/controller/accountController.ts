@@ -5,6 +5,20 @@ import { PayoutRequest } from "../entity/Payment/PayoutRequest";
 import { CashbackTxn } from "../entity/Transactions/CashbackTxn";
 import { IGetUserAuthInfoRequest } from "../types";
 
+const charSet: string =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+const generatePaymentId = () => {
+    let randomString: string = "";
+    for (let i: number = 0; i < 10; i++) {
+        randomString += charSet.charAt(
+            Math.floor(Math.random() * charSet.length)
+        );
+    }
+    randomString += new Date().getTime().toString(36);
+    return randomString;
+};
+
 const getAllTxns = async (
     req: IGetUserAuthInfoRequest,
     res: Response,
@@ -31,7 +45,7 @@ const calculateWallet = async (
     let pendingAmount = 0;
     let comfirmedAmount = 0;
 
-    // TODO Calculation for rewards to be done
+    // TODO: Calculation for rewards to be done
     txns.forEach((txn) => {
         if (txn.status === "pending") {
             pendingAmount += txn.cashback;
@@ -77,8 +91,7 @@ const withdraw = async (req: IGetUserAuthInfoRequest, res: Response) => {
         where: { id: paymentModeId },
     });
     payout.cashback_amount = amountToWithdraw;
-    var date = new Date();
-    payout.payment_id = date.getTime().toString(36);
+    payout.payment_id = generatePaymentId();
 
     await getRepository(PayoutRequest).save(payout);
     return res.status(200).json({ message: "Payout request sent" });
