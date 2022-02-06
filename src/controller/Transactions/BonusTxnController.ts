@@ -4,7 +4,7 @@ import { BonusTxn } from "../../entity/Transactions/BonusTxn";
 
 
 const getBonusTxns = async (request: Request, response: Response, next: NextFunction) => {
-    var txns = await getRepository(BonusTxn).find();
+    var txns = await getRepository(BonusTxn).find({relations: ["user"]});
     response.status(200).json(txns);
 }
 

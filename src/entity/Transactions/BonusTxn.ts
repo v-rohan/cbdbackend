@@ -28,7 +28,7 @@ export class BonusTxn {
     @CreateDateColumn()
     awarded_on: Date;
 
-    @Column({ type: 'timestamp', nullable: true })
+    @Column({ type: 'timestamptz', nullable: true })
     expires_on: Date;
 
     @Column({

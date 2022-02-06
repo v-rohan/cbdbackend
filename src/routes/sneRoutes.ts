@@ -39,7 +39,12 @@ module.exports = (app: Express, passport) => {
 
             click.user = sne.user;
             click.store = sne.store;
+            click.network = sne.store.network;
             store = sne.store;
+            click.ipAddress = String(
+                request.headers["x-forwarded-for"] ||
+                    request.connection.remoteAddress
+            );
 
             await getManager()
                 .transaction(async (transactionalEntityManager) => {
@@ -48,23 +53,6 @@ module.exports = (app: Express, passport) => {
                         .catch((error) => {
                             throw error;
                         });
-
-                    await getRepository(Store)
-                        .findOneOrFail(
-                            { id: store.id },
-                            { relations: ["network"] }
-                        )
-                        .then((storeq) => {
-                            click.network = storeq.network;
-                        })
-                        .catch((error) => {
-                            console.log(error);
-                            throw error;
-                        });
-                    click.ipAddress = String(
-                        request.headers["x-forwarded-for"] ||
-                            request.connection.remoteAddress
-                    );
                     console.log(click);
                     await transactionalEntityManager
                         .save(click)

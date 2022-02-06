@@ -54,7 +54,7 @@ export class SalesTxn {
     @Column({
         type: "enum",
         enum: StatusOpts,
-        default: StatusOpts.PENDING
+        default: StatusOpts.pending
     })
     status: StatusOpts;
 
