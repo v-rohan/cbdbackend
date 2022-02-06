@@ -34,12 +34,15 @@ export class User {
     })
     role: UserRole
 
-    @OneToMany(() => SnE, (SnE) => SnE.user, {eager: true})
+    @OneToMany(() => SnE, (SnE) => SnE.user)
     snelinks: SnE[];
 
-    @OneToMany(() => PaymentMode, (PaymentMode) => PaymentMode.user, {eager: true})
+    @OneToMany(() => PaymentMode, (PaymentMode) => PaymentMode.user)
     paymentmodes: PaymentMode[];
 
-    @OneToMany(() => Clicks, (Clicks) => Clicks.user, {eager: true})
+    @OneToMany(() => Clicks, (Clicks) => Clicks.user)
     clicks: Clicks[];
+
+    @Column({ unique: true })
+    referralLink: string;
 }
