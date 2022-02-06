@@ -6,6 +6,7 @@ import { IGetUserAuthInfoRequest } from "../types";
 import AdminCheck from "../middleware/AdminCheck";
 import { Store } from "../entity/Store";
 import { Clicks } from "../entity/Clicks";
+import { AffiliateNetwork } from "../entity/AffiliateNetwork";
 
 module.exports = (app: Express, passport) => {
     app.post(
@@ -31,6 +32,7 @@ module.exports = (app: Express, passport) => {
     app.get("/c/:shortlink", async (request: Request, response: Response) => {
         var store: any;
         var click = new Clicks();
+        var link = "";
         try {
             var sne: SnE = await getRepository(SnE).findOneOrFail(
                 { shortlink: request.params.shortlink },
@@ -39,8 +41,15 @@ module.exports = (app: Express, passport) => {
 
             click.user = sne.user;
             click.store = sne.store;
-            click.network = sne.store.network;
+            click.ref = request.params.shortlink;
+            click.network = await getRepository(AffiliateNetwork).findOneOrFail(
+                sne.store.network
+            );
             store = sne.store;
+            var nl = sne.store.affiliateLink;
+            nl = nl.replace(/#EULINK/g, encodeURIComponent(sne.store.homepage));
+            console.log(nl);
+            click.redirectLink = nl;
             click.ipAddress = String(
                 request.headers["x-forwarded-for"] ||
                     request.connection.remoteAddress
@@ -56,12 +65,26 @@ module.exports = (app: Express, passport) => {
                     console.log(click);
                     await transactionalEntityManager
                         .save(click)
+                        .then(async (savedclk) => {
+                            savedclk.redirectLink =  savedclk.redirectLink.replace(
+                                /MYCBCLKID/g,
+                                String(savedclk.id)
+                            );
+                            await transactionalEntityManager
+                                .save(savedclk)
+                                .then(async (savedclk2) => {
+                                    link = savedclk2.redirectLink;
+                                })
+                                .catch((error) => {
+                                    throw error;
+                                });
+                        })
                         .catch((error) => {
                             throw error;
                         });
                 })
                 .then(async () => {
-                    response.send(store.affiliateLink);
+                    response.send(link);
                 })
                 .catch((error) => {
                     throw error;

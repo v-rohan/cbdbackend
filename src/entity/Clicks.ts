@@ -31,6 +31,12 @@ export class Clicks {
     @Column({ nullable: false })
     ipAddress: string;
 
+    @Column({ nullable: true})
+    ref: string;
+
+    @Column({ nullable: true })
+    redirectLink: string;
+
     @Column({ nullable: true })
     httpReferer: string;
 
