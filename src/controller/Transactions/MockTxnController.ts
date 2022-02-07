@@ -88,7 +88,7 @@ const mockTxnUploadCsv = async (
                     where: { name: data[i]["network_id"] },
                 });
                 data[i]["network_id"] = network.id;
-                let status = network.saleStatuses;
+                let status = network.sale_statuses;
                 for (var key in status) {
                     if (status[key] == data[i]["status"]) {
                         data[i]["status"] = key;

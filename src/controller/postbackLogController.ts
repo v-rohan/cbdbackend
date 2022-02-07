@@ -22,7 +22,8 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
     if (!salesTxn)
       salesTxn = new SalesTxn();
 
-    let cashbackTxn: CashbackTxn = await getRepository(CashbackTxn).findOne({ click_id: String(req.query.aff_sub1) });
+    var click = await getRepository(Clicks).findOneOrFail({ where: {id: req.query.aff_sub1} });
+    let cashbackTxn: CashbackTxn = await getRepository(CashbackTxn).findOne({ click_id: click });
     if (!cashbackTxn)
       cashbackTxn = new CashbackTxn();
 
@@ -51,7 +52,7 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
       getRepository(Clicks).findOneOrFail({ id: Number(req.query.aff_sub1) }).then(click => {
         cashbackTxn.user = click.user;
         cashbackTxn.store = click.store;
-        cashbackTxn.click_id = String(click.id);
+        cashbackTxn.click_id = click;
         cashbackTxn.cashback = cashbackTxn.sale_amount * click.store.cashbackPercent / 100;
         cashbackTxn.txn_date_time = (new Date());
       })
