@@ -3,11 +3,13 @@ import {
     PrimaryGeneratedColumn,
     Column,
     OneToMany,
-    CreateDateColumn,
+    OneToOne,
+    JoinColumn,
 } from "typeorm";
 import { Clicks } from "./Clicks";
 import { PaymentMode } from "./Payment/PaymentMode";
 import { SnE } from "./SnE";
+import { User } from "./User";
 
 export enum UserRole {
     ADMIN = "admin",
@@ -15,15 +17,16 @@ export enum UserRole {
 }
 
 @Entity()
-export class User {
+export class Wallet {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ nullable: true })
-    first_name: string;
+    @OneToOne(() => User, { onDelete: "NO ACTION" })
+    @JoinColumn([{ name: "user", referencedColumnName: "id" }])
+    user: User;
 
-    @Column({ nullable: true })
-    last_name: string;
+    @Column()
+    lastName: string;
 
     @Column({ unique: true })
     email: string;
@@ -38,18 +41,14 @@ export class User {
     })
     role: UserRole;
 
-    @OneToMany(() => SnE, (SnE) => SnE.user)
+    @OneToMany(() => SnE, (SnE) => SnE.user, { eager: true })
     snelinks: SnE[];
 
-    @OneToMany(() => PaymentMode, (PaymentMode) => PaymentMode.user)
+    @OneToMany(() => PaymentMode, (PaymentMode) => PaymentMode.user, {
+        eager: true,
+    })
     paymentmodes: PaymentMode[];
 
-    @OneToMany(() => Clicks, (Clicks) => Clicks.user)
+    @OneToMany(() => Clicks, (Clicks) => Clicks.user, { eager: true })
     clicks: Clicks[];
-
-    @Column({ unique: true })
-    referralLink: string;
-
-    @CreateDateColumn()
-    user_registered: Date;
 }

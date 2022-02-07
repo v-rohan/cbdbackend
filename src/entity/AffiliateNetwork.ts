@@ -1,10 +1,10 @@
 import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
+    Column,
+    CreateDateColumn,
+    Entity,
+    OneToMany,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
 } from "typeorm";
 import { Clicks } from "./Clicks";
 import { PostbackLog } from "./PostbackLog";
@@ -14,109 +14,111 @@ import { MockTxn } from "./Transactions/MockTxn";
 import { SalesTxn } from "./Transactions/SalesTxn";
 
 export enum SaleStatus {
-  PENDING = "pending",
-  APPROVED = "confirmed",
-  REJECTED = "declined",
+    PENDING = "pending",
+    APPROVED = "confirmed",
+    REJECTED = "declined",
 }
 
 export enum Currency {
-  INR = "INR",
-  USD = "USD",
+    INR = "INR",
+    USD = "USD",
 }
 
 @Entity()
 export class AffiliateNetwork {
-  @PrimaryGeneratedColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column({ unique: true, nullable: false })
-  name: string;
+    @Column({ unique: true, nullable: false })
+    name: string;
 
-  @Column({ nullable: false })
-  shortname: string;
+    @Column({ nullable: false })
+    shortname: string;
 
-  @Column({ nullable: false })
-  namespace: string;
+    @Column({ nullable: false })
+    namespace: string;
 
-  @Column({ nullable: true })
-  affiliateId: string;
+    @Column({ nullable: true })
+    affiliate_id: string;
 
-  @Column({ nullable: true })
-  websiteId: number;
+    @Column({ nullable: true })
+    website_id: string;
 
-  @Column({ nullable: false })
-  confirmDays: number;
+    @Column({ nullable: false })
+    confirm_days: number;
 
-  @Column({ nullable: false })
-  enabled: boolean;
+    @Column({ nullable: false })
+    enabled: boolean;
 
-  @Column({ type: "enum", enum: Currency, default: Currency.INR })
-  currency: Currency;
+    @Column({ type: "enum", enum: Currency, default: Currency.INR })
+    currency: Currency;
 
-  @Column({ nullable: true })
-  directMerchant: string;
+    @Column({ nullable: true })
+    direct_merchant: number;
 
-  @Column({ type: "json", nullable: true })
-  campaignStatuses: any;
+    @Column({ type: "json", nullable: true })
+    campaign_statuses: any;
 
-  @Column({ nullable: true })
-  campaignInfoUrl: string;
+    @Column({ type: "json", nullable: true })
+    sale_statuses: any;
 
-  @Column({ type: "json" })
-  saleStatuses: any;
+    @Column({ type: "json", nullable: true })
+    columns_update: any;
 
-  @Column({ type: "json", nullable: true })
-  columnsUpdate: any;
+    @Column({ nullable: true })
+    api_key: string;
 
-  @Column({ nullable: true })
-  apiKey: string;
+    @Column({ type: "json", nullable: true })
+    auth_tokens: any;
 
-  @Column({ type: "json", nullable: true })
-  authTokens: any;
+    @Column({ type: "json", nullable: true })
+    credentials: any;
 
-  @Column({ type: "json", nullable: true })
-  credentials: any;
+    @Column({ nullable: true })
+    network_platform: string;
 
-  @Column({ nullable: true })
-  networkPlatform: string;
+    @Column({ nullable: true })
+    subids: string;
 
-  @Column({ nullable: true })
-  Subids: string;
+    @Column({ nullable: true })
+    campaign_info_url: string;
 
-  @Column({ type: "json", nullable: true })
-  networkSubids: any;
+    @Column({ type: "json", nullable: true })
+    network_subids: any;
 
-  @OneToMany(() => PostbackLog, (postbackLog) => postbackLog.network_id)
-  postbackLogs: PostbackLog[];
+    @OneToMany(() => PostbackLog, (postbackLog) => postbackLog.network_id)
+    postbackLogs: PostbackLog[];
 
-  @OneToMany(() => Store, (store) => store.network)
-  stores: Store[];
+    @OneToMany(() => Store, (store) => store.network)
+    stores: Store[];
 
-  @OneToMany(() => CashbackTxn, (cashbackTxn) => cashbackTxn.network_id,
-    {onDelete: 'CASCADE', onUpdate: 'CASCADE'}
-  )
-  cashbackTxns: CashbackTxn[];
+    @OneToMany(() => CashbackTxn, (cashbackTxn) => cashbackTxn.network_id, {
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+    })
+    cashbackTxns: CashbackTxn[];
 
-  @OneToMany(() => CashbackTxn, (salesTxn) => salesTxn.network_id,
-    {onDelete: 'CASCADE', onUpdate: 'CASCADE'}
-  )
-  salesTxns: SalesTxn[];
+    @OneToMany(() => CashbackTxn, (salesTxn) => salesTxn.network_id, {
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+    })
+    salesTxns: SalesTxn[];
 
-  @OneToMany(() => MockTxn, (mockTxn) => mockTxn.network_id, {
-    onDelete: "NO ACTION",
-    onUpdate: "CASCADE",
-  })
-  mockTxns: MockTxn[];
+    @OneToMany(() => MockTxn, (mockTxn) => mockTxn.network_id, {
+        onDelete: "NO ACTION",
+        onUpdate: "CASCADE",
+    })
+    mockTxns: MockTxn[];
 
-  @OneToMany(() => Clicks, (clicks) => clicks.network, {
-    onDelete: "NO ACTION",
-    onUpdate: "NO ACTION",
-  })
-  clicks: Clicks[];
+    @OneToMany(() => Clicks, (clicks) => clicks.network, {
+        onDelete: "NO ACTION",
+        onUpdate: "NO ACTION",
+    })
+    clicks: Clicks[];
 
-  @CreateDateColumn()
-  createdAt: Date;
+    @CreateDateColumn()
+    created_at: Date;
 
-  @UpdateDateColumn()
-  updatedAt: Date;
+    @UpdateDateColumn()
+    updated_at: Date;
 }

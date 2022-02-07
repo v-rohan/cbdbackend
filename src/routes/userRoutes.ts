@@ -5,6 +5,7 @@ import { secretOrKey } from "../config";
 import { IGetUserAuthInfoRequest } from "../types";
 import { generateLink, passowrdhasher } from "../services";
 import { BonusTxn } from "../entity/Transactions/BonusTxn";
+import AdminCheck from "../middleware/AdminCheck";
 
 var jwt = require("jsonwebtoken");
 
@@ -35,7 +36,7 @@ module.exports = (app: Express, passport) => {
                         referralLink: request.body.ref,
                     });
                 }
-               newUser.password = await passowrdhasher(request.body.password);
+                newUser.password = await passowrdhasher(request.body.password);
                 await getManager()
                     .transaction(async (transactionalEntityManager) => {
                         await transactionalEntityManager
@@ -152,6 +153,28 @@ module.exports = (app: Express, passport) => {
                         response.status(500).send(error);
                     });
             } else response.status(200).json(request.user);
+            response.status(200).json(request.user);
+        }
+    );
+
+    app.post(
+        "/user/createAdmin",
+        passport.authenticate("jwt", { session: false }),
+        AdminCheck,
+        async (req: IGetUserAuthInfoRequest, res: Response) => {
+            const id = req.body.id;
+            try {
+                const user = await getRepository(User).findOneOrFail({
+                    where: { id: Number(id) },
+                });
+                user.role = UserRole.ADMIN;
+                await getRepository(User).save(user);
+                return res.status(204).json({ message: "Action Successful" });
+            } catch (err) {
+                return res.status(400).json({
+                    message: `Failed to find user with id: ${req.body.id}`,
+                });
+            }
         }
     );
 };

@@ -43,9 +43,6 @@ const MigrateMockTxns = async () => {
                 });
 
             salesTxn.commission_amount = salesTxn.base_commission;
-            let affNet = await getRepository(AffiliateNetwork).findOneOrFail({
-                where: { id: salesTxn.network_id },
-            });
 
             salesTxn.status = newMockTxn.status;
             if (newMockTxn.status == StatusOpts.delayed) {
@@ -54,10 +51,16 @@ const MigrateMockTxns = async () => {
                 cashbackTxn.status = AcceptedStatusOpts[newMockTxn.status];
             }
 
-            cashbackTxn.click_id = mockTxn.aff_sub1;
-            var click = await getRepository(Clicks).findOneOrFail({
-                where: { id: Number(cashbackTxn.click_id) },
-            });
+            try {
+                var click = await getRepository(Clicks).findOneOrFail({
+                    where: { id: Number(mockTxn.aff_sub1) },
+                });
+            } catch (err) {
+                console.log(err);
+                return { message: "Click not found" };
+            }
+
+            cashbackTxn.click_id = click;
             cashbackTxn.user = click.user;
             cashbackTxn.store = click.store;
             cashbackTxn.cashback =
