@@ -23,7 +23,7 @@ export class BonusTxn {
     bonus_code: string;
 
     @Column({ type: "decimal", nullable: false })
-    amount: Number;
+    amount: number;
 
     @CreateDateColumn()
     awarded_on: Date;
