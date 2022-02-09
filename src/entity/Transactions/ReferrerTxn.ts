@@ -22,7 +22,6 @@ export class ReferrerTxn {
     @JoinColumn([{ name: 'user', referencedColumnName: 'email' }])
     user: User;
 
-
     @ManyToOne(() => User , {onDelete: 'NO ACTION', onUpdate: 'CASCADE'})
     @JoinColumn([{ name: 'shopper', referencedColumnName: 'email' }])
     shopper: User;
@@ -40,7 +39,7 @@ export class ReferrerTxn {
     txn_date_time: Date;
 
     @Column({ type: "decimal", nullable: false })
-    referrer_mount: number;
+    referrer_amount: number;
 
     @Column({ nullable: true })
     currency: string;
