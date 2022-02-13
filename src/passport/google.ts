@@ -2,6 +2,7 @@ import { User } from "../entity/User";
 import { getRepository } from "typeorm";
 import {Profile, Strategy} from 'passport-google-oauth20'; 
 import { callbackURL, clientID, clientSecret } from "../config";
+import { generateLink } from "../services";
 
 module.exports = function (passport) {
 
@@ -30,7 +31,9 @@ module.exports = function (passport) {
                 var newUser = new User();
                 newUser.email = profile.emails[0].value;
                 newUser.password= profile.id;
-
+                newUser.referralLink = generateLink();
+                newUser.is_email_verified = true;
+            
                 getRepository(User).save(newUser).then((newUser) => {
                     console.log(newUser)
                     done(null, newUser)
