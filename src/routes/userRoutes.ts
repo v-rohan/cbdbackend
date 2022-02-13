@@ -109,6 +109,41 @@ module.exports = (app: Express, passport) => {
         }
     );
 
+    app.post(
+        "/adminLogin",
+        async (request: Request, response: Response, next: NextFunction) => {
+            var email = request.body.email;
+            var password = request.body.password;
+            try {
+                var user = await getRepository(User).findOne({ email: email });
+                console.log(user);
+                bcrypt.compare(password, user.password, function (err, result) {
+                    if (result && user.role == UserRole.ADMIN) {
+                        const payload = {
+                            id: user.id,
+                            email: user.email,
+                            role: user.role,
+                        };
+
+                        var token = jwt.sign(payload, secretOrKey, {
+                            expiresIn: 600000,
+                        });
+
+                        response.status(200).json({
+                            token: "Bearer " + token,
+                        });
+                    }
+                    else if(result) {
+                        response.status(403).send("User not an admin");
+                    } 
+                    else response.status(403).send("Invalid email or password");
+                });
+            } catch (error) {
+                response.status(500).send(error);
+            }
+        }
+    );
+
     app.get(
         "/google",
         passport.authenticate("google", {
