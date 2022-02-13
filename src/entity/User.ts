@@ -50,6 +50,9 @@ export class User {
     @Column({ unique: true })
     referralLink: string;
 
+    @Column({ nullable: true, default: null })
+    referralUser: User;
+
     @CreateDateColumn()
     user_registered: Date;
 }

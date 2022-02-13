@@ -31,7 +31,7 @@ export class Clicks {
     @Column({ nullable: false })
     ipAddress: string;
 
-    @Column({ nullable: true})
+    @Column({ nullable: true, default: null })
     ref: string;
 
     @Column({ nullable: true })
