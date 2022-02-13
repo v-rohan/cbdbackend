@@ -4,6 +4,7 @@ import { Store } from "../entity/Store";
 
 const getAllStores = async (req: Request, res: Response) => {
   const stores = await getRepository(Store).find();
+  res.set({ 'Access-Control-Expose-Headers': 'Content-Range', 'Content-Range': `X-Total-Count: ${1} - ${stores.length} / ${stores.length}` });
   return res.status(200).json(stores);
 };
 

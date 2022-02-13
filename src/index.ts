@@ -10,6 +10,7 @@ import { port, secretOrKey } from "./config";
 
 var session = require("express-session");
 var passport = require("passport");
+const cors = require("cors");
 
 function handleError(err, req: Request, res: Response, next: Function) {
   console.error(err);
@@ -33,6 +34,7 @@ createConnection()
     app.use(passport.session());
     app.use(morgan("tiny"));
     app.use(bodyParser.json());
+    app.use(cors());
 
     // register express routes from defined application routes
     require("./routes/userRoutes")(app, passport);
