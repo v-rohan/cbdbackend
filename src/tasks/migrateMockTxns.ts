@@ -5,6 +5,8 @@ import { MockTxn } from "../entity/Transactions/MockTxn";
 import { SalesTxn } from "../entity/Transactions/SalesTxn";
 import { Clicks } from "../entity/Clicks";
 import { StatusOpts, AcceptedStatusOpts } from "../entity/Transactions/Common";
+import { ReferrerTxn } from "../entity/Transactions/ReferrerTxn";
+import { SnE } from "../entity/SnE";
 
 const MigrateMockTxns = async () => {
     const mockTxns = await getRepository(MockTxn).find({
@@ -14,6 +16,7 @@ const MigrateMockTxns = async () => {
         try {
             let salesTxn: SalesTxn;
             let cashbackTxn: CashbackTxn;
+            var referrerTxn: ReferrerTxn;
             try {
                 salesTxn = await getRepository(SalesTxn).findOneOrFail({
                     where: { aff_sub1: mockTxn.aff_sub1 },
@@ -21,9 +24,13 @@ const MigrateMockTxns = async () => {
                 cashbackTxn = await getRepository(CashbackTxn).findOneOrFail({
                     where: { click_id: mockTxn.aff_sub1 },
                 });
+                referrerTxn = await getRepository(ReferrerTxn).findOneOrFail({
+                    where: { user: click.user.referralUser },
+                });
             } catch (err) {
                 salesTxn = new SalesTxn();
                 cashbackTxn = new CashbackTxn();
+                referrerTxn = new ReferrerTxn();
             }
 
             let newMockTxn = { ...mockTxn };
@@ -47,8 +54,10 @@ const MigrateMockTxns = async () => {
             salesTxn.status = newMockTxn.status;
             if (newMockTxn.status == StatusOpts.delayed) {
                 cashbackTxn.status = AcceptedStatusOpts.pending;
+                referrerTxn.status = AcceptedStatusOpts.pending;
             } else {
                 cashbackTxn.status = AcceptedStatusOpts[newMockTxn.status];
+                referrerTxn.status = AcceptedStatusOpts[salesTxn.status];
             }
 
             try {
@@ -70,6 +79,30 @@ const MigrateMockTxns = async () => {
             await getManager().transaction(async (transaction) => {
                 await transaction.save(salesTxn);
                 await transaction.save(cashbackTxn);
+                if (click.user.referralUser != null) {
+                    referrerTxn.sale_id = cashbackTxn.sale_id;
+                    referrerTxn.user = click.user.referralUser;
+                    referrerTxn.shopper = click.user;
+                    referrerTxn.store = click.store;
+                    referrerTxn.sale_amount = cashbackTxn.sale_amount;
+                    referrerTxn.currency = "INR";
+                    referrerTxn.referrer_amount = cashbackTxn.cashback * 0.1;
+                    referrerTxn.mail_sent = false;
+                    referrerTxn.txn_date_time = new Date();
+
+                    await transaction.save(referrerTxn);
+                }
+                if (
+                    cashbackTxn.status == AcceptedStatusOpts.confirmed &&
+                    click.ref != null
+                ) {
+                    var sne: SnE = await transaction.connection
+                        .getRepository(SnE)
+                        .findOneOrFail({ shortlink: click.ref });
+
+                    sne.earning += cashbackTxn.cashback;
+                    await transaction.save(sne);
+                }
             });
         } catch (err) {
             return err;

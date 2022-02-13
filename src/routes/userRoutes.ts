@@ -35,6 +35,7 @@ module.exports = (app: Express, passport) => {
                     bonus2.user = await getRepository(User).findOneOrFail({
                         referralLink: request.body.ref,
                     });
+                    newUser.referralUser = bonus2.user;
                 }
                 newUser.password = await passowrdhasher(request.body.password);
                 await getManager()
