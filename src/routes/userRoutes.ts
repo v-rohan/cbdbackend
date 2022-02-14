@@ -6,6 +6,7 @@ import { IGetUserAuthInfoRequest } from "../types";
 import { generateLink, passowrdhasher } from "../services";
 import { BonusTxn } from "../entity/Transactions/BonusTxn";
 import AdminCheck from "../middleware/AdminCheck";
+import e = require("express");
 
 var jwt = require("jsonwebtoken");
 
@@ -132,11 +133,10 @@ module.exports = (app: Express, passport) => {
                         response.status(200).json({
                             token: "Bearer " + token,
                         });
-                    }
-                    else if(result) {
+                    } else if (result) {
                         response.status(403).send("User not an admin");
-                    } 
-                    else response.status(403).send("Invalid email or password");
+                    } else
+                        response.status(403).send("Invalid email or password");
                 });
             } catch (error) {
                 response.status(500).send(error);
@@ -210,6 +210,26 @@ module.exports = (app: Express, passport) => {
                 return res.status(400).json({
                     message: `Failed to find user with id: ${req.body.id}`,
                 });
+            }
+        }
+    );
+
+    app.get(
+        "/verify/:link",
+        passport.authenticate("jwt", { session: false }),
+        async (req: IGetUserAuthInfoRequest, res: Response) => {
+            const link = req.params.link;
+            try {
+                const user = await getRepository(User).findOneOrFail({
+                    where: { referralLink: link },
+                });
+                if (user === req.user) {
+                    user.is_email_verified = true;
+                    await getRepository(User).save(user);
+                    res.sendStatus(200);
+                } else res.sendStatus(403);
+            } catch (err) {
+                res.sendStatus(400);
             }
         }
     );
