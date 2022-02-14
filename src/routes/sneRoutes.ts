@@ -43,10 +43,10 @@ module.exports = (app: Express, passport) => {
             click.store = sne.store;
             click.ref = request.params.shortlink;
             click.network = await getRepository(AffiliateNetwork).findOneOrFail(
-                sne.store.network
+                sne.store.network_id
             );
             store = sne.store;
-            var nl = sne.store.affiliateLink;
+            var nl = sne.store.affiliate_link;
             nl = nl.replace(/#EULINK/g, encodeURIComponent(sne.store.homepage));
             console.log(nl);
             click.redirectLink = nl;
@@ -66,10 +66,11 @@ module.exports = (app: Express, passport) => {
                     await transactionalEntityManager
                         .save(click)
                         .then(async (savedclk) => {
-                            savedclk.redirectLink =  savedclk.redirectLink.replace(
-                                /MYCBCLKID/g,
-                                String(savedclk.id)
-                            );
+                            savedclk.redirectLink =
+                                savedclk.redirectLink.replace(
+                                    /MYCBCLKID/g,
+                                    String(savedclk.id)
+                                );
                             await transactionalEntityManager
                                 .save(savedclk)
                                 .then(async (savedclk2) => {

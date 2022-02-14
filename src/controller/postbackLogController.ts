@@ -73,7 +73,7 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
                 cashbackTxn.store = click.store;
                 cashbackTxn.click_id = click;
                 cashbackTxn.cashback =
-                    (cashbackTxn.sale_amount * click.store.cashbackPercent) /
+                    (cashbackTxn.sale_amount * click.store.cashback_percent) /
                     100;
                 cashbackTxn.txn_date_time = new Date();
 

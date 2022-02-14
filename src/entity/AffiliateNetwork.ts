@@ -5,8 +5,11 @@ import {
     OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
+    PrimaryColumn,
+    ManyToMany,
 } from "typeorm";
 import { Clicks } from "./Clicks";
+import { Coupon } from "./Coupon";
 import { PostbackLog } from "./PostbackLog";
 import { Store } from "./Store";
 import { CashbackTxn } from "./Transactions/CashbackTxn";
@@ -89,7 +92,7 @@ export class AffiliateNetwork {
     @OneToMany(() => PostbackLog, (postbackLog) => postbackLog.network_id)
     postbackLogs: PostbackLog[];
 
-    @OneToMany(() => Store, (store) => store.network)
+    @OneToMany(() => Store, (store) => store.network_id)
     stores: Store[];
 
     @OneToMany(() => CashbackTxn, (cashbackTxn) => cashbackTxn.network_id, {
@@ -115,6 +118,12 @@ export class AffiliateNetwork {
         onUpdate: "NO ACTION",
     })
     clicks: Clicks[];
+
+    @OneToMany(() => Coupon, (coupon) => coupon.network_id, {
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+    })
+    coupons: Coupon[];
 
     @CreateDateColumn()
     created_at: Date;

@@ -22,7 +22,7 @@ module.exports = (app: Express, passport) => {
             click.store = await getRepository(Store).findOneOrFail(
                 request.body.store
             );
-            click.redirectLink = click.store.affiliateLink.replace(
+            click.redirectLink = click.store.affiliate_link.replace(
                 /#EULINK/g,
                 encodeURIComponent(click.store.homepage)
             );
