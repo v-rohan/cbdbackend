@@ -34,7 +34,7 @@ module.exports = function (passport) {
                 getRepository(User).save(newUser).then((newUser) => {
                     console.log(newUser)
                     done(null, newUser)
-                })
+                }).catch(err => console.log(err))
             }
         })
 
