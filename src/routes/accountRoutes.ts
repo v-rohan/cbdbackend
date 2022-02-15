@@ -17,4 +17,6 @@ module.exports = (app: Express, passport: any) => {
     router.route("/alltxns").get(getAllTxns);
     router.route("/walletDetails").get(getAmountStatus);
     router.route("/withdraw").get(withdraw);
+
+    return router;
 };
