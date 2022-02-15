@@ -5,7 +5,9 @@ thunder-tests/thunderEnvironment.db
 .env
 
 node_modules/
+yarn-error.log
 
 mockTxns/*
 src/migration
 dbData
+media/banners/*

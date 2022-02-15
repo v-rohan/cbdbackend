@@ -2,7 +2,7 @@ import { createQueryBuilder, getRepository } from "typeorm";
 import { Request, Response, Express } from "express";
 import { generateLink } from "../services";
 import { IGetUserAuthInfoRequest } from "../types";
-import AdminCheck from "../middleware/AdminCheck";
+import { AdminCheck } from "../middleware/AuthMiddleware";
 import { request } from "http";
 import { Store } from "../entity/Store";
 import { Clicks } from "../entity/Clicks";
@@ -22,7 +22,7 @@ module.exports = (app: Express, passport) => {
             click.store = await getRepository(Store).findOneOrFail(
                 request.body.store
             );
-            click.redirectLink = click.store.affiliateLink.replace(
+            click.redirectLink = click.store.affiliate_link.replace(
                 /#EULINK/g,
                 encodeURIComponent(click.store.homepage)
             );

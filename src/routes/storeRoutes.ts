@@ -1,26 +1,44 @@
 import { Express, Router } from "express";
 import {
-  createStore,
-  getAllStores,
-  getStoreById,
-  updateStoreById,
-  deleteStoreById,
+    createStore,
+    getAllStores,
+    getStoreById,
+    updateStoreById,
+    deleteStoreById,
+    getStoreCategories,
+    getStoreCategoryById,
+    createStoreCategory,
+    updateStoreCategory,
+    deleteStoreCategory,
 } from "../controller/storeController";
 
-import AdminCheck from "../middleware/AdminCheck";
+import { AdminCheckAllowSafe } from "../middleware/AuthMiddleware";
 
 module.exports = (app: Express, passport: any) => {
-  require("../passport/jwt")(passport);
+    require("../passport/jwt")(passport);
+    require("../passport/google")(passport);
 
-  var router = Router();
+    var router = Router();
 
-  // Middleware
-  router.use(passport.authenticate("jwt", { session: false }));
-  router.use(AdminCheck);
+    // Middleware
+    router.use(passport.authenticate("jwt", { session: false }));
+    router.use(AdminCheckAllowSafe);
 
-  // AffiliateNetwork Routes
-  router.route("/").get(getAllStores).post(createStore);
-  router.route("/:id").get(getStoreById).put(updateStoreById).delete(deleteStoreById);
+    // Store Routes
+    router.route("/").get(getAllStores).post(createStore);
+    router
+        .route("/:id")
+        .get(getStoreById)
+        .put(updateStoreById)
+        .delete(deleteStoreById);
 
-  return router;
+    // Store Category Routes
+    router.route("/category").get(getStoreCategories).post(createStoreCategory);
+    router
+        .route("/category/:id")
+        .get(getStoreCategoryById)
+        .post(updateStoreCategory)
+        .delete(deleteStoreCategory);
+
+    return router;
 };

@@ -5,7 +5,7 @@ import { secretOrKey } from "../config";
 import { IGetUserAuthInfoRequest } from "../types";
 import { generateLink, passowrdhasher } from "../services";
 import { BonusTxn } from "../entity/Transactions/BonusTxn";
-import AdminCheck from "../middleware/AdminCheck";
+import { AdminCheck } from "../middleware/AuthMiddleware";
 
 var jwt = require("jsonwebtoken");
 
@@ -24,6 +24,7 @@ module.exports = (app: Express, passport) => {
             newUser.referralLink = generateLink();
             bonus.amount = 25;
             newUser.email = request.body.email;
+            newUser.role = UserRole.ADMIN;
             try {
                 var bonus2 = new BonusTxn();
                 bonus2.amount = 25;
@@ -35,7 +36,7 @@ module.exports = (app: Express, passport) => {
                     bonus2.user = await getRepository(User).findOneOrFail({
                         referralLink: request.body.ref,
                     });
-                    newUser.referralUser = bonus2.user;
+                    newUser.referralUser = bonus2.user.id;
                 }
                 newUser.password = await passowrdhasher(request.body.password);
                 await getManager()
@@ -132,11 +133,10 @@ module.exports = (app: Express, passport) => {
                         response.status(200).json({
                             token: "Bearer " + token,
                         });
-                    }
-                    else if(result) {
+                    } else if (result) {
                         response.status(403).send("User not an admin");
-                    } 
-                    else response.status(403).send("Invalid email or password");
+                    } else
+                        response.status(403).send("Invalid email or password");
                 });
             } catch (error) {
                 response.status(500).send(error);

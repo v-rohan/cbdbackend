@@ -9,7 +9,7 @@ import {
     getBankPayouts,
     getPaytmWalletPayouts,
 } from "../controller/userRequestController";
-import AdminCheck from "../middleware/AdminCheck";
+import { AdminCheck } from "../middleware/AuthMiddleware";
 
 module.exports = (app: Express, passport: any) => {
     require("../passport/jwt")(passport);

@@ -51,7 +51,7 @@ export class User {
     referralLink: string;
 
     @Column({ nullable: true, default: null })
-    referralUser: User;
+    referralUser: Number;
 
     @CreateDateColumn()
     user_registered: Date;

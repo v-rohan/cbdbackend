@@ -5,6 +5,7 @@ import {
     getAmountStatus,
     withdraw,
 } from "../controller/accountController";
+import { IsAuthenticated } from "../middleware/AuthMiddleware";
 
 module.exports = (app: Express, passport: any) => {
     require("../passport/jwt")(passport);
@@ -13,8 +14,11 @@ module.exports = (app: Express, passport: any) => {
     var router = express.Router();
 
     router.use(passport.authenticate("jwt", { session: false }));
+    router.use(IsAuthenticated);
 
     router.route("/alltxns").get(getAllTxns);
     router.route("/walletDetails").get(getAmountStatus);
     router.route("/withdraw").get(withdraw);
+
+    return router;
 };
