@@ -1,12 +1,10 @@
 # pull official base image
 FROM node:12-alpine
 
-RUN mkdir /app
-
-COPY package.json /app
-COPY yarn.lock /app
-
-COPY . /app
+ENV NODE_ENV development
 WORKDIR /app
-
-RUN yarn install
+COPY package.json .
+RUN cat package.json
+COPY yarn.lock .
+RUN yarn
+COPY . .
