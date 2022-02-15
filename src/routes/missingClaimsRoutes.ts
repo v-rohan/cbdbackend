@@ -5,7 +5,9 @@ import {
     getClaimById,
     updateClaimStaus,
     getAllClaims,
+    submitClaim,
 } from "../controller/missingClaimsController";
+import { AdminCheck, IsAuthenticated } from "../middleware/AuthMiddleware";
 
 module.exports = (app: Express, passport: any) => {
     require("../passport/jwt")(passport);
@@ -13,11 +15,16 @@ module.exports = (app: Express, passport: any) => {
 
     var router = express.Router();
 
-    router.route("/submitclaim").post();
+    router.use(passport.authenticate("jwt", { session: false }));
+
+    router.route("/submitclaim").post(IsAuthenticated, submitClaim);
     router.route("/viewclaims").get(getClaimByUser);
-    router.route("/viewclaims/:id").get(getClaimById);
-    router.route("/missingclaims").get(getAllClaims);
-    router.route("/missingclaims/:id").get(getClaimById).put(updateClaimStaus);
+    router.route("/viewclaims/:id").get(AdminCheck, getClaimById);
+    router.route("/missingclaims").get(AdminCheck, getAllClaims);
+    router
+        .route("/missingclaims/:id")
+        .get(getClaimById)
+        .put(AdminCheck, updateClaimStaus);
 
     return router;
 };

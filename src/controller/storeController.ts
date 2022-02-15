@@ -65,7 +65,7 @@ const deleteStoreById = async (req: Request, res: Response) => {
     }
 };
 
-const getCategories = async (req: Request, res: Response) => {
+const getStoreCategories = async (req: Request, res: Response) => {
     try {
         const categories = await getRepository(StoreCategory).find({
             relations: ["stores"],
@@ -76,7 +76,7 @@ const getCategories = async (req: Request, res: Response) => {
     }
 };
 
-const getCategoryById = async (req: Request, res: Response) => {
+const getStoreCategoryById = async (req: Request, res: Response) => {
     try {
         const category = await getRepository(StoreCategory).findOneOrFail({
             where: { id: Number(req.params.id) },
@@ -88,12 +88,57 @@ const getCategoryById = async (req: Request, res: Response) => {
     }
 };
 
+const createStoreCategory = async (req: Request, res: Response) => {
+    try {
+        let category = new StoreCategory();
+        category = { ...req.body };
+        await getRepository(StoreCategory).save(category);
+        return res.status(201).json(category);
+    } catch (error) {
+        return res.status(400).json(error);
+    }
+};
+
+const updateStoreCategory = async (req: Request, res: Response) => {
+    try {
+        const category = await getRepository(StoreCategory).findOneOrFail({
+            where: { id: Number(req.params.id) },
+        });
+        getRepository(StoreCategory).merge(category, { ...req.body });
+        const updatedCategory = await getRepository(StoreCategory).save(
+            category
+        );
+        return res.status(200).json(updatedCategory);
+    } catch (err) {
+        return res.status(400).json(err);
+    }
+};
+
+const deleteStoreCategory = async (req: Request, res: Response) => {
+    try {
+        const category = await getRepository(StoreCategory).findOneOrFail({
+            where: { id: Number(req.params.id) },
+        });
+        if (category) {
+            await getRepository(StoreCategory).remove(category);
+            return res
+                .status(204)
+                .json({ message: "Category has been deleted successfully" });
+        }
+    } catch (err) {
+        return res.status(400).json(err);
+    }
+};
+
 export {
     getAllStores,
     getStoreById,
     createStore,
     updateStoreById,
     deleteStoreById,
-    getCategories,
-    getCategoryById,
+    getStoreCategories,
+    getStoreCategoryById,
+    createStoreCategory,
+    updateStoreCategory,
+    deleteStoreCategory,
 };

@@ -1,11 +1,15 @@
 import { Express, Router, Request } from "express";
-import AdminCheck from "../middleware/AdminCheck";
+import { AdminCheck, AdminCheckAllowSafe } from "../middleware/AuthMiddleware";
 import { getBanner, postBanner } from "../controller/bannerController";
 import multer = require("multer");
 
 module.exports = (app: Express, passport: any) => {
     require("../passport/jwt")(passport);
     require("../passport/google")(passport);
+
+    const router = Router();
+    router.use(passport.authenticate("jwt", { session: false }));
+    router.use(AdminCheckAllowSafe);
 
     // Storage configuration for image files
     const storage = multer.diskStorage({
@@ -28,12 +32,8 @@ module.exports = (app: Express, passport: any) => {
     });
     const upload = multer({ storage: storage });
 
-    app.get("/banner", getBanner);
-    app.post(
-        "/banner",
-        passport.authenticate("jwt", { session: false }),
-        AdminCheck,
-        upload.single("image"),
-        postBanner
-    );
+    router
+        .route("/banner")
+        .get(getBanner)
+        .post(upload.single("image"), postBanner);
 };

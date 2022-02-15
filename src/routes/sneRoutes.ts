@@ -3,7 +3,7 @@ import { Request, Response, Express } from "express";
 import { generateLink } from "../services";
 import { SnE } from "../entity/SnE";
 import { IGetUserAuthInfoRequest } from "../types";
-import AdminCheck from "../middleware/AdminCheck";
+import { AdminCheck } from "../middleware/AuthMiddleware";
 import { Store } from "../entity/Store";
 import { Clicks } from "../entity/Clicks";
 import { AffiliateNetwork } from "../entity/AffiliateNetwork";

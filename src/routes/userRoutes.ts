@@ -5,7 +5,7 @@ import { secretOrKey } from "../config";
 import { IGetUserAuthInfoRequest } from "../types";
 import { generateLink, passowrdhasher } from "../services";
 import { BonusTxn } from "../entity/Transactions/BonusTxn";
-import AdminCheck from "../middleware/AdminCheck";
+import { AdminCheck } from "../middleware/AuthMiddleware";
 
 var jwt = require("jsonwebtoken");
 

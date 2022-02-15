@@ -1,7 +1,7 @@
 import { Request, Express } from "express";
 import * as express from "express";
 import multer = require("multer");
-import AdminCheck from "../middleware/AdminCheck";
+import { AdminCheck } from "../middleware/AuthMiddleware";
 import {
     deleteMockTxn,
     getMockTxn,

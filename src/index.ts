@@ -52,6 +52,8 @@ createConnection()
         );
         app.use("/txn", require("./routes/txnRoutes")(app, passport));
         require("./routes/bannerRoutes")(app, passport);
+
+        // Serve media files
         app.use("/media", express.static("media"));
         // app.use(handleError);
 

@@ -5,11 +5,14 @@ import {
     getStoreById,
     updateStoreById,
     deleteStoreById,
-    getCategories,
-    getCategoryById,
+    getStoreCategories,
+    getStoreCategoryById,
+    createStoreCategory,
+    updateStoreCategory,
+    deleteStoreCategory,
 } from "../controller/storeController";
 
-import AdminCheck from "../middleware/AdminCheck";
+import { AdminCheckAllowSafe } from "../middleware/AuthMiddleware";
 
 module.exports = (app: Express, passport: any) => {
     require("../passport/jwt")(passport);
@@ -19,7 +22,7 @@ module.exports = (app: Express, passport: any) => {
 
     // Middleware
     router.use(passport.authenticate("jwt", { session: false }));
-    router.use(AdminCheck);
+    router.use(AdminCheckAllowSafe);
 
     // Store Routes
     router.route("/").get(getAllStores).post(createStore);
@@ -30,8 +33,12 @@ module.exports = (app: Express, passport: any) => {
         .delete(deleteStoreById);
 
     // Store Category Routes
-    router.route("/category").get(getCategories);
-    router.route("/category/:id").get(getCategoryById);
+    router.route("/category").get(getStoreCategories).post(createStoreCategory);
+    router
+        .route("/category/:id")
+        .get(getStoreCategoryById)
+        .post(updateStoreCategory)
+        .delete(deleteStoreCategory);
 
     return router;
 };

@@ -3,7 +3,7 @@ import { NextFunction, Request, Response, Express } from "express";
 import { IGetUserAuthInfoRequest } from "../types";
 import { Mode, PaymentMode } from "../entity/Payment/PaymentMode";
 import e = require("express");
-import AdminCheck from "../middleware/AdminCheck";
+import { AdminCheck } from "../middleware/AuthMiddleware";
 
 module.exports = (app: Express, passport) => {
     require("../passport/jwt")(passport);

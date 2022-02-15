@@ -6,7 +6,7 @@ import {
     updateCashbackRateById,
 } from "../controller/cashbackRatesController";
 
-import AdminCheck from "../middleware/AdminCheck";
+import { AdminCheck } from "../middleware/AuthMiddleware";
 
 module.exports = (app: Express, passport: any) => {
     require("../passport/jwt")(passport);
