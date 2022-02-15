@@ -7,6 +7,7 @@ import { Clicks } from "../entity/Clicks";
 import { StatusOpts, AcceptedStatusOpts } from "../entity/Transactions/Common";
 import { ReferrerTxn } from "../entity/Transactions/ReferrerTxn";
 import { SnE } from "../entity/SnE";
+import { User } from "../entity/User";
 
 const MigrateMockTxns = async () => {
     const mockTxns = await getRepository(MockTxn).find({
@@ -81,7 +82,9 @@ const MigrateMockTxns = async () => {
                 await transaction.save(cashbackTxn);
                 if (click.user.referralUser != null) {
                     referrerTxn.sale_id = cashbackTxn.sale_id;
-                    referrerTxn.user = click.user.referralUser;
+                    referrerTxn.user = await getRepository(User).findOne({
+                        where: { id: click.user.referralUser },
+                    });
                     referrerTxn.shopper = click.user;
                     referrerTxn.store = click.store;
                     referrerTxn.sale_amount = cashbackTxn.sale_amount;

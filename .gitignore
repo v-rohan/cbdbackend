@@ -10,3 +10,4 @@ yarn-error.log
 mockTxns/*
 src/migration
 dbData
+media/banners/*

@@ -36,7 +36,7 @@ module.exports = (app: Express, passport) => {
                     bonus2.user = await getRepository(User).findOneOrFail({
                         referralLink: request.body.ref,
                     });
-                    newUser.referralUser = bonus2.user;
+                    newUser.referralUser = bonus2.user.id;
                 }
                 newUser.password = await passowrdhasher(request.body.password);
                 await getManager()
@@ -133,11 +133,10 @@ module.exports = (app: Express, passport) => {
                         response.status(200).json({
                             token: "Bearer " + token,
                         });
-                    }
-                    else if(result) {
+                    } else if (result) {
                         response.status(403).send("User not an admin");
-                    } 
-                    else response.status(403).send("Invalid email or password");
+                    } else
+                        response.status(403).send("Invalid email or password");
                 });
             } catch (error) {
                 response.status(500).send(error);

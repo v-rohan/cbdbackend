@@ -38,18 +38,16 @@ export class Coupon {
     })
     store_id: Store;
 
-    @ManyToOne(
-        () => AffiliateNetwork,
-        (affiliateNetwork) => affiliateNetwork.coupons,
-        { onDelete: "CASCADE", onUpdate: "CASCADE" }
-    )
+    @ManyToOne(() => AffiliateNetwork, (affNet) => affNet.coupons, {
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+    })
     network_id: AffiliateNetwork;
 
-    @ManyToMany(
-        () => CouponCategory,
-        (couponCategory) => couponCategory.coupons,
-        { onDelete: "CASCADE", onUpdate: "CASCADE" }
-    )
+    @ManyToMany(() => CouponCategory, (couponCat) => couponCat.coupons, {
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+    })
     categories: CouponCategory[];
 
     @Column({ type: "boolean", default: true })

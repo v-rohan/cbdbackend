@@ -8,6 +8,7 @@ import { ReferrerTxn } from "../entity/Transactions/ReferrerTxn";
 import { Clicks } from "../entity/Clicks";
 import { AcceptedStatusOpts, StatusOpts } from "../entity/Transactions/Common";
 import { SnE } from "../entity/SnE";
+import { User } from "../entity/User";
 
 const getAllLogs = async (req: Request, res: Response) => {
     const logs = await getRepository(PostbackLog).find();
@@ -99,7 +100,9 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
 
                 if (click.user.referralUser != null) {
                     referrerTxn.sale_id = cashbackTxn.sale_id;
-                    referrerTxn.user = click.user.referralUser;
+                    referrerTxn.user = await getRepository(User).findOne({
+                        where: { id: click.user.referralUser },
+                    });
                     referrerTxn.shopper = click.user;
                     referrerTxn.store = click.store;
                     referrerTxn.sale_amount = cashbackTxn.sale_amount;

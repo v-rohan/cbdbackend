@@ -51,6 +51,8 @@ createConnection()
             require("./routes/cashbackRatesRoutes")(app, passport)
         );
         app.use("/txn", require("./routes/txnRoutes")(app, passport));
+        require("./routes/bannerRoutes")(app, passport);
+        app.use("/media", express.static("media"));
         // app.use(handleError);
 
         // setup express app here

@@ -8,82 +8,104 @@ import {
     getMockTxns,
     mockTxnUploadCsv,
     postMockTxn,
-    postMockTxns
+    postMockTxns,
 } from "../controller/Transactions/MockTxnController";
 import {
     deleteSalesTxn,
     getSalesTxns,
     postSalesTxn,
-    postSalesTxns
+    postSalesTxns,
 } from "../controller/Transactions/SalesTxnController";
 import {
     getCashbackTxn,
-    getCashbackTxns,postCashbackTxn,
+    getCashbackTxns,
+    postCashbackTxn,
     postCashbackTxns,
-    deleteCashbackTxn
+    deleteCashbackTxn,
 } from "../controller/Transactions/CashbackTxnController";
 import {
     deleteBonusTxn,
     getBonusTxn,
     getBonusTxns,
     postBonusTxn,
-    updateBonusTxn
+    updateBonusTxn,
 } from "../controller/Transactions/BonusTxnController";
 import {
     deleteReferrerTxn,
     getReferrerTxn,
     getReferrerTxns,
     postReferrerTxn,
-    postReferrerTxns
+    postReferrerTxns,
 } from "../controller/Transactions/ReferrerTxnController";
 
 module.exports = (app: Express, passport: any) => {
-
     require("../passport/jwt")(passport);
     require("../passport/google")(passport);
 
     var router = express.Router();
 
     // Middleware
-    router.use(passport.authenticate('jwt', { session: false }));
+    router.use(passport.authenticate("jwt", { session: false }));
     router.use(AdminCheck);
 
     // Storage configuration for CSV files
     const storage = multer.diskStorage({
         destination: (request: Request, file: any, cb: any) => {
-            cb(null, './mockTxns/')
+            cb(null, "./mockTxns/");
         },
         filename: (request: Request, file: any, cb: any) => {
             const suffix = Date.now();
-            cb(null, (
-                    file.originalname.substring(0, file.originalname.length - 4) + '-' + suffix + '.csv'
-                ))
-        }
-    })
-    const upload = multer({ storage: storage })
+            cb(
+                null,
+                file.originalname.substring(0, file.originalname.length - 4) +
+                    "-" +
+                    suffix +
+                    ".csv"
+            );
+        },
+    });
+    const upload = multer({ storage: storage });
 
     // MockTxn Routes
-    router.route('/mock').get(getMockTxns).post(postMockTxns)
-    router.post('/mockUpload', upload.single('csv'), mockTxnUploadCsv)
-    router.route('/mock/:id').get(getMockTxn).post(postMockTxn).delete(deleteMockTxn)
+    router.route("/mock").get(getMockTxns).post(postMockTxns);
+    router.post("/mockUpload", upload.single("csv"), mockTxnUploadCsv);
+    router
+        .route("/mock/:id")
+        .get(getMockTxn)
+        .post(postMockTxn)
+        .delete(deleteMockTxn);
 
     // SalesTxn Routes
-    router.route('sales').get(getSalesTxns).post(postSalesTxns)
-    router.route('sales/:id').get(getSalesTxns).post(postSalesTxn).delete(deleteSalesTxn)
+    router.route("sales").get(getSalesTxns).post(postSalesTxns);
+    router
+        .route("sales/:id")
+        .get(getSalesTxns)
+        .post(postSalesTxn)
+        .delete(deleteSalesTxn);
 
     // CashbackTxn Routes
-    router.route('/cashback').get(getCashbackTxns).post(postCashbackTxns)
-    router.route('/cashback/:id').get(getCashbackTxn).post(postCashbackTxn).delete(deleteCashbackTxn)
+    router.route("/cashback").get(getCashbackTxns).post(postCashbackTxns);
+    router
+        .route("/cashback/:id")
+        .get(getCashbackTxn)
+        .post(postCashbackTxn)
+        .delete(deleteCashbackTxn);
 
     // BonusTxn Routes
-    router.route('/bonus').get(getBonusTxns).post(postBonusTxn)
-    router.route('/bonus/:id').get(getBonusTxn).post(updateBonusTxn).delete(deleteBonusTxn)
+    router.route("/bonus").get(getBonusTxns).post(postBonusTxn);
+    router
+        .route("/bonus/:id")
+        .get(getBonusTxn)
+        .post(updateBonusTxn)
+        .delete(deleteBonusTxn);
 
     // ReferrerTxn Routes
-    router.route('/referrer').get(getReferrerTxns).post(postReferrerTxns)
-    router.route('/referrer/:id').get(getReferrerTxn).post(postReferrerTxn).delete(deleteReferrerTxn)
-
+    router.route("/referrer").get(getReferrerTxns).post(postReferrerTxns);
+    router
+        .route("/referrer/:id")
+        .get(getReferrerTxn)
+        .post(postReferrerTxn)
+        .delete(deleteReferrerTxn);
 
     return router;
-
-}
+};
