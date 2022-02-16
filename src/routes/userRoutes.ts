@@ -7,6 +7,8 @@ import { generateLink, passowrdhasher } from "../services";
 import { BonusTxn } from "../entity/Transactions/BonusTxn";
 import { AdminCheck } from "../middleware/AuthMiddleware";
 
+import fetch from "node-fetch";
+
 var jwt = require("jsonwebtoken");
 
 var bcrypt = require("bcryptjs");
@@ -170,6 +172,67 @@ module.exports = (app: Express, passport) => {
             });
         }
     );
+
+    app.post("/googleapp", async (request: Request, response: Response) => {
+        try {
+            const res = await fetch(
+                "https://www.googleapis.com/oauth2/v3/userinfo?access_token=" +
+                    request.body.accessToken
+            );
+            const data = await res.json();
+            await getRepository(User)
+                .findOne({ email: data.email })
+                .then(async (user) => {
+                    if (user) {
+                        const payload = {
+                            id: user.id,
+                            email: user.email,
+                            role: user.role,
+                        };
+
+                        var token = jwt.sign(payload, secretOrKey, {
+                            expiresIn: 600000,
+                        });
+
+                        response.status(200).json({
+                            token: "Bearer " + token,
+                        });
+                    } else {
+                        user = new User();
+                        user.email = data.email;
+                        user.password = data.sub;
+                        user.referralLink = generateLink();
+                        user.is_email_verified = true;
+
+                        getRepository(User)
+                            .save(user)
+                            .then(async (savedUser) => {
+                                const payload = {
+                                    id: savedUser.id,
+                                    email: savedUser.email,
+                                    role: savedUser.role,
+                                };
+
+                                var token = jwt.sign(payload, secretOrKey, {
+                                    expiresIn: 600000,
+                                });
+
+                                response.status(200).json({
+                                    token: "Bearer " + token,
+                                });
+                            });
+                    }
+                })
+                .catch((error) => {
+                    response.status(500).send(error);
+                });
+
+            console.log(data);
+        } catch (error) {
+            console.log(error);
+            response.sendStatus(403);
+        }
+    });
 
     app.get(
         "/user",
