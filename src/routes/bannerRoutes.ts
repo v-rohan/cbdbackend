@@ -2,13 +2,15 @@ import { Express, Router, Request } from "express";
 import { AdminCheck, AdminCheckAllowSafe } from "../middleware/AuthMiddleware";
 import { getBanner, postBanner } from "../controller/bannerController";
 import multer = require("multer");
+const AnonymousStrategy = require('passport-anonymous').Strategy;
 
 module.exports = (app: Express, passport: any) => {
     require("../passport/jwt")(passport);
     require("../passport/google")(passport);
+    passport.use(new AnonymousStrategy());
 
     const router = Router();
-    router.use(passport.authenticate("jwt", { session: false }));
+    router.use(passport.authenticate(["jwt", "anonymous"], { session: false }));
     router.use(AdminCheckAllowSafe);
 
     // Storage configuration for image files
@@ -33,7 +35,9 @@ module.exports = (app: Express, passport: any) => {
     const upload = multer({ storage: storage });
 
     router
-        .route("/banner")
+        .route("/")
         .get(getBanner)
         .post(upload.single("image"), postBanner);
+
+    return router;
 };

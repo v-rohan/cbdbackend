@@ -51,7 +51,7 @@ createConnection()
             require("./routes/cashbackRatesRoutes")(app, passport)
         );
         app.use("/txn", require("./routes/txnRoutes")(app, passport));
-        require("./routes/bannerRoutes")(app, passport);
+        app.use("/banner",require("./routes/bannerRoutes")(app, passport));
 
         // Serve media files
         app.use("/media", express.static("media"));

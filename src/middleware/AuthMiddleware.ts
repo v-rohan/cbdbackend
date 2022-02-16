@@ -18,13 +18,14 @@ const AdminCheckAllowSafe = (
     response: Response,
     next: NextFunction
 ) => {
+    console.log(request.method);
     if (
-        request.method == "GET" ||
+        request.method == "GET" || request.method == "OPTIONS" ||
         (request.isAuthenticated() && request.user.role === "admin")
     ) {
         next();
     } else {
-        response.status(410).send("Unauthorized");
+        response.status(401).send("Unauthorized");
     }
 };
 
