@@ -26,7 +26,7 @@ module.exports = (app: Express, passport) => {
             newUser.referralLink = generateLink();
             bonus.amount = 25;
             newUser.email = request.body.email;
-            newUser.role = UserRole.ADMIN;
+            // newUser.role = UserRole.ADMIN;
             try {
                 var bonus2 = new BonusTxn();
                 bonus2.amount = 25;
@@ -246,6 +246,7 @@ module.exports = (app: Express, passport) => {
                 await getRepository(User)
                     .find()
                     .then((users) => {
+                        users.forEach((item)=> delete item['password'])
                         response.status(200).json(users);
                     })
                     .catch((error) => {

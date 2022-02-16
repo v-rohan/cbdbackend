@@ -1,59 +1,71 @@
 import { NextFunction, Request, Response } from "express";
 import { getRepository } from "typeorm";
 import { BonusTxn } from "../../entity/Transactions/BonusTxn";
+import { IGetUserAuthInfoRequest } from "../../types";
 
 const getBonusTxns = async (
-    request: Request,
-    response: Response,
+    req: Request,
+    res: Response,
     next: NextFunction
 ) => {
     var txns = await getRepository(BonusTxn).find();
-    response.status(200).json(txns);
+    res.status(200).json(txns);
 };
 
 const postBonusTxn = async (
-    request: Request,
-    response: Response,
+    req: Request,
+    res: Response,
     next: NextFunction
 ) => {
-    var newTxn = request.body;
+    var newTxn = req.body;
     await getRepository(BonusTxn).save(newTxn);
-    response.status(201).json(newTxn);
+    res.status(201).json(newTxn);
 };
 
 const getBonusTxn = async (
-    request: Request,
-    response: Response,
+    req: Request,
+    res: Response,
     next: NextFunction
 ) => {
-    var txn = await getRepository(BonusTxn).findOne(request.params.id);
-    response.status(200).json(txn);
+    var txn = await getRepository(BonusTxn).findOne(req.params.id);
+    res.status(200).json(txn);
 };
 
 const updateBonusTxn = async (
-    request: Request,
-    response: Response,
+    req: Request,
+    res: Response,
     next: NextFunction
 ) => {
-    var txn = await getRepository(BonusTxn).findOne(request.params.id);
-    txn = { ...txn, ...request.body };
+    var txn = await getRepository(BonusTxn).findOne(req.params.id);
+    txn = { ...txn, ...req.body };
     await getRepository(BonusTxn).save(txn);
-    response.status(201).json(txn);
+    res.status(201).json(txn);
 };
 
 const deleteBonusTxn = async (
-    request: Request,
-    response: Response,
+    req: Request,
+    res: Response,
     next: NextFunction
 ) => {
-    await getRepository(BonusTxn).delete(request.params.id);
-    response.status(204).send();
+    await getRepository(BonusTxn).delete(req.params.id);
+    res.status(204).send();
 };
 
+const getBonusTxnByUser = async (
+    req: IGetUserAuthInfoRequest,
+    res: Response,
+    next: NextFunction
+) => {
+    const bonusTxns = await getRepository(BonusTxn).find({
+        where: {user: req.user}
+    })
+    res.status(200).json(bonusTxns);
+}
 export {
     getBonusTxns,
     postBonusTxn,
     getBonusTxn,
     updateBonusTxn,
     deleteBonusTxn,
+    getBonusTxnByUser
 };

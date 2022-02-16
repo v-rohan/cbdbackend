@@ -2,30 +2,30 @@ import { NextFunction, Request, Response } from "express";
 import { getRepository } from "typeorm";
 import { SalesTxn } from "../../entity/Transactions/SalesTxn";
 
-const getSalesTxns = async (request: Request, response: Response, next: NextFunction) => {
+const getSalesTxns = async (req: Request, res: Response, next: NextFunction) => {
     var txns = await getRepository(SalesTxn).find({ relations: ["network"] });
-    response.status(200).json(txns);
+    res.status(200).json(txns);
 }
 
-const postSalesTxns = async (request: Request, response: Response, next: NextFunction) => {
-    var newTxn = request.body;
+const postSalesTxns = async (req: Request, res: Response, next: NextFunction) => {
+    var newTxn = req.body;
     await getRepository(SalesTxn).save(newTxn);
-    response.status(201).json(newTxn);
+    res.status(201).json(newTxn);
 }
 
-const getSalesTxn = async (request: Request, response: Response, next: NextFunction) => {
+const getSalesTxn = async (req: Request, res: Response, next: NextFunction) => {
     var txn = await getRepository(SalesTxn).findOne(
-        request.params.id,
+        req.params.id,
         { relations: ["network"] }
     );
-    response.status(200).json(txn);
+    res.status(200).json(txn);
 }
 
-const postSalesTxn = async (request: Request, response: Response, next: NextFunction) => {
-    var txn = await getRepository(SalesTxn).findOne(request.params.id);
-    txn = {...txn, ...request.body};
+const postSalesTxn = async (req: Request, res: Response, next: NextFunction) => {
+    var txn = await getRepository(SalesTxn).findOne(req.params.id);
+    txn = {...txn, ...req.body};
     await getRepository(SalesTxn).save(txn);
-    response.status(201).json(txn);
+    res.status(201).json(txn);
 }
 
 const createorUpdateSalesTxn = async (data: any) => {
@@ -38,9 +38,9 @@ const createorUpdateSalesTxn = async (data: any) => {
     }
 }
 
-const deleteSalesTxn = async (request: Request, response: Response, next: NextFunction) => {
-    await getRepository(SalesTxn).delete(request.params.id);
-    response.status(204).send();
+const deleteSalesTxn = async (req: Request, res: Response, next: NextFunction) => {
+    await getRepository(SalesTxn).delete(req.params.id);
+    res.status(204).send();
 }
 
 export {

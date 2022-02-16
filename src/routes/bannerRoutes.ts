@@ -6,12 +6,10 @@ import {
     postBanner,
 } from "../controller/bannerController";
 import multer = require("multer");
-const AnonymousStrategy = require("passport-anonymous").Strategy;
 
 module.exports = (app: Express, passport: any) => {
     require("../passport/jwt")(passport);
     require("../passport/google")(passport);
-    passport.use(new AnonymousStrategy());
 
     const router = Router();
     router.use(passport.authenticate(["jwt", "anonymous"], { session: false }));

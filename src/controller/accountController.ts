@@ -44,7 +44,7 @@ const calculateWallet = async (
 }> => {
     const cashTxns = await getRepository(CashbackTxn).find({
         where: { user: id },
-        relations: ["user", "store", "networkId"],
+        relations: ["user", "store", "network_id"],
     });
     let pendingAmount = 0;
     let comfirmedAmount = 0;
@@ -94,7 +94,7 @@ const calculateWallet = async (
             user_id: id,
             status: "completed",
         },
-        relations: ["user"],
+        relations: ["user_id"],
     });
 
     let payoutAmount = 0; // Amount Already Paid to user
