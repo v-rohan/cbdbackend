@@ -23,4 +23,18 @@ const postBanner = async (req: IGetUserAuthInfoRequest, res: Response) => {
     }
 };
 
-export { getBanner, postBanner };
+const deleteBanner = async (req: IGetUserAuthInfoRequest, res: Response) => {
+    try {
+        const banner = await getRepository(Banner).findOneOrFail({
+            where: { id: Number(req.params.id) },
+        });
+        await getRepository(Banner).remove(banner);
+        return res
+            .status(204)
+            .json({ message: "Banner has been deleted successfully" });
+    } catch (err) {
+        res.status(400).json({ err });
+    }
+};
+
+export { getBanner, postBanner, deleteBanner };
