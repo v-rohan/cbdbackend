@@ -213,4 +213,24 @@ module.exports = (app: Express, passport) => {
             }
         }
     );
+
+    app.get(
+        "/verify/:link",
+        passport.authenticate("jwt", { session: false }),
+        async (req: IGetUserAuthInfoRequest, res: Response) => {
+            const link = req.params.link;
+            try {
+                const user = await getRepository(User).findOneOrFail({
+                    where: { referralLink: link },
+                });
+                if (user === req.user) {
+                    user.is_email_verified = true;
+                    await getRepository(User).save(user);
+                    res.sendStatus(200);
+                } else res.sendStatus(403);
+            } catch (err) {
+                res.sendStatus(400);
+            }
+        }
+    );
 };

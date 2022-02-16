@@ -4,6 +4,7 @@ import {
     Column,
     OneToMany,
     CreateDateColumn,
+    ManyToOne,
 } from "typeorm";
 import { Clicks } from "./Clicks";
 import { PaymentMode } from "./Payment/PaymentMode";
@@ -27,6 +28,9 @@ export class User {
 
     @Column({ unique: true })
     email: string;
+
+    @Column({ nullable: true })
+    mobile: string;
 
     @Column()
     password: string;
@@ -52,6 +56,21 @@ export class User {
 
     @Column({ nullable: true, default: null })
     referralUser: Number;
+
+    @Column({ nullable: true, default: false })
+    is_email_verified: boolean;
+
+    @Column({ nullable: true, default: false })
+    is_mobile_verified: boolean;
+
+    @Column({ nullable: true, default: false })
+    is_user_banned: boolean;
+
+    @Column({ nullable: true, default: null })
+    email_verified_at: Date;
+
+    @Column({ nullable: true, default: null })
+    mobile_verified_at: Date;
 
     @CreateDateColumn()
     user_registered: Date;
