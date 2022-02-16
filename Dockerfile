@@ -1,5 +1,5 @@
 # pull official base image
-FROM node:12-alpine
+FROM node:14-alpine
 
 ENV NODE_ENV development
 WORKDIR /app
