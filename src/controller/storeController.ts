@@ -4,7 +4,9 @@ import { Store } from "../entity/Store";
 import { StoreCategory } from "../entity/StoreCategory";
 
 const getAllStores = async (req: Request, res: Response) => {
-    const stores = await getRepository(Store).find();
+    const stores = await getRepository(Store).find({
+        relations: ["categories"],
+    });
     res.set({
         "Access-Control-Expose-Headers": "Content-Range",
         "Content-Range": `X-Total-Count: ${1} - ${stores.length} / ${
@@ -18,6 +20,7 @@ const getStoreById = async (req: Request, res: Response) => {
     try {
         const st = await getRepository(Store).findOneOrFail({
             where: { id: Number(req.params.id) },
+            relations: ["network_id"],
         });
         return res.status(200).json(st);
     } catch (error) {
@@ -29,6 +32,17 @@ const createStore = async (req: Request, res: Response) => {
     try {
         let st = new Store();
         st = { ...req.body };
+        req.body.categories.forEach(async (category) => {
+            try {
+                st.categories.push(
+                    await getRepository(StoreCategory).findOneOrFail({
+                        cat_id: category,
+                    })
+                );
+            } catch (err) {
+                console.log(err);
+            }
+        });
         await getRepository(Store).save(st);
         return res.status(201).json(st);
     } catch (error) {
@@ -38,12 +52,30 @@ const createStore = async (req: Request, res: Response) => {
 
 const updateStoreById = async (req: Request, res: Response) => {
     try {
-        const st = await getRepository(Store).findOne({
+        let st = await getRepository(Store).findOne({
             where: { id: Number(req.params.id) },
         });
         if (st) {
-            getRepository(Store).merge(st, { ...req.body });
-            const updatedStore = await getRepository(Store).save(st);
+            st = { ...st, ...req.body };
+            var arr = [];
+            req.body.categories.forEach(async (category) => {
+                try {
+                    arr.push(
+                        await getRepository(StoreCategory).findOneOrFail({
+                            cat_id: category,
+                        })
+                    );
+                } catch (err) {
+                    console.log(err);
+                }
+            });
+            st.categories = arr;
+            const updatedStore = await getRepository(Store)
+                .save(st)
+                .catch((err) => {
+                    console.log(err);
+                    throw err;
+                });
             return res.status(200).json(updatedStore);
         }
     } catch (err) {
@@ -101,10 +133,10 @@ const createStoreCategory = async (req: Request, res: Response) => {
 
 const updateStoreCategory = async (req: Request, res: Response) => {
     try {
-        const category = await getRepository(StoreCategory).findOneOrFail({
-            where: { id: Number(req.params.id) },
+        var category = await getRepository(StoreCategory).findOneOrFail({
+            where: { cat_id: Number(req.params.id) },
         });
-        getRepository(StoreCategory).merge(category, { ...req.body });
+        category = { ...category, ...req.body };
         const updatedCategory = await getRepository(StoreCategory).save(
             category
         );
