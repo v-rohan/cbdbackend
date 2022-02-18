@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Coupon } from "./Coupon";
 
 @Entity()
@@ -25,5 +25,6 @@ export class CouponCategory {
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
     })
+    @JoinTable()
     coupons: Coupon[];
 }

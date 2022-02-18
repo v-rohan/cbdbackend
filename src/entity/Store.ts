@@ -55,7 +55,7 @@ export class Store {
     @Column({ nullable: true })
     tracking_speed: string;
 
-    @Column({ type: "integer", default:0 })
+    @Column({ type: "integer", default: 0 })
     visits: number;
 
     @Column({ nullable: true, type: "text" })
@@ -147,7 +147,7 @@ export class Store {
     @OneToMany(() => SnE, (SnE) => SnE.store)
     snelinks: SnE[];
 
-    @ManyToMany(() => StoreCategory, (storeCategory) => storeCategory.stores, {
+    @ManyToMany(() => StoreCategory, (storeCat) => storeCat.stores, {
         onDelete: "CASCADE",
         onUpdate: "NO ACTION",
     })
