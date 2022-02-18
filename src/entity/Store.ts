@@ -7,6 +7,7 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
     ManyToMany,
+    JoinTable,
 } from "typeorm";
 import { AffiliateNetwork } from "./AffiliateNetwork";
 import { CashbackRates } from "./CashbackRates";
@@ -54,7 +55,7 @@ export class Store {
     @Column({ nullable: true })
     tracking_speed: string;
 
-    @Column({ type: "integer" })
+    @Column({ type: "integer", default:0 })
     visits: number;
 
     @Column({ nullable: true, type: "text" })
@@ -128,10 +129,10 @@ export class Store {
     @Column({ type: "varchar", length: 20, nullable: false })
     status: string;
 
-    @Column({ type: "varchar", length: 6, nullable: true })
+    @Column({ type: "varchar", length: 7, nullable: true })
     color1: string;
 
-    @Column({ type: "varchar", length: 6, nullable: true })
+    @Column({ type: "varchar", length: 7, nullable: true })
     color2: string;
 
     @OneToMany(() => CashbackRates, (cashbackRate) => cashbackRate.store)
@@ -150,11 +151,12 @@ export class Store {
         onDelete: "CASCADE",
         onUpdate: "NO ACTION",
     })
+    @JoinTable()
     categories: StoreCategory[];
 
     @OneToMany(() => Coupon, (coupon) => coupon.store_id, {
         onDelete: "CASCADE",
-        onUpdate: "NO ACTION",
+        onUpdate: "CASCADE",
     })
     coupons: Coupon[];
 

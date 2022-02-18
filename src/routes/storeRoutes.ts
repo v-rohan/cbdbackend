@@ -26,19 +26,20 @@ module.exports = (app: Express, passport: any) => {
 
     // Store Routes
     router.route("/").get(getAllStores).post(createStore);
-    router
-        .route("/:id")
-        .get(getStoreById)
-        .put(updateStoreById)
-        .delete(deleteStoreById);
 
     // Store Category Routes
     router.route("/category").get(getStoreCategories).post(createStoreCategory);
     router
         .route("/category/:id")
         .get(getStoreCategoryById)
-        .post(updateStoreCategory)
+        .put(updateStoreCategory)
         .delete(deleteStoreCategory);
+
+    router
+        .route("/:id")
+        .get(getStoreById)
+        .put(updateStoreById)
+        .delete(deleteStoreById);
 
     return router;
 };

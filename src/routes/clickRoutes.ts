@@ -14,7 +14,9 @@ module.exports = (app: Express, passport) => {
         async (request: IGetUserAuthInfoRequest, response: Response) => {
             var click = new Clicks();
             click.user = request.user;
-            click = { ...click, ...request.body };
+            //  click = { ...click, ...request.body };
+            //console.log(request.body);
+            click.network = request.body.network;
             click.ipAddress = String(
                 request.headers["x-forwarded-for"] ||
                     request.connection.remoteAddress
@@ -31,12 +33,13 @@ module.exports = (app: Express, passport) => {
                 .save(click)
                 .then((click) => {
                     click.redirectLink = click.redirectLink.replace(
-                        /MYCBDCLKID/g,
+                        /MYCBCLKID/g,
                         String(click.id)
                     );
                     getRepository(Clicks)
                         .save(click)
                         .then(() => {
+                            console.log(click)
                             response.status(201).send(click);
                         })
                         .catch((error) => {
@@ -44,6 +47,8 @@ module.exports = (app: Express, passport) => {
                         });
                 })
                 .catch((error) => {
+                    console.log("----------------------------------------");
+                    console.log(error);
                     response.status(401).send(error);
                 });
         }
