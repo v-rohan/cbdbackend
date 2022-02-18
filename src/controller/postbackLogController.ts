@@ -12,6 +12,12 @@ import { User } from "../entity/User";
 
 const getAllLogs = async (req: Request, res: Response) => {
     const logs = await getRepository(PostbackLog).find();
+    res.set({
+        "Access-Control-Expose-Headers": "Content-Range",
+        "Content-Range": `X-Total-Count: ${1} - ${logs.length} / ${
+            logs.length
+        }`,
+    });
     return res.status(200).json(logs);
 };
 

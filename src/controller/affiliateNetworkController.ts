@@ -4,6 +4,12 @@ import { AffiliateNetwork } from "../entity/AffiliateNetwork";
 
 const getAllNetworks = async (req: Request, res: Response) => {
   const networks = await getRepository(AffiliateNetwork).find();
+  res.set({
+    "Access-Control-Expose-Headers": "Content-Range",
+    "Content-Range": `X-Total-Count: ${1} - ${networks.length} / ${
+        networks.length
+    }`,
+  });
   return res.status(200).json(networks);
 };
 
