@@ -20,7 +20,7 @@ module.exports = (app: Express, passport) => {
         ) => {
             var newMode = new PaymentMode();
             newMode.user = request.user;
-            newMode = { ...request.body, ...newMode };
+            newMode = { ...newMode, ...request.body };
             switch (request.body.platform) {
                 case "paytm":
                     newMode.method_code = Mode.paytm;

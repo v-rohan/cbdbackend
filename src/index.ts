@@ -4,6 +4,7 @@ import * as express from "express";
 import * as bodyParser from "body-parser";
 import { Request, Response } from "express";
 import * as morgan from "morgan";
+const AnonymousStrategy = require("passport-anonymous").Strategy;
 
 import { User } from "./entity/User";
 import { port, secretOrKey } from "./config";
@@ -35,6 +36,8 @@ createConnection()
         app.use(morgan("tiny"));
         app.use(bodyParser.json());
         app.use(cors());
+        
+        passport.use(new AnonymousStrategy());
 
         // register express routes from defined application routes
         require("./routes/userRoutes")(app, passport);
@@ -53,7 +56,8 @@ createConnection()
         );
         app.use("/txn", require("./routes/txnRoutes")(app, passport));
         app.use("/banner",require("./routes/bannerRoutes")(app, passport));
-
+        app.use("/account", require("./routes/accountRoutes")(app, passport));
+        
         // Serve media files
         app.use("/media", express.static("media"));
         // app.use(handleError);

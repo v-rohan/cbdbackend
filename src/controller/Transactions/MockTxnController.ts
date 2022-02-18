@@ -45,35 +45,35 @@ const csvProcessor = (filePath: string) => {
 };
 
 const getMockTxns = async (
-    request: Request,
-    response: Response,
+    req: Request,
+    res: Response,
     next: NextFunction
 ) => {
     var txns = await getRepository(MockTxn).find({ relations: ["network_id"] });
     // transferMockTxns();
-    response.status(200).json(txns);
+    res.status(200).json(txns);
 };
 
 const postMockTxns = async (
-    request: Request,
-    response: Response,
+    req: Request,
+    res: Response,
     next: NextFunction
 ) => {
-    var newTxn = request.body;
+    var newTxn = req.body;
     try {
         await getRepository(MockTxn).save(newTxn);
     } catch (err) {
-        response.status(400).json(err);
+        res.status(400).json(err);
     }
-    response.status(201).json(newTxn);
+    res.status(201).json(newTxn);
 };
 
 const mockTxnUploadCsv = async (
-    request: Request,
-    response: Response,
+    req: Request,
+    res: Response,
     next: NextFunction
 ) => {
-    csvProcessor(request.file.path).then(async (data: Array<Object>) => {
+    csvProcessor(req.file.path).then(async (data: Array<Object>) => {
         const MockTxnRepo = getRepository(MockTxn);
         var errorLog = [];
         for (var i = 0; i < data.length; i++) {
@@ -104,61 +104,61 @@ const mockTxnUploadCsv = async (
             }
         }
         if (errorLog.length > 0) {
-            response.status(200).json({
+            res.status(200).json({
                 error: `Error at lines: ${errorLog}`,
             });
         } else {
-            response.status(200).json({});
+            res.status(200).json({});
         }
     });
 };
 
 const getMockTxn = async (
-    request: Request,
-    response: Response,
+    req: Request,
+    res: Response,
     next: NextFunction
 ) => {
-    var txn = await getRepository(MockTxn).findOne(request.params.id, {
+    var txn = await getRepository(MockTxn).findOne(req.params.id, {
         relations: ["network_id"],
     });
-    response.status(200).json(txn);
+    res.status(200).json(txn);
 };
 
 const postMockTxn = async (
-    request: Request,
-    response: Response,
+    req: Request,
+    res: Response,
     next: NextFunction
 ) => {
     const MockTxnRepo = getRepository(MockTxn);
-    var txn = await MockTxnRepo.findOne(request.params.id);
-    txn = { ...txn, ...request.body };
+    var txn = await MockTxnRepo.findOne(req.params.id);
+    txn = { ...txn, ...req.body };
     try {
         await MockTxnRepo.save(txn);
     } catch (err) {
-        response.status(400).json(err);
+        res.status(400).json(err);
     }
-    response.status(201).json(txn);
+    res.status(201).json(txn);
 };
 
 const deleteMockTxn = async (
-    request: Request,
-    response: Response,
+    req: Request,
+    res: Response,
     next: NextFunction
 ) => {
-    await getRepository(MockTxn).delete(request.params.id);
-    response.status(204).send();
+    await getRepository(MockTxn).delete(req.params.id);
+    res.status(204).send();
 };
 
 const transferMockTxns = async (
-    request: Request,
-    response: Response,
+    req: Request,
+    res: Response,
     next: NextFunction
 ) => {
     try {
         await MigrateMockTxns();
-        response.status(200);
+        res.status(200);
     } catch (err) {
-        response.status(400).json(err);
+        res.status(400).json(err);
     }
 };
 

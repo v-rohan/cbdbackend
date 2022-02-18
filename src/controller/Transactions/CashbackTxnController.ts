@@ -1,48 +1,49 @@
 import { NextFunction, Request, Response } from "express";
 import { getRepository } from "typeorm";
 import { CashbackTxn } from "../../entity/Transactions/CashbackTxn";
+import { IGetUserAuthInfoRequest } from "../../types";
 
 const getCashbackTxns = async (
-    request: Request,
-    response: Response,
+    req: Request,
+    res: Response,
     next: NextFunction
 ) => {
     var txns = await getRepository(CashbackTxn).find({
         relations: ["user", "store", "network_id"],
     });
-    response.status(200).json(txns);
+    res.status(200).json(txns);
 };
 
 const postCashbackTxns = async (
-    request: Request,
-    response: Response,
+    req: Request,
+    res: Response,
     next: NextFunction
 ) => {
-    var newTxn = request.body;
+    var newTxn = req.body;
     await getRepository(CashbackTxn).save(newTxn);
-    response.status(201).json(newTxn);
+    res.status(201).json(newTxn);
 };
 
 const getCashbackTxn = async (
-    request: Request,
-    response: Response,
+    req: Request,
+    res: Response,
     next: NextFunction
 ) => {
-    var txn = await getRepository(CashbackTxn).findOne(request.params.id, {
+    var txn = await getRepository(CashbackTxn).findOne(req.params.id, {
         relations: ["store", "network_id"],
     });
-    response.status(200).json(txn);
+    res.status(200).json(txn);
 };
 
 const postCashbackTxn = async (
-    request: Request,
-    response: Response,
+    req: Request,
+    res: Response,
     next: NextFunction
 ) => {
-    var txn = await getRepository(CashbackTxn).findOne(request.params.id);
-    txn = { ...txn, ...request.body };
+    var txn = await getRepository(CashbackTxn).findOne(req.params.id);
+    txn = { ...txn, ...req.body };
     await getRepository(CashbackTxn).save(txn);
-    response.status(201).json(txn);
+    res.status(201).json(txn);
 };
 
 const createorUpdateCashbackTxn = async (data: any) => {
@@ -56,13 +57,21 @@ const createorUpdateCashbackTxn = async (data: any) => {
 };
 
 const deleteCashbackTxn = async (
-    request: Request,
-    response: Response,
+    req: Request,
+    res: Response,
     next: NextFunction
 ) => {
-    await getRepository(CashbackTxn).delete(request.params.id);
-    response.status(204).send();
+    await getRepository(CashbackTxn).delete(req.params.id);
+    res.status(204).send();
 };
+
+const getCashbackTxnByUser = async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
+    const cashTxns = await getRepository(CashbackTxn).find({
+        where: {user: req.user},
+        relations: ["store", "network_id"]
+    })
+    res.status(200).json(cashTxns);
+}
 
 export {
     getCashbackTxns,
@@ -71,4 +80,5 @@ export {
     getCashbackTxn,
     postCashbackTxn,
     deleteCashbackTxn,
+    getCashbackTxnByUser
 };

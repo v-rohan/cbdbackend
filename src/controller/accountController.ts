@@ -2,10 +2,13 @@ import { NextFunction, Response } from "express";
 import { getRepository } from "typeorm";
 import { PaymentMode } from "../entity/Payment/PaymentMode";
 import { PayoutRequest } from "../entity/Payment/PayoutRequest";
+import { Clicks } from "../entity/Clicks";
+import { CashbackType } from "../entity/Store";
 import { BonusTxn } from "../entity/Transactions/BonusTxn";
 import { CashbackTxn } from "../entity/Transactions/CashbackTxn";
 import { ReferrerTxn } from "../entity/Transactions/ReferrerTxn";
 import { IGetUserAuthInfoRequest } from "../types";
+import { User } from "../entity/User";
 
 const charSet: string =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -27,14 +30,14 @@ const getAllTxns = async (
     next: NextFunction
 ) => {
     const txns = await getRepository(CashbackTxn).find({
-        where: { user: req.user.id },
+        where: { user: req.user },
         relations: ["user", "store", "networkId"],
     });
     return res.status(200).json(txns);
 };
 
 const calculateWallet = async (
-    id: number
+    id: User
 ): Promise<{
     pendingAmount: number;
     comfirmedAmount: number;
@@ -44,43 +47,52 @@ const calculateWallet = async (
 }> => {
     const cashTxns = await getRepository(CashbackTxn).find({
         where: { user: id },
-        relations: ["user", "store", "networkId"],
+        relations: ["store"],
     });
     let pendingAmount = 0;
     let comfirmedAmount = 0;
+    
+    let rewardAmount = 0;
+    let rewardAmountPending = 0;
 
     cashTxns.forEach((txn) => {
-        if (txn.status === "pending") {
-            pendingAmount += txn.cashback;
-        }
-        if (txn.status === "confirmed") {
-            comfirmedAmount += txn.cashback;
-        }
-    });
-
-    const referrerTxns = await getRepository(ReferrerTxn).find({
-        where: { user: id },
-        relations: ["user", "store"],
-    });
-    referrerTxns.forEach((txn) => {
-        if (txn.status === "pending") {
-            pendingAmount += txn.referrer_amount;
-        }
-        if (txn.status === "confirmed") {
-            comfirmedAmount += txn.referrer_amount;
+        if (txn.store.cashback_type === CashbackType.CASHBACK) {
+            if (txn.status === "pending") {
+                pendingAmount += txn.cashback;
+            }
+            else if (txn.status === "confirmed") {
+                comfirmedAmount += txn.cashback;
+            }
+        } else {
+            if (txn.status === "pending") {
+                rewardAmountPending += txn.cashback;
+            }
+            else if (txn.status === "confirmed") {
+                rewardAmount += txn.cashback;
+            }
         }
     });
 
     // Calculation for rewards
-    let rewardAmount = 0;
-    let rewardAmountPending = 0;
-
-    const rewardTxns = await getRepository(BonusTxn).find({
+    const referrerTxns = await getRepository(ReferrerTxn).find({
+        where: { user: id },
+        relations: ["user", "store"],
+    });
+    const bonusTxns = await getRepository(BonusTxn).find({
         where: { user: id },
         relations: ["user"],
     });
 
-    rewardTxns.forEach((txn) => {
+    referrerTxns.forEach((txn) => {
+        if (txn.status === "pending") {
+            rewardAmountPending += txn.referrer_amount;
+        }
+        if (txn.status === "confirmed") {
+            rewardAmount += txn.referrer_amount;
+        }
+    });
+
+    bonusTxns.forEach((txn) => {
         if (txn.status === "pending") {
             rewardAmountPending += txn.amount;
         }
@@ -94,10 +106,11 @@ const calculateWallet = async (
             user_id: id,
             status: "completed",
         },
-        relations: ["user"],
+        relations: ["user_id"],
     });
 
-    let payoutAmount = 0; // Amount Already Paid to user
+    // Amount Already Paid to user
+    let payoutAmount = 0;
     let payoutAmtReward = 0;
     payouts.forEach((payout) => {
         payoutAmount += payout.cashback_amount;
@@ -107,22 +120,22 @@ const calculateWallet = async (
     const walletAmount = comfirmedAmount - payoutAmount + rewardAmount - payoutAmtReward;
 
     return {
+        walletAmount,
         pendingAmount,
         comfirmedAmount,
-        walletAmount,
         rewardAmount,
         rewardAmountPending,
     };
 };
 
 const getAmountStatus = async (req: IGetUserAuthInfoRequest, res: Response) => {
-    return res.status(200).json(await calculateWallet(req.user.id));
+    return res.status(200).json(await calculateWallet(req.user));
 };
 
 const withdraw = async (req: IGetUserAuthInfoRequest, res: Response) => {
     const paymentModeId = req.body.payment_mode;
-    const { walletAmount, rewardAmount } = await calculateWallet(req.user.id);
-    // TODO: Calculation for rewards to be done
+    const { walletAmount, rewardAmount } = await calculateWallet(req.user);
+
     var amountToWithdraw = req.body.amount;
     if (amountToWithdraw < 100)
         return res.status(400).json({message: "Minimum Withdraw Amount 100INR"})
@@ -152,4 +165,110 @@ const withdraw = async (req: IGetUserAuthInfoRequest, res: Response) => {
     return res.status(200).json({ message: "Payout request sent" });
 };
 
-export { getAllTxns, getAmountStatus, withdraw };
+const getClicksByUserByMonth = async (req : IGetUserAuthInfoRequest, res : Response) => {
+    const clicks = await getRepository(Clicks).find({
+        where: { user: req.user },
+        relations: ["store"],
+        order: { createdAt: 'DESC' }
+    })
+    const monthlyClicks = Object.values(clicks.reduce((r, element) => {
+        let dateObj = new Date(element.createdAt);
+        let monthyear = dateObj.toLocaleString("en-us", {month: "long"}).substring(0, 3).toUpperCase() + " " + dateObj.getFullYear();
+        if (!r[monthyear]) {
+            r[monthyear] = { monthyear, clicks: [element] }
+        } else {
+            r[monthyear].clicks.push(element);
+        }
+        return r;
+    }, {}))
+    console.log(monthlyClicks)
+    return res.status(200).json(monthlyClicks);
+}
+
+const getCashbackTxnsByUserByMonth = async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const cashback = await getRepository(CashbackTxn).find({
+        where: { user: req.user, store: { cashback_type: CashbackType.CASHBACK } },
+        relations: [ "network_id", "store" ],
+        order: { created_at: "DESC" }
+    })
+    const monthlyCashbacks = Object.values(cashback.reduce((r, element) => {
+        let dateObj = new Date(element.created_at);
+        let monthyear = dateObj.toLocaleString("en-us", {month: "long"}).substring(0, 3).toUpperCase() + " " + dateObj.getFullYear();
+        if (!r[monthyear]) {
+            r[monthyear] = { monthyear, txns: [element] }
+        } else {
+            r[monthyear].txns.push(element);
+        }
+        return r;
+    }, {}))
+    return res.status(200).json(monthlyCashbacks);
+}
+
+const getRewardTxnByUserByMonth = async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const bonus = await getRepository(BonusTxn).find({
+        where: { user: req.user },
+        order: { awarded_on: "DESC" }
+    })
+    const referrerTxns = await getRepository(ReferrerTxn).find({
+        where: { user: req.user },
+        order: { created_at: "DESC" }
+    })
+    const cashbackTxns = await getRepository(CashbackTxn).find({
+        where: { user: req.user, store: { cashback_type: CashbackType.REWARD } },
+        relations: ["store"],
+        order: { created_at: "DESC" }
+    })
+
+    const monthlyBonus = (bonus.reduce((r, element) => {
+        let dateObj = new Date(element.awarded_on);
+        element["created_at"] = element.awarded_on;
+        let monthyear = dateObj.toLocaleString("en-us", {month: "long"}).substring(0, 3).toUpperCase() + " " + dateObj.getFullYear();
+        if (!r[monthyear]) {
+            r[monthyear] = { monthyear, txns: [element] }
+        } else {
+            r[monthyear].txns.push(element);
+        }
+        return r;
+    }, {}))
+    const txnReducer = (r, element) => {
+        let dateObj = new Date(element.created_at);
+        let monthyear = dateObj.toLocaleString("en-us", {month: "long"}).substring(0, 3).toUpperCase() + " " + dateObj.getFullYear();
+        if (!r[monthyear]) {
+            r[monthyear] = { monthyear, txns: [element] }
+        } else {
+            r[monthyear].txns.push(element);
+        }
+        return r;
+    }
+    const monthlyCashbacks = cashbackTxns.reduce(txnReducer, {})
+    const monthlyRefers = referrerTxns.reduce(txnReducer, {})
+    var monthlyRewards = monthlyBonus;
+
+    Object.keys(monthlyCashbacks).forEach((key) => {
+        if(monthlyRewards.hasOwnProperty(key)) {
+            monthlyRewards[key].txns.concat(monthlyCashbacks[key].txns)
+        } else {
+            monthlyRewards[key] = monthlyCashbacks[key]
+        }
+    })
+
+    Object.keys(monthlyRefers).forEach((key) => {
+        if (monthlyRewards.hasOwnProperty(key)) {
+            monthlyRewards[key].txns.concat(monthlyRefers[key].txns)
+        } else {
+            monthlyRewards[key] = monthlyRefers[key]
+        }
+    })
+
+    monthlyRewards = Object.values(monthlyRewards);
+    return res.status(200).json(monthlyRewards);
+}
+
+export {
+    getAllTxns,
+    getAmountStatus,
+    withdraw,
+    getClicksByUserByMonth,
+    getCashbackTxnsByUserByMonth,
+    getRewardTxnByUserByMonth
+ };

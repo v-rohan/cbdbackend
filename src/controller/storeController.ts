@@ -5,7 +5,10 @@ import { StoreCategory } from "../entity/StoreCategory";
 
 const getAllStores = async (req: Request, res: Response) => {
     const stores = await getRepository(Store).find({
-        relations: ["categories"],
+        relations: [
+            "network_id", "cashbackRates", "cashbackTxns",
+            "refTxns", "snelinks", "categories", "coupons", "clicks_id"
+        ]
     });
     res.set({
         "Access-Control-Expose-Headers": "Content-Range",
@@ -20,7 +23,10 @@ const getStoreById = async (req: Request, res: Response) => {
     try {
         const st = await getRepository(Store).findOneOrFail({
             where: { id: Number(req.params.id) },
-            relations: ["network_id"],
+            relations: [
+                "network_id", "cashbackRates", "cashbackTxns",
+                "refTxns", "snelinks", "categories", "coupons", "clicks_id"
+            ]
         });
         return res.status(200).json(st);
     } catch (error) {

@@ -7,6 +7,7 @@ import {
     Column,
     OneToMany,
     ManyToOne,
+    JoinTable,
 } from "typeorm";
 import { AffiliateNetwork } from "./AffiliateNetwork";
 import { CouponCategory } from "./CouponCategory";
@@ -48,6 +49,7 @@ export class Coupon {
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
     })
+    @JoinTable()
     categories: CouponCategory[];
 
     @Column({ type: "boolean", default: true })
