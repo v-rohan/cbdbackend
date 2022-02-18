@@ -25,6 +25,5 @@ export class CouponCategory {
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
     })
-    @JoinTable()
     coupons: Coupon[];
 }

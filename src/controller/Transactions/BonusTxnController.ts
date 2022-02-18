@@ -67,7 +67,7 @@ const getBonusTxnByUser = async (
         if (bonusTxns[i].status === AcceptedStatusOpts.pending) {
             const cashbacks = await getRepository(CashbackTxn).find({
                 where: {
-                    user: req.user.id,
+                    user: req.user,
                     created_at: Between(bonusTxns[i].awarded_on, bonusTxns[i].expires_on),
                 }
             })

@@ -67,7 +67,7 @@ const deleteCashbackTxn = async (
 
 const getCashbackTxnByUser = async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
     const cashTxns = await getRepository(CashbackTxn).find({
-        where: {user: req.user.id},
+        where: {user: req.user},
         relations: ["store", "network_id"]
     })
     res.status(200).json(cashTxns);

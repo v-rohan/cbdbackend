@@ -16,6 +16,5 @@ export class StoreCategory {
     image: string;
 
     @ManyToMany(() => Store, store => store.categories)
-    @JoinTable()
     stores: Store[];
 }
