@@ -50,7 +50,7 @@ export class AffiliateNetwork {
     @Column({ nullable: false })
     confirm_days: number;
 
-    @Column({ nullable: false })
+    @Column({ nullable: false, default: false })
     enabled: boolean;
 
     @Column({ type: "enum", enum: Currency, default: Currency.INR })
