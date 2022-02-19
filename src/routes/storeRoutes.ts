@@ -11,6 +11,7 @@ import {
     createStoreCategory,
     updateStoreCategory,
     deleteStoreCategory,
+    getStoresByName,
 } from "../controller/storeController";
 
 import { AdminCheckAllowSafe } from "../middleware/AuthMiddleware";
@@ -59,6 +60,8 @@ module.exports = (app: Express, passport: any) => {
         .get(getStoreCategoryById)
         .put(updateStoreCategory)
         .delete(deleteStoreCategory);
+
+    router.route("/search").get(getStoresByName);
 
     router
         .route("/:id")

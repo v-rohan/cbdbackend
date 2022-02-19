@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getRepository } from "typeorm";
+import { getRepository, Like } from "typeorm";
 import { Store } from "../entity/Store";
 import { StoreCategory } from "../entity/StoreCategory";
 
@@ -138,6 +138,14 @@ const getStoreCategoryById = async (req: Request, res: Response) => {
     }
 };
 
+const getStoresByName = async (req: Request, res: Response) => {
+    const stores = await getRepository(Store).find({
+        where: { name: Like(`%${req.params.name}%`) },
+    });
+    return res.status(200).json(stores);
+};
+
+// Store Catrgory Controllers
 const createStoreCategory = async (req: Request, res: Response) => {
     try {
         let category = new StoreCategory();
@@ -186,6 +194,7 @@ export {
     createStore,
     updateStoreById,
     deleteStoreById,
+    getStoresByName,
     getStoreCategories,
     getStoreCategoryById,
     createStoreCategory,
