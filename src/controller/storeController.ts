@@ -6,9 +6,15 @@ import { StoreCategory } from "../entity/StoreCategory";
 const getAllStores = async (req: Request, res: Response) => {
     const stores = await getRepository(Store).find({
         relations: [
-            "network_id", "cashbackRates", "cashbackTxns",
-            "refTxns", "snelinks", "categories", "coupons", "clicks_id"
-        ]
+            "network_id",
+            "cashbackRates",
+            "cashbackTxns",
+            "refTxns",
+            "snelinks",
+            "categories",
+            "coupons",
+            "clicks_id",
+        ],
     });
     res.set({
         "Access-Control-Expose-Headers": "Content-Range",
@@ -24,9 +30,15 @@ const getStoreById = async (req: Request, res: Response) => {
         const st = await getRepository(Store).findOneOrFail({
             where: { id: Number(req.params.id) },
             relations: [
-                "network_id", "cashbackRates", "cashbackTxns",
-                "refTxns", "snelinks", "categories", "coupons", "clicks_id"
-            ]
+                "network_id",
+                "cashbackRates",
+                "cashbackTxns",
+                "refTxns",
+                "snelinks",
+                "categories",
+                "coupons",
+                "clicks_id",
+            ],
         });
         return res.status(200).json(st);
     } catch (error) {
@@ -129,7 +141,7 @@ const getStoreCategoryById = async (req: Request, res: Response) => {
 const createStoreCategory = async (req: Request, res: Response) => {
     try {
         let category = new StoreCategory();
-        category = { ...req.body };
+        category = { ...req.body, image: req.file.path };
         await getRepository(StoreCategory).save(category);
         return res.status(201).json(category);
     } catch (error) {

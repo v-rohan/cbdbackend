@@ -1,4 +1,10 @@
-import { PrimaryGeneratedColumn, Entity, Column, ManyToMany, JoinTable } from "typeorm";
+import {
+    PrimaryGeneratedColumn,
+    Entity,
+    Column,
+    ManyToMany,
+    JoinTable,
+} from "typeorm";
 import { Store } from "./Store";
 
 @Entity()
@@ -15,6 +21,6 @@ export class StoreCategory {
     @Column({ type: "varchar", length: 255 })
     image: string;
 
-    @ManyToMany(() => Store, store => store.categories)
+    @ManyToMany(() => Store, (store) => store.categories)
     stores: Store[];
 }
