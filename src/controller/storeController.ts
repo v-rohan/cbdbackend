@@ -140,7 +140,7 @@ const getStoreCategoryById = async (req: Request, res: Response) => {
 
 const getStoresByName = async (req: Request, res: Response) => {
     const stores = await getRepository(Store).find({
-        where: { name: Like(`%${req.params.name}%`) },
+        where: { name: Like(`%${req.query.name}%`) },
     });
     return res.status(200).json(stores);
 };
