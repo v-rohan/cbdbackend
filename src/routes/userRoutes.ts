@@ -6,7 +6,7 @@ import { IGetUserAuthInfoRequest } from "../types";
 import { generateLink, passowrdhasher } from "../services";
 import { BonusTxn } from "../entity/Transactions/BonusTxn";
 import { AdminCheck } from "../middleware/AuthMiddleware";
-
+import multer = require("multer");
 import fetch from "node-fetch";
 
 var jwt = require("jsonwebtoken");
@@ -16,6 +16,48 @@ var bcrypt = require("bcryptjs");
 module.exports = (app: Express, passport) => {
     require("../passport/jwt")(passport);
     require("../passport/google")(passport);
+
+    // Storage configuration for image files
+    const storage = multer.diskStorage({
+        destination: (req: Request, file: any, cb: any) => {
+            cb(null, "./media/users/");
+        },
+        filename: (req: Request, file: any, cb: any) => {
+            cb(
+                null,
+                file.originalname
+                    .replace(new RegExp(" ", "g"), "-")
+                    .substring(0, file.originalname.length - 4) +
+                    "-" +
+                    Date.now() +
+                    file.originalname.substring(
+                        file.originalname.length - 4,
+                        file.originalname.length
+                    )
+            );
+        },
+    });
+    const upload = multer({ storage: storage });
+
+    app.post("/edituser",
+        passport.authenticate("jwt", { session: false }),
+        upload.single("image"),
+        async (req: IGetUserAuthInfoRequest, res: Response) => {
+            console.log(req.file);
+            var user = await getRepository(User).findOne({
+                where: {id: req.user.id}
+            })
+            if (req.file) {
+                user.image = req.file.path
+                await getRepository(User).save(user).then(() => {
+                    res.status(200).json(user);
+                });
+            } else {
+                return res.sendStatus(400);
+            }
+        }
+    )
+
 
     //signup
     app.post(
@@ -179,7 +221,7 @@ module.exports = (app: Express, passport) => {
                 "https://www.googleapis.com/oauth2/v3/userinfo?access_token=" +
                     request.body.accessToken
             );
-            const data = await res.json();
+            const data: any = await res.json();
             await getRepository(User)
                 .findOne({ email: data.email })
                 .then(async (user) => {
@@ -253,7 +295,6 @@ module.exports = (app: Express, passport) => {
                         response.status(500).send(error);
                     });
             } else response.status(200).json(request.user);
-            response.status(200).json(request.user);
         }
     );
 

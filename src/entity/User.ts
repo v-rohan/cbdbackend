@@ -42,6 +42,9 @@ export class User {
     })
     role: UserRole;
 
+    @Column({ type: "varchar", length: 255, nullable: true })
+    image: string;
+
     @OneToMany(() => SnE, (SnE) => SnE.user)
     snelinks: SnE[];
 

@@ -26,7 +26,7 @@ module.exports = (app: Express, passport: any) => {
     router.route("/bonus").get(getBonusTxnByUser);
     router.route("/clicks/month").get(getClicksByUserByMonth);
     router.route("/txns/cashback").get(getCashbackTxnsByUserByMonth);
-    router.route("/txns/rewards").get(getRewardTxnByUserByMonth)
+    router.route("/txns/rewards").get(getRewardTxnByUserByMonth);
 
     return router;
 };
