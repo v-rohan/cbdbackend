@@ -94,6 +94,8 @@ module.exports = (app: Express, passport) => {
                                 throw error;
                             });
 
+                        bonus2.referred = newUser;
+
                         if (request.body.ref) {
                             bonus.bonus_code = "join_with_refer";
                             await transactionalEntityManager.save(bonus2);

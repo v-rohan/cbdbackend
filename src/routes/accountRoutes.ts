@@ -6,9 +6,10 @@ import {
     withdraw,
     getRewardTxnByUserByMonth,
     getCashbackTxnsByUserByMonth,
-    getClicksByUserByMonth
+    getClicksByUserByMonth,
+    claimBonus,
+    getBonusTxnByUser
 } from "../controller/accountController";
-import { getBonusTxnByUser } from "../controller/Transactions/BonusTxnController";
 import { getCashbackTxnByUser } from "../controller/Transactions/CashbackTxnController";
 
 module.exports = (app: Express, passport: any) => {
@@ -27,6 +28,7 @@ module.exports = (app: Express, passport: any) => {
     router.route("/clicks/month").get(getClicksByUserByMonth);
     router.route("/txns/cashback").get(getCashbackTxnsByUserByMonth);
     router.route("/txns/rewards").get(getRewardTxnByUserByMonth);
+    router.route("/bonus/claim/:id").get(claimBonus);
 
     return router;
 };
