@@ -11,6 +11,12 @@ const getCashbackTxns = async (
     var txns = await getRepository(CashbackTxn).find({
         relations: ["user", "store", "network_id"],
     });
+    res.set({
+        "Access-Control-Expose-Headers": "Content-Range",
+        "Content-Range": `X-Total-Count: ${1} - ${txns.length} / ${
+            txns.length
+        }`,
+    })
     res.status(200).json(txns);
 };
 
