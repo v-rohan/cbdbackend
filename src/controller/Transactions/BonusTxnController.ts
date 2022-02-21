@@ -11,6 +11,12 @@ const getBonusTxns = async (
     next: NextFunction
 ) => {
     var txns = await getRepository(BonusTxn).find();
+    res.set({
+        "Access-Control-Expose-Headers": "Content-Range",
+        "Content-Range": `X-Total-Count: ${1} - ${txns.length} / ${
+            txns.length
+        }`,
+    })
     res.status(200).json(txns);
 };
 

@@ -13,6 +13,7 @@ import {
 import {
     deleteSalesTxn,
     getSalesTxns,
+    getSalesTxn,
     postSalesTxn,
     postSalesTxns,
 } from "../controller/Transactions/SalesTxnController";
@@ -76,10 +77,10 @@ module.exports = (app: Express, passport: any) => {
         .delete(deleteMockTxn);
 
     // SalesTxn Routes
-    router.route("sales").get(getSalesTxns).post(postSalesTxns);
+    router.route("/sales").get(getSalesTxns).post(postSalesTxns);
     router
-        .route("sales/:id")
-        .get(getSalesTxns)
+        .route("/sales/:id")
+        .get(getSalesTxn)
         .post(postSalesTxn)
         .delete(deleteSalesTxn);
 

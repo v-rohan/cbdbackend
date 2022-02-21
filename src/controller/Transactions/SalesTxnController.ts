@@ -3,7 +3,13 @@ import { getRepository } from "typeorm";
 import { SalesTxn } from "../../entity/Transactions/SalesTxn";
 
 const getSalesTxns = async (req: Request, res: Response, next: NextFunction) => {
-    var txns = await getRepository(SalesTxn).find({ relations: ["network"] });
+    var txns = await getRepository(SalesTxn).find({ relations: ["network_id"] });
+    res.set({
+        "Access-Control-Expose-Headers": "Content-Range",
+        "Content-Range": `X-Total-Count: ${1} - ${txns.length} / ${
+            txns.length
+        }`,
+    })
     res.status(200).json(txns);
 }
 
@@ -16,7 +22,7 @@ const postSalesTxns = async (req: Request, res: Response, next: NextFunction) =>
 const getSalesTxn = async (req: Request, res: Response, next: NextFunction) => {
     var txn = await getRepository(SalesTxn).findOne(
         req.params.id,
-        { relations: ["network"] }
+        { relations: ["network_id"] }
     );
     res.status(200).json(txn);
 }

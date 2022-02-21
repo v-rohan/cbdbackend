@@ -4,6 +4,12 @@ import { ReferrerTxn } from "../../entity/Transactions/ReferrerTxn";
 
 const getReferrerTxns = async (req: Request, res: Response, next: NextFunction) => {
     var txns = await getRepository(ReferrerTxn).find({ relations: ["store"] });
+    res.set({
+        "Access-Control-Expose-Headers": "Content-Range",
+        "Content-Range": `X-Total-Count: ${1} - ${txns.length} / ${
+            txns.length
+        }`,
+    })
     res.status(200).json(txns);
 }
 
