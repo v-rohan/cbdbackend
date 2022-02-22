@@ -11,7 +11,7 @@ const getAllStores = async (req: Request, res: Response) => {
             "cashbackTxns",
             "refTxns",
             "snelinks",
-            "categories",
+            // "categories",
             "coupons",
             "clicks_id",
         ],
@@ -35,7 +35,7 @@ const getStoreById = async (req: Request, res: Response) => {
                 "cashbackTxns",
                 "refTxns",
                 "snelinks",
-                "categories",
+                // "categories",
                 "coupons",
                 "clicks_id",
             ],
@@ -49,8 +49,15 @@ const getStoreById = async (req: Request, res: Response) => {
 const createStore = async (req: Request, res: Response) => {
     try {
         let st = new Store();
-        st = { ...req.body };
-        req.body.categories.forEach(async (category) => {
+        st = { ...req.body, image: req.file.path };
+
+        st.featured = Boolean(req.body.featured);
+        st.cashback_enabled = Boolean(req.body.cashback_enabled);
+        st.is_claimable = Boolean(req.body.is_claimable);
+
+        st.categories = [];
+        console.log(st);
+        req.body.categories.split(",").forEach(async (category) => {
             try {
                 st.categories.push(
                     await getRepository(StoreCategory).findOneOrFail({
@@ -61,10 +68,11 @@ const createStore = async (req: Request, res: Response) => {
                 console.log(err);
             }
         });
-        await getRepository(Store).save(st);
-        return res.status(201).json(st);
+        const store = await getRepository(Store).save(st);
+        return res.status(201).json(store);
     } catch (error) {
-        return res.status(400).json(error);
+        console.log(error);
+        return res.status(400).send(error);
     }
 };
 
@@ -145,6 +153,19 @@ const getStoresByName = async (req: Request, res: Response) => {
     return res.status(200).json(stores);
 };
 
+const getTopStores = async (req: Request, res: Response) => {
+    try {
+        const stores = await getRepository(Store).find({
+            where: { featured: true },
+            order: { cashback_percent: "DESC" },
+            take: 10,
+        });
+        return res.status(200).json(stores);
+    } catch (error) {
+        return res.status(400).json({ error });
+    }
+};
+
 // Store Catrgory Controllers
 const createStoreCategory = async (req: Request, res: Response) => {
     try {
@@ -195,6 +216,7 @@ export {
     updateStoreById,
     deleteStoreById,
     getStoresByName,
+    getTopStores,
     getStoreCategories,
     getStoreCategoryById,
     createStoreCategory,

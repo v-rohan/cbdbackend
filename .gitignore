@@ -12,3 +12,4 @@ src/migration
 dbData
 media/banners/**
 media/category/**
+media/store/**

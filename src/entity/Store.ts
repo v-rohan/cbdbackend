@@ -74,7 +74,7 @@ export class Store {
     description: string;
 
     @Column({ type: "varchar", length: 255, default: "" })
-    logo: string;
+    image: string;
 
     @Column({
         type: "enum",
@@ -150,6 +150,7 @@ export class Store {
     @ManyToMany(() => StoreCategory, (storeCat) => storeCat.stores, {
         onDelete: "CASCADE",
         onUpdate: "NO ACTION",
+        eager: true,
     })
     @JoinTable()
     categories: StoreCategory[];

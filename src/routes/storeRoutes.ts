@@ -12,26 +12,15 @@ import {
     updateStoreCategory,
     deleteStoreCategory,
     getStoresByName,
+    getTopStores,
 } from "../controller/storeController";
 
 import { AdminCheckAllowSafe } from "../middleware/AuthMiddleware";
 
-module.exports = (app: Express, passport: any) => {
-    require("../passport/jwt")(passport);
-    require("../passport/google")(passport);
-
-    var router = Router();
-
-    // Middleware
-    router.use(passport.authenticate(["jwt", "anonymous"], { session: false }));
-    router.use(AdminCheckAllowSafe);
-
-    // Store Routes
-    router.route("/").get(getAllStores).post(createStore);
-
-    const storage = multer.diskStorage({
+const fileStorageEngine = (path: string) => {
+    const storage: multer.StorageEngine = multer.diskStorage({
         destination: (req: Request, file: any, cb: any) => {
-            cb(null, "./media/category/");
+            cb(null, `./media/${path}/`);
         },
         filename: (req: Request, file: any, cb: any) => {
             cb(
@@ -48,13 +37,37 @@ module.exports = (app: Express, passport: any) => {
             );
         },
     });
-    const upload = multer({ storage });
+
+    return storage;
+};
+
+module.exports = (app: Express, passport: any) => {
+    require("../passport/jwt")(passport);
+    require("../passport/google")(passport);
+
+    var router = Router();
+
+    // Middleware
+    router.use(passport.authenticate(["jwt", "anonymous"], { session: false }));
+    router.use(AdminCheckAllowSafe);
+
+    const storeStorage = fileStorageEngine("store");
+    const uploadStore = multer({ storage: storeStorage });
+
+    // Store Routes
+    router
+        .route("/")
+        .get(getAllStores)
+        .post(uploadStore.single("image"), createStore);
+
+    const categoryStorage = fileStorageEngine("category");
+    const uploadCategory = multer({ storage: categoryStorage });
 
     // Store Category Routes
     router
         .route("/category")
         .get(getStoreCategories)
-        .post(upload.single("image"), createStoreCategory);
+        .post(uploadCategory.single("image"), createStoreCategory);
     router
         .route("/category/:id")
         .get(getStoreCategoryById)
@@ -62,6 +75,7 @@ module.exports = (app: Express, passport: any) => {
         .delete(deleteStoreCategory);
 
     router.route("/search").get(getStoresByName);
+    router.route("/featured").get(getTopStores);
 
     router
         .route("/:id")
