@@ -6,14 +6,14 @@ import { StoreCategory } from "../entity/StoreCategory";
 const getAllStores = async (req: Request, res: Response) => {
     const stores = await getRepository(Store).find({
         relations: [
-            "network_id",
-            "cashbackRates",
-            "cashbackTxns",
-            "refTxns",
-            "snelinks",
+            // "network_id",
+            // "cashbackRates",
+            // "cashbackTxns",
+            // "refTxns",
+            // "snelinks",
             "categories",
             "coupons",
-            "clicks_id",
+            // "clicks_id",
         ],
     });
     res.set({
@@ -30,14 +30,14 @@ const getStoreById = async (req: Request, res: Response) => {
         const st = await getRepository(Store).findOneOrFail({
             where: { id: Number(req.params.id) },
             relations: [
-                "network_id",
-                "cashbackRates",
-                "cashbackTxns",
-                "refTxns",
-                "snelinks",
+                // "network_id",
+                // "cashbackRates",
+                // "cashbackTxns",
+                // "refTxns",
+                // "snelinks",
                 "categories",
                 "coupons",
-                "clicks_id",
+                // "clicks_id",
             ],
         });
         return res.status(200).json(st);
@@ -46,13 +46,22 @@ const getStoreById = async (req: Request, res: Response) => {
     }
 };
 
+const uploadStoreImage = async (req: Request, res: Response) => {
+    try {
+        return res.status(200).json({ image: req.file.path });
+    } catch (err) {
+        return res.status(400).json({ err });
+    }
+};
+
 const createStore = async (req: Request, res: Response) => {
     try {
         let st = new Store();
         st = { ...req.body };
+        var arr = [];
         req.body.categories.forEach(async (category) => {
             try {
-                st.categories.push(
+                arr.push(
                     await getRepository(StoreCategory).findOneOrFail({
                         cat_id: category,
                     })
@@ -61,8 +70,14 @@ const createStore = async (req: Request, res: Response) => {
                 console.log(err);
             }
         });
-        await getRepository(Store).save(st);
-        return res.status(201).json(st);
+        st.categories = arr;
+        const newStore = await getRepository(Store)
+            .save(st)
+            .catch((err) => {
+                console.log(err);
+                throw err;
+            });
+        return res.status(200).json(newStore);
     } catch (error) {
         return res.status(400).json(error);
     }
@@ -145,6 +160,19 @@ const getStoresByName = async (req: Request, res: Response) => {
     return res.status(200).json(stores);
 };
 
+const getTopStores = async (req: Request, res: Response) => {
+    try {
+        const stores = await getRepository(Store).find({
+            where: { featured: true },
+            order: { cashback_percent: "DESC" },
+            take: 10,
+        });
+        return res.status(200).json(stores);
+    } catch (error) {
+        return res.status(400).json({ error });
+    }
+};
+
 // Store Catrgory Controllers
 const createStoreCategory = async (req: Request, res: Response) => {
     try {
@@ -195,9 +223,11 @@ export {
     updateStoreById,
     deleteStoreById,
     getStoresByName,
+    getTopStores,
     getStoreCategories,
     getStoreCategoryById,
     createStoreCategory,
     updateStoreCategory,
     deleteStoreCategory,
+    uploadStoreImage,
 };
