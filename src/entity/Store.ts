@@ -74,7 +74,7 @@ export class Store {
     description: string;
 
     @Column({ type: "varchar", length: 255, default: "" })
-    iamge: string;
+    image: string;
 
     @Column({
         type: "enum",

@@ -29,16 +29,7 @@ const getStoreById = async (req: Request, res: Response) => {
     try {
         const st = await getRepository(Store).findOneOrFail({
             where: { id: Number(req.params.id) },
-            relations: [
-                // "network_id",
-                // "cashbackRates",
-                // "cashbackTxns",
-                // "refTxns",
-                // "snelinks",
-                "categories",
-                "coupons",
-                // "clicks_id",
-            ],
+            relations: ["categories", "coupons"],
         });
         return res.status(200).json(st);
     } catch (error) {
@@ -57,8 +48,16 @@ const uploadStoreImage = async (req: Request, res: Response) => {
 const createStore = async (req: Request, res: Response) => {
     try {
         let st = new Store();
-        st = { ...req.body };
+        st = { ...st, ...req.body };
         var arr = [];
+
+        let savedStore = await getRepository(Store)
+            .save(st)
+            .catch((err) => {
+                console.log(err);
+                throw err;
+            });
+
         req.body.categories.forEach(async (category) => {
             try {
                 arr.push(
@@ -70,14 +69,9 @@ const createStore = async (req: Request, res: Response) => {
                 console.log(err);
             }
         });
-        st.categories = arr;
-        const newStore = await getRepository(Store)
-            .save(st)
-            .catch((err) => {
-                console.log(err);
-                throw err;
-            });
-        return res.status(200).json(newStore);
+        savedStore.categories = arr;
+        const updatedStore = await getRepository(Store).save(savedStore);
+        return res.status(200).json(updatedStore);
     } catch (error) {
         return res.status(400).json(error);
     }
