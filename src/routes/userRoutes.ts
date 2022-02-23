@@ -94,6 +94,8 @@ module.exports = (app: Express, passport) => {
                                 throw error;
                             });
 
+                        bonus2.referred = newUser;
+
                         if (request.body.ref) {
                             bonus.bonus_code = "join_with_refer";
                             await transactionalEntityManager.save(bonus2);
@@ -130,7 +132,6 @@ module.exports = (app: Express, passport) => {
             var password = request.body.password;
             try {
                 var user = await getRepository(User).findOne({ email: email });
-                console.log(user);
                 bcrypt.compare(password, user.password, function (err, result) {
                     if (result) {
                         const payload = {
@@ -269,8 +270,8 @@ module.exports = (app: Express, passport) => {
                     response.status(500).send(error);
                 });
 
-            console.log(data);
-        } catch (error) {
+
+            } catch (error) {
             console.log(error);
             response.sendStatus(403);
         }

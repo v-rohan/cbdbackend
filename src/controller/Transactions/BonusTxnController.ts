@@ -59,54 +59,10 @@ const deleteBonusTxn = async (
     res.status(204).send();
 };
 
-const getBonusTxnByUser = async (
-    req: IGetUserAuthInfoRequest,
-    res: Response,
-    next: NextFunction
-) => {
-    const bonusTxns = await getRepository(BonusTxn).find({
-        where: { user: req.user },
-        order: { awarded_on: "ASC" }
-    })
-    var currDate = new Date();
-    for(let i = 0; i < bonusTxns.length; i++ ) {
-        if (bonusTxns[i].status === AcceptedStatusOpts.pending) {
-            const cashbacks = await getRepository(CashbackTxn).find({
-                where: {
-                    user: req.user,
-                    created_at: Between(bonusTxns[i].awarded_on, bonusTxns[i].expires_on),
-                }
-            })
-            var sum = 0;
-            cashbacks.forEach(cshbck => {
-                sum += cshbck.cashback;
-            })
-            try {
-                if (sum === 500) {
-                    await getRepository(BonusTxn).save({
-                        id: bonusTxns[i].id,
-                        status: AcceptedStatusOpts.confirmed
-                    })
-                } else if (currDate > bonusTxns[i].expires_on) {
-                    await getRepository(BonusTxn).save({
-                        id: bonusTxns[i].id,
-                        status: AcceptedStatusOpts.declined,
-                    })
-                }
-                bonusTxns[i]["cashback"] = sum;
-            } catch (err) {
-                res.status(500).json(err);
-            }
-        }
-    }
-    res.status(200).json(bonusTxns);
-}
-
 export {
     getBonusTxns,
     postBonusTxn,
     getBonusTxn,
     updateBonusTxn,
     deleteBonusTxn,
-    getBonusTxnByUser
 };

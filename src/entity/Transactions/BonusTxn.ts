@@ -19,6 +19,10 @@ export class BonusTxn {
     @JoinColumn([{ name: 'user', referencedColumnName: 'email' }])
     user: User;
 
+    @ManyToOne(() => User, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+    @JoinColumn([{ name: 'referred', referencedColumnName: 'email' }])
+    referred: User;
+
     @Column()
     bonus_code: string;
 
@@ -37,5 +41,8 @@ export class BonusTxn {
         default: AcceptedStatusOpts.pending
     })
     status: AcceptedStatusOpts;
+
+    @Column({type: 'boolean', default: false})
+    claimed: boolean;
 
 }
