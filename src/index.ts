@@ -57,6 +57,7 @@ createConnection()
         app.use("/txn", require("./routes/txnRoutes")(app, passport));
         app.use("/banner",require("./routes/bannerRoutes")(app, passport));
         app.use("/account", require("./routes/accountRoutes")(app, passport));
+        app.use("/bankimage", require("./routes/bankImageRoutes")(app, passport));
         
         // Serve media files
         app.use("/media", express.static("media"));

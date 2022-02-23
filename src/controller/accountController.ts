@@ -10,9 +10,31 @@ import { ReferrerTxn } from "../entity/Transactions/ReferrerTxn";
 import { IGetUserAuthInfoRequest } from "../types";
 import { User } from "../entity/User";
 import { AcceptedStatusOpts } from "../entity/Transactions/Common";
+import { BankImage } from "../entity/BankImages";
+import e = require("express");
 
 const charSet: string =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    const txnReducer = (r, element) => {
+    let dateObj = new Date(element.created_at);
+    let monthyear =
+        dateObj
+            .toLocaleString("en-us", { month: "long" })
+            .substring(0, 3)
+            .toUpperCase() +
+        " " +
+        dateObj.getFullYear();
+    if (!r[monthyear]) {
+        r[monthyear] = {
+            monthyear,
+            txns: [element],
+        };
+    } else {
+        r[monthyear].txns.push(element);
+    }
+    return r;
+};
 
 const generatePaymentId = () => {
     let randomString: string = "";
@@ -141,17 +163,17 @@ const getAmountStatus = async (req: IGetUserAuthInfoRequest, res: Response) => {
 };
 
 const withdraw = async (req: IGetUserAuthInfoRequest, res: Response) => {
-    const paymentModeId = req.body.payment_mode;
+    const paymentModeId = Number(req.body.payment_mode);
     const { walletAmount, rewardAmount } = await calculateWallet(req.user);
 
     var amountToWithdraw = req.body.amount;
     if (amountToWithdraw < 100)
         return res
             .status(400)
-            .json({ message: "Minimum Withdraw Amount 100INR" });
+            .json({ message: "Minimum withdrawal amount is 100INR" });
 
     if (amountToWithdraw > walletAmount) {
-        return res.status(400).json({ message: "Insufficient funds" });
+        return res.status(400).json({ message: "Insufficient funds to complete the transaction" });
     }
     var payout = new PayoutRequest();
     payout.user_id = req.user;
@@ -301,6 +323,7 @@ const evaluateBonusTxns = async (user: User) => {
                     where: {
                         user: user,
                         store: { cashback_type: CashbackType.CASHBACK },
+                        status: AcceptedStatusOpts.confirmed,
                         created_at: Between(
                             bonusTxns[i].awarded_on,
                             bonusTxns[i].expires_on
@@ -378,25 +401,7 @@ const getRewardTxnByUserByMonth = async (
         }
         return r;
     }, {});
-    const txnReducer = (r, element) => {
-        let dateObj = new Date(element.created_at);
-        let monthyear =
-            dateObj
-                .toLocaleString("en-us", { month: "long" })
-                .substring(0, 3)
-                .toUpperCase() +
-            " " +
-            dateObj.getFullYear();
-        if (!r[monthyear]) {
-            r[monthyear] = {
-                monthyear,
-                txns: [element],
-            };
-        } else {
-            r[monthyear].txns.push(element);
-        }
-        return r;
-    };
+    
     const monthlyCashbacks = cashbackTxns.reduce(txnReducer, {});
     const monthlyRefers = referrerTxns.reduce(txnReducer, {});
     var monthlyRewards = monthlyBonus;
@@ -435,6 +440,29 @@ const claimBonus = async (req: IGetUserAuthInfoRequest, res: Response) => {
     }
 };
 
+const payoutsByUserByMonth = async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const payouts = await getRepository(PayoutRequest).find({
+        where: {user_id: req.user},
+        order: {created_at: 'DESC'},
+        relations: ["payment_mode"]
+    })
+    for (var i = 0; i < payouts.length; i++) {
+        var bankImg;
+        if (payouts[i].payment_mode.method_code === "bank") {
+            bankImg = await getRepository(BankImage).findOneOrFail({
+                where: {ifsc_prefix: payouts[i].payment_mode.inputs["ifsc_code"].substring(0,4)}
+            })
+        } else {
+            bankImg = await getRepository(BankImage).findOneOrFail({
+                where: {ifsc_prefix: "PYTM"}
+            })
+        }
+        payouts[i]["image"] = bankImg.image;
+    }
+    const monthlyPayouts = Object.values(payouts.reduce(txnReducer, {}))
+    return res.status(200).json(monthlyPayouts);
+}
+
 export {
     getAllTxns,
     getAmountStatus,
@@ -444,4 +472,5 @@ export {
     getRewardTxnByUserByMonth,
     claimBonus,
     getBonusTxnByUser,
+    payoutsByUserByMonth
 };
