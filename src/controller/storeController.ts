@@ -29,13 +29,24 @@ const getStoreById = async (req: Request, res: Response) => {
     try {
         const st = await getRepository(Store).findOneOrFail({
             where: { id: Number(req.params.id) },
-            relations: ["categories", "coupons"],
+            relations: ["categories", "coupons", "network_id"],
         });
         return res.status(200).json(st);
     } catch (error) {
         return res.status(404).json({ error: "Store not found" });
     }
 };
+
+const getCats = async(req: Request, res: Response )=>{
+    try {
+        const category = await getRepository(StoreCategory).find({
+            select: ['name']
+         });
+        return res.status(200).json(category);
+    } catch (error) {
+        return res.status(404).json({ error: "Category not found" });
+    }
+}
 
 const uploadStoreImage = async (req: Request, res: Response) => {
     try {
@@ -85,6 +96,7 @@ const updateStoreById = async (req: Request, res: Response) => {
         if (st) {
             st = { ...st, ...req.body };
             var arr = [];
+            if(req.body.categories){
             req.body.categories.forEach(async (category) => {
                 try {
                     arr.push(
@@ -96,7 +108,7 @@ const updateStoreById = async (req: Request, res: Response) => {
                     console.log(err);
                 }
             });
-            st.categories = arr;
+            st.categories = arr;}
             const updatedStore = await getRepository(Store)
                 .save(st)
                 .catch((err) => {
@@ -138,7 +150,7 @@ const getStoreCategories = async (req: Request, res: Response) => {
 const getStoreCategoryById = async (req: Request, res: Response) => {
     try {
         const category = await getRepository(StoreCategory).findOneOrFail({
-            where: { id: Number(req.params.id) },
+            where: { cat_id: Number(req.params.id) },
             relations: ["stores"],
         });
         return res.status(200).json(category);
@@ -184,7 +196,7 @@ const updateStoreCategory = async (req: Request, res: Response) => {
         var category = await getRepository(StoreCategory).findOneOrFail({
             where: { cat_id: Number(req.params.id) },
         });
-        category = { ...category, ...req.body };
+        category = { ...category, ...req.body, image: req.file.path };
         const updatedCategory = await getRepository(StoreCategory).save(
             category
         );
@@ -218,6 +230,7 @@ export {
     deleteStoreById,
     getStoresByName,
     getTopStores,
+    getCats,
     getStoreCategories,
     getStoreCategoryById,
     createStoreCategory,

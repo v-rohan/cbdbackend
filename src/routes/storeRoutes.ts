@@ -11,6 +11,7 @@ import {
     getStoreCategoryById,
     createStoreCategory,
     updateStoreCategory,
+    getCats,
     deleteStoreCategory,
     getStoresByName,
     getTopStores,
@@ -71,8 +72,10 @@ module.exports = (app: Express, passport: any) => {
     router
         .route("/category/:id")
         .get(getStoreCategoryById)
-        .put(updateStoreCategory)
+        .put(uploadCategory.single("image"), updateStoreCategory)
         .delete(deleteStoreCategory);
+    
+    router.route("/getcats").get(getCats)
 
     router.route("/search").get(getStoresByName);
     router.route("/featured").get(getTopStores);
