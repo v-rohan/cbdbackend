@@ -39,6 +39,19 @@ module.exports = (app: Express, passport) => {
     });
     const upload = multer({ storage: storage });
 
+    app.post("/updateuser", 
+        passport.authenticate("jwt", { session: false }),
+        async (req: IGetUserAuthInfoRequest, res: Response) => {
+            var user = await getRepository(User).findOne({
+                where: {id: req.user.id}
+            })
+            user = { ...user, ...req.body };
+            await getRepository(User).save(user).then(() => {
+                return res.status(200).json(user);
+            })
+        }
+    )
+
     app.post("/edituser",
         passport.authenticate("jwt", { session: false }),
         upload.single("image"),

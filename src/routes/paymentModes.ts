@@ -79,10 +79,14 @@ module.exports = (app: Express, passport) => {
                                 } catch (err) {
                                     console.log(err);
                             } else {
-                                var bankImg = await getRepository(BankImage).findOneOrFail({
-                                    where: {ifsc_prefix: "PYTM"}
-                                })
-                                modes[i]["image"] = bankImg.image;
+                                try {
+                                    var bankImg = await getRepository(BankImage).findOneOrFail({
+                                        where: {ifsc_prefix: "PYTM"}
+                                    })
+                                    modes[i]["image"] = bankImg.image;
+                                } catch (err) {
+                                    console.log(err);
+                                }
                             }
                         }
                         response.status(200).send(modes);
