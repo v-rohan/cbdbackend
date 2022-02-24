@@ -15,3 +15,6 @@ media/category/**
 media/users/**
 media/bankimgs/**
 media/store/**
+
+rabbitmq-data/
+rabbitmq-log/
