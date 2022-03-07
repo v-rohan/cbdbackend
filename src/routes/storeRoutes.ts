@@ -1,4 +1,3 @@
-
 import { Express, Request, Router } from "express";
 import multer = require("multer");
 import {
@@ -16,6 +15,7 @@ import {
     getStoresByName,
     getTopStores,
     uploadStoreImage,
+    getMostVisitedStores,
 } from "../controller/storeController";
 
 import { AdminCheckAllowSafe } from "../middleware/AuthMiddleware";
@@ -79,6 +79,7 @@ module.exports = (app: Express, passport: any) => {
 
     router.route("/search").get(getStoresByName);
     router.route("/featured").get(getTopStores);
+    router.get("/visited", getMostVisitedStores);
 
     router
         .route("/:id")
