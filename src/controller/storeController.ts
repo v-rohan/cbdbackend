@@ -37,16 +37,16 @@ const getStoreById = async (req: Request, res: Response) => {
     }
 };
 
-const getCats = async(req: Request, res: Response )=>{
+const getCats = async (req: Request, res: Response) => {
     try {
         const category = await getRepository(StoreCategory).find({
-            select: ['name']
-         });
+            select: ["name"],
+        });
         return res.status(200).json(category);
     } catch (error) {
         return res.status(404).json({ error: "Category not found" });
     }
-}
+};
 
 const uploadStoreImage = async (req: Request, res: Response) => {
     try {
@@ -96,19 +96,20 @@ const updateStoreById = async (req: Request, res: Response) => {
         if (st) {
             st = { ...st, ...req.body };
             var arr = [];
-            if(req.body.categories){
-            req.body.categories.forEach(async (category) => {
-                try {
-                    arr.push(
-                        await getRepository(StoreCategory).findOneOrFail({
-                            cat_id: category,
-                        })
-                    );
-                } catch (err) {
-                    console.log(err);
-                }
-            });
-            st.categories = arr;}
+            if (req.body.categories) {
+                req.body.categories.forEach(async (category) => {
+                    try {
+                        arr.push(
+                            await getRepository(StoreCategory).findOneOrFail({
+                                cat_id: category,
+                            })
+                        );
+                    } catch (err) {
+                        console.log(err);
+                    }
+                });
+                st.categories = arr;
+            }
             const updatedStore = await getRepository(Store)
                 .save(st)
                 .catch((err) => {
@@ -179,6 +180,18 @@ const getTopStores = async (req: Request, res: Response) => {
     }
 };
 
+const getMostVisitedStores = async (req: Request, res: Response) => {
+    try {
+        const stores = await getRepository(Store).find({
+            order: { visits: "DESC" },
+            take: 4,
+        });
+        return res.status(200).json(stores);
+    } catch (err) {
+        res.status(400).json({ error: err });
+    }
+};
+
 // Store Catrgory Controllers
 const createStoreCategory = async (req: Request, res: Response) => {
     try {
@@ -231,6 +244,7 @@ export {
     getStoresByName,
     getTopStores,
     getCats,
+    getMostVisitedStores,
     getStoreCategories,
     getStoreCategoryById,
     createStoreCategory,
