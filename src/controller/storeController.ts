@@ -31,7 +31,11 @@ const getStoreById = async (req: Request, res: Response) => {
             where: { id: Number(req.params.id) },
             relations: ["categories", "coupons", "network_id"],
         });
-        return res.status(200).json(st);
+        const updatedStore = getRepository(Store).update(st.id, {
+            ...st,
+            visits: st.visits + 1,
+        });
+        return res.status(200).json(updatedStore);
     } catch (error) {
         return res.status(404).json({ error: "Store not found" });
     }
