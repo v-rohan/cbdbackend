@@ -41,7 +41,7 @@ module.exports = (app: Express, passport) => {
                 sne.shortlink = link;
                 console.log(request.body);
                 let domain = new URL(request.body.mainlink).hostname;
-                domain = 'https://' + domain;
+                domain = 'https://' + domain + '/';
                 console.log(domain);
                 sne.store = await getRepository(Store).findOneOrFail({
                     where: { homepage: domain },
