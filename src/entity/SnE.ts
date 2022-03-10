@@ -22,6 +22,9 @@ export class SnE {
     @CreateDateColumn()
     createdAt: Date;
 
+    @Column({ nullable: true })
+    mainlink: string;
+
     @UpdateDateColumn()
     updatedAt: Date;
 

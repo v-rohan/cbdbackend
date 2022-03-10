@@ -7,6 +7,7 @@ import { AdminCheck } from "../middleware/AuthMiddleware";
 import { Store } from "../entity/Store";
 import { Clicks } from "../entity/Clicks";
 import { AffiliateNetwork } from "../entity/AffiliateNetwork";
+import { URL } from "url";
 
 module.exports = (app: Express, passport) => {
     app.post(
@@ -29,6 +30,35 @@ module.exports = (app: Express, passport) => {
         }
     );
 
+    app.post(
+        "/link",
+        passport.authenticate("jwt", { session: false }),
+        async (request: IGetUserAuthInfoRequest, response: Response) => {
+            try {
+                var link = generateLink();
+                var sne = new SnE();
+                sne.user = request.user;
+                sne.shortlink = link;
+                let domain = new URL(request.body.mainlink).hostname;
+                console.log(domain);
+                sne.store = await getRepository(Store).findOneOrFail({
+                    where: { homepage: domain },
+                });
+                sne.mainlink = request.body.mainlink;
+                getRepository(SnE)
+                    .save(sne)
+                    .then((sne) => {
+                        response.status(201).send(sne);
+                    })
+                    .catch((error) => {
+                        response.status(400).send(error);
+                    });
+            } catch (error) {
+                response.status(400).send(error);
+            }
+        }
+    );
+
     app.get("/c/:shortlink", async (request: Request, response: Response) => {
         var store: any;
         var click = new Clicks();
@@ -47,7 +77,8 @@ module.exports = (app: Express, passport) => {
             );
             store = sne.store;
             var nl = sne.store.affiliate_link;
-            nl = nl.replace(/#EULINK/g, encodeURIComponent(sne.store.homepage));
+            var page = sne.mainlink ? sne.mainlink : sne.store.homepage;
+            nl = nl.replace(/#EULINK/g, encodeURIComponent(page));
             console.log(nl);
             click.redirectLink = nl;
             click.ipAddress = String(
