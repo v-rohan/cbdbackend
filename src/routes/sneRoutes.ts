@@ -54,6 +54,7 @@ module.exports = (app: Express, passport) => {
                         response.status(400).send(error);
                     });
             } catch (error) {
+                console.log(error);
                 response.status(400).send(error);
             }
         }
