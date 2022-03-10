@@ -35,7 +35,7 @@ const getStoreById = async (req: Request, res: Response) => {
             ...st,
             visits: st.visits + 1,
         });
-        return res.status(200).json(updatedStore);
+        return res.status(200).json(st);
     } catch (error) {
         return res.status(404).json({ error: "Store not found" });
     }
