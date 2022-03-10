@@ -39,6 +39,7 @@ module.exports = (app: Express, passport) => {
                 var sne = new SnE();
                 sne.user = request.user;
                 sne.shortlink = link;
+                console.log(request.body);
                 let domain = new URL(request.body.mainlink).hostname;
                 console.log(domain);
                 sne.store = await getRepository(Store).findOneOrFail({
