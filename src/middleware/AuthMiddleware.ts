@@ -28,6 +28,21 @@ const AdminCheckAllowSafe = (
     }
 };
 
+const AdminCheckAllowUnSafe = (
+    request: IGetUserAuthInfoRequest,
+    response: Response,
+    next: NextFunction
+) => {
+    if (
+        request.method == "POST" || request.method == "PUT" || request.method == "OPTIONS" ||
+        (request.isAuthenticated() && request.user.role === "admin")
+    ) {
+        next();
+    } else {
+        response.status(401).send("Unauthorized");
+    }
+};
+
 const IsAuthenticated = (
     request: IGetUserAuthInfoRequest,
     response: Response,
@@ -38,4 +53,4 @@ const IsAuthenticated = (
         : response.status(401).send("Unauthorized");
 };
 
-export { AdminCheck, AdminCheckAllowSafe, IsAuthenticated };
+export { AdminCheck, AdminCheckAllowSafe, IsAuthenticated, AdminCheckAllowUnSafe };
