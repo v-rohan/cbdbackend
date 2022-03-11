@@ -20,9 +20,9 @@ module.exports = (app: Express, passport: any) => {
     router.use(passport.authenticate("jwt", { session: false }));
     router.use(AdminCheck);
 
-    router.route("/payoutrequests").get(getPayoutRequests);
+    router.route("/").get(getPayoutRequests);
     router
-        .route("/payoutrequests/:id")
+        .route("/:id")
         .get(getPayoutRequestById)
         .put(updatePayoutRequestById)
         .delete(deletePayoutRequestById);

@@ -13,7 +13,7 @@ const bulkTransfer = async (req: IGetUserAuthInfoRequest, res: Response) => {
     payoutRequestIds.forEach(async ({ id }) => {
         const payoutRequest: PayoutRequest = await PayoutReqRepo.findOne({
             where: { id: Number(id) },
-            relations: ["paymentMode", "user"],
+            relations: ["payment_mode", "user_id"],
         });
         // Make PAYTM API Call
         let paytmParams: any = {
@@ -91,9 +91,16 @@ const getPayoutRequests = async (
     const payoutRequests: PayoutRequest[] = await getRepository(
         PayoutRequest
     ).find({
-        relations: ["paymentMode", "user"],
+        relations: ["payment_mode", "user_id"],
     });
-    return res.status(200).json({ payoutRequests });
+    console.log(payoutRequests);
+    res.set({
+        "Access-Control-Expose-Headers": "Content-Range",
+        "Content-Range": `X-Total-Count: ${1} - ${payoutRequests.length} / ${
+            payoutRequests.length
+        }`,
+    });
+    return res.status(200).json(payoutRequests);
 };
 
 const getPayoutRequestById = async (
@@ -106,7 +113,7 @@ const getPayoutRequestById = async (
             PayoutRequest
         ).findOneOrFail({
             where: { id: Number(payoutRequestId) },
-            relations: ["paymentMode", "user"],
+            relations: ["payment_mode", "user_id"],
         });
         return res.status(200).json({
             payoutRequest,
@@ -158,7 +165,7 @@ const getBankPayouts = async (req: IGetUserAuthInfoRequest, res: Response) => {
         where: {
             payment_mode: { method_code: Mode.bank },
         },
-        relations: ["paymentMode", "user"],
+        relations: ["payment_mode", "user_id"],
     });
     return res.status(200).json({ payoutRequests });
 };
@@ -173,7 +180,7 @@ const getPaytmWalletPayouts = async (
         where: {
             payment_mode: { method_code: Mode.paytm },
         },
-        relations: ["paymentMode", "user"],
+        relations: ["payment_mode", "user_id"],
     });
     return res.status(200).json({ paytmWalletPayouts });
 };

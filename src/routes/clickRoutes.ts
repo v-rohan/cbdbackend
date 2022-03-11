@@ -65,6 +65,12 @@ module.exports = (app: Express, passport) => {
                         order: { createdAt: "DESC" },
                     })
                     .then((clicks) => {
+                        response.set({
+                            "Access-Control-Expose-Headers": "Content-Range",
+                            "Content-Range": `X-Total-Count: ${1} - ${clicks.length} / ${
+                                clicks.length
+                            }`,
+                        });
                         response.send(clicks);
                     })
                     .catch((error) => {
@@ -78,6 +84,12 @@ module.exports = (app: Express, passport) => {
                         where: { user: request.user },
                     })
                     .then((clicks) => {
+                        response.set({
+                            "Access-Control-Expose-Headers": "Content-Range",
+                            "Content-Range": `X-Total-Count: ${1} - ${clicks.length} / ${
+                                clicks.length
+                            }`,
+                        });
                         response.send(clicks);
                     })
                     .catch((error) => {
