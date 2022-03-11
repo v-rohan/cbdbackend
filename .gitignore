@@ -18,3 +18,5 @@ media/store/**
 
 rabbitmq-data/
 rabbitmq-log/
+
+build

@@ -8,6 +8,10 @@ import { BonusTxn } from "../entity/Transactions/BonusTxn";
 import { AdminCheck } from "../middleware/AuthMiddleware";
 import multer = require("multer");
 import fetch from "node-fetch";
+import { amqp, queue, mailgun_apikey, mailgun_url } from "../config";
+import * as amqplib from "amqplib/callback_api";
+import * as nodemailer from "nodemailer";
+import { publishMail } from "../tasks/publishMail";
 
 var jwt = require("jsonwebtoken");
 
@@ -126,6 +130,12 @@ module.exports = (app: Express, passport) => {
                             });
                     })
                     .then(() => {
+                        publishMail({
+                            "from": "mailgun@cashbackduniya.com",
+                            "to": newUser.email.toString(),
+                            "subject": "New Registration",
+                            "text": "Thank You for registering."
+                        })
                         response.sendStatus(200);
                     })
                     .catch((error) => {

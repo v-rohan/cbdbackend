@@ -10,6 +10,16 @@ services:
     volumes:
       - ./dbData:/var/lib/postgresql/data
 
+  rabbitmq:
+    image: rabbitmq:3.8-management-alpine
+    # container_name: 'rabbitmq'
+    ports:
+        - 5672:5672
+        - 15672:15672
+    volumes:
+        - ./rabbitmq-data/:/var/lib/rabbitmq/
+        - ./rabbitmq-log/:/var/log/rabbitmq
+
   node:
     volumes:
       - .:/app
@@ -21,3 +31,16 @@ services:
       - "3000:3000"
     depends_on:
       - postgres
+      - rabbitmq
+  
+  subs:
+    volumes:
+      - .:/app
+    build: .
+    command: yarn run subs
+    env_file:
+      - .env
+    depends_on:
+    - postgres
+    - node
+    - rabbitmq
