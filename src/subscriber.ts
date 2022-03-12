@@ -1,7 +1,6 @@
 import { amqp, queue, mailgun_apikey, mailgun_url, mailgun_pass, mailgun_user } from "./config";
 import * as amqplib from "amqplib/callback_api";
 const nodemailer = require('nodemailer');
-const mg = require('nodemailer-mailgun-transport');
 
 // Setup Nodemailer transport
 const transport = nodemailer.createTransport({

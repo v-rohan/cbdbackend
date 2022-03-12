@@ -8,7 +8,7 @@ import {
     updateLogById,
 } from "../controller/postbackLogController";
 
-import { AdminCheck } from "../middleware/AuthMiddleware";
+import { AdminCheck, AdminCheckAllowUnSafe } from "../middleware/AuthMiddleware";
 
 module.exports = (app: Express, passport: any) => {
     require("../passport/jwt")(passport);
@@ -17,7 +17,7 @@ module.exports = (app: Express, passport: any) => {
 
     // Middleware
     router.use(passport.authenticate("jwt", { session: false }));
-    router.use(AdminCheck);
+    router.use(AdminCheckAllowUnSafe);
 
     // Postback log Routes
     router.route("/").get(getAllLogs).post(createOrUpdatePostbackLog);
