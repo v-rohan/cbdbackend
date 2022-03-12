@@ -89,7 +89,7 @@ const mockTxnUploadCsv = async (
                         transaction_id: data[i]["transaction_id"],
                     },
                 });
-                let network = await getRepository(AffiliateNetwork).findOne({
+                let network = await getRepository(AffiliateNetwork).findOneOrFail({
                     where: { name: data[i]["network_id"] },
                 });
                 data[i]["network_id"] = network.id;

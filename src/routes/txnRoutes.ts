@@ -52,7 +52,7 @@ module.exports = (app: Express, passport: any) => {
     // Storage configuration for CSV files
     const storage = multer.diskStorage({
         destination: (request: Request, file: any, cb: any) => {
-            cb(null, "./mockTxns/");
+            cb(null, "./media/mockTxns/");
         },
         filename: (request: Request, file: any, cb: any) => {
             const suffix = Date.now();
