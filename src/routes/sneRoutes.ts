@@ -140,6 +140,12 @@ module.exports = (app: Express, passport) => {
                         order: { createdAt: "DESC" },
                     })
                     .then((links) => {
+                        response.set({
+                            "Access-Control-Expose-Headers": "Content-Range",
+                            "Content-Range": `X-Total-Count: ${1} - ${links.length} / ${
+                                links.length
+                            }`,
+                        });
                         response.send(links);
                     })
                     .catch((error) => {
@@ -155,6 +161,12 @@ module.exports = (app: Express, passport) => {
                         },
                     })
                     .then((links) => {
+                        response.set({
+                            "Access-Control-Expose-Headers": "Content-Range",
+                            "Content-Range": `X-Total-Count: ${1} - ${links.length} / ${
+                                links.length
+                            }`,
+                        });
                         response.send(links);
                     })
                     .catch((error) => {

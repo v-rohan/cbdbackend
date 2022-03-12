@@ -167,6 +167,12 @@ const getBankPayouts = async (req: IGetUserAuthInfoRequest, res: Response) => {
         },
         relations: ["payment_mode", "user_id"],
     });
+    res.set({
+        "Access-Control-Expose-Headers": "Content-Range",
+        "Content-Range": `X-Total-Count: ${1} - ${payoutRequests.length} / ${
+            payoutRequests.length
+        }`,
+    });
     return res.status(200).json({ payoutRequests });
 };
 
@@ -181,6 +187,12 @@ const getPaytmWalletPayouts = async (
             payment_mode: { method_code: Mode.paytm },
         },
         relations: ["payment_mode", "user_id"],
+    });
+    res.set({
+        "Access-Control-Expose-Headers": "Content-Range",
+        "Content-Range": `X-Total-Count: ${1} - ${paytmWalletPayouts.length} / ${
+            paytmWalletPayouts.length
+        }`,
     });
     return res.status(200).json({ paytmWalletPayouts });
 };
