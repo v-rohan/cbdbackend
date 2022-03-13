@@ -39,17 +39,6 @@ const MigrateMockTxns = async () => {
             delete newMockTxn["created_at"];
             delete newMockTxn["updated_at"];
 
-            Object.keys(salesTxn)
-                .filter((key) => key in newMockTxn)
-                .forEach((key) => {
-                    salesTxn[key] = newMockTxn[key];
-                });
-            Object.keys(cashbackTxn)
-                .filter((key) => key in newMockTxn)
-                .forEach((key) => {
-                    cashbackTxn[key] = newMockTxn[key];
-                });
-
             salesTxn.commission_amount = salesTxn.base_commission;
 
             salesTxn.status = newMockTxn.status;
@@ -78,6 +67,25 @@ const MigrateMockTxns = async () => {
             cashbackTxn.txn_date_time = new Date();
 
             await getManager().transaction(async (transaction) => {
+                Object.keys(
+                    await transaction.connection.getMetadata(SalesTxn)
+                        .propertiesMap
+                )
+                    .filter((key: any) => key in newMockTxn)
+                    .forEach((keyto: any) => {
+                        console.log("HELLO", keyto);
+                        salesTxn[keyto] = newMockTxn[keyto];
+                    });
+
+                Object.keys(
+                    await transaction.connection.getMetadata(CashbackTxn)
+                        .propertiesMap
+                )
+                    .filter((key: any) => key in newMockTxn)
+                    .forEach((keyto: any) => {
+                        console.log("HELLO", keyto);
+                        cashbackTxn[keyto] = newMockTxn[keyto];
+                    });
                 await transaction.save(salesTxn);
                 await transaction.save(cashbackTxn);
                 if (click.user.referralUser != null) {

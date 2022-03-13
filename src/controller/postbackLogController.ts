@@ -23,56 +23,84 @@ const getAllLogs = async (req: Request, res: Response) => {
 
 const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
     try {
-        let log: PostbackLog = await getRepository(PostbackLog).findOne({
-            aff_sub1: req.query.aff_sub1,
-        });
-        if (!log) log = new PostbackLog();
+        var log = new PostbackLog();
 
-        let salesTxn: SalesTxn = await getRepository(SalesTxn).findOne({
-            aff_sub1: String(req.query.aff_sub1),
-        });
-        if (!salesTxn) salesTxn = new SalesTxn();
+        try {
+            log = await getRepository(PostbackLog).findOneOrFail({
+                aff_sub1: req.query.aff_sub1,
+            });
+        } catch (err) {
+            log = new PostbackLog();
+        }
 
-        var click: Clicks = await getRepository(Clicks).findOneOrFail({
+        var salesTxn = new SalesTxn();
+        try {
+            salesTxn = await getRepository(SalesTxn).findOneOrFail({
+                aff_sub1: String(req.query.aff_sub1),
+            });
+        } catch (err) {
+            salesTxn = new SalesTxn();
+        }
+
+        var click = await getRepository(Clicks).findOneOrFail({
             where: { id: req.query.aff_sub1 },
-            relations: ["user", "network"],
+            relations: ["user", "network", "store"],
         });
 
-        var referrerTxn: ReferrerTxn = await getRepository(
-            ReferrerTxn
-        ).findOneOrFail({
-            where: { user: click.user.referralUser },
-        });
-        if (!referrerTxn) referrerTxn = new ReferrerTxn();
+        try {
+            var referrerTxn = new ReferrerTxn();
+            referrerTxn = await getRepository(ReferrerTxn).findOneOrFail({
+                where: { user: click.user.referralUser },
+            });
+        } catch (err) {
+            referrerTxn = new ReferrerTxn();
+        }
 
-        let cashbackTxn: CashbackTxn = await getRepository(CashbackTxn).findOne(
-            { click_id: click }
-        );
-        if (!cashbackTxn) cashbackTxn = new CashbackTxn();
+        var cashbackTxn = new CashbackTxn();
+        try {
+            cashbackTxn = await getRepository(CashbackTxn).findOneOrFail({
+                click_id: click,
+            });
+        } catch (err) {
+            cashbackTxn = new CashbackTxn();
+        }
 
         await getManager()
             .transaction(async (transactionalEntityManager) => {
                 log = { ...log, ...req.query };
 
-                await transactionalEntityManager.save(log);
+                await transactionalEntityManager.connection
+                    .getRepository(PostbackLog)
+                    .save(log);
 
-                Object.keys(salesTxn)
-                    .filter((key) => key in req.query)
-                    .forEach((key) => {
-                        salesTxn[key] = req.query[key];
+                console.log(Object.keys(await transactionalEntityManager.connection
+                    .getMetadata(SalesTxn).propertiesMap))
+                
+                Object.keys(await transactionalEntityManager.connection
+                    .getMetadata(SalesTxn).propertiesMap)
+                    .filter((key: any) => key in req.query)
+                    .forEach((keyto: any) => {
+                        console.log("HELLO", keyto);
+                        salesTxn[keyto] = req.query[keyto];
                     });
 
-                salesTxn.commission_amount = salesTxn.base_commission;
+                salesTxn.commission_amount = Number(req.query.base_commission);
+                salesTxn.transaction_id = String(req.query.transaction_id);
                 salesTxn.status =
                     StatusOpts[
                         `${click.network.sale_statuses[`${req.query.status}`]}`
                     ];
+                salesTxn.sale_status = `${click.network.sale_statuses[`${req.query.status}`]}`
+                await transactionalEntityManager.connection
+                    .getRepository(SalesTxn)
+                    .save(salesTxn);
 
-                await transactionalEntityManager.save(salesTxn);
+                console.log(cashbackTxn);
 
-                Object.keys(cashbackTxn)
-                    .filter((key) => key in req.query)
-                    .forEach((key) => {
+                Object.keys(await transactionalEntityManager.connection
+                    .getMetadata(CashbackTxn).propertiesMap)
+                    .filter((key: any) => key in req.query)
+                    .forEach((key: any) => {
                         cashbackTxn[key] = req.query[key];
                     });
 
@@ -101,7 +129,9 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
                         .findOneOrFail({ shortlink: click.ref });
 
                     sne.earning += cashbackTxn.cashback;
-                    await transactionalEntityManager.save(sne);
+                    await transactionalEntityManager.connection
+                        .getRepository(SnE)
+                        .save(sne);
                 }
 
                 if (click.user.referralUser != null) {
@@ -117,10 +147,14 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
                     referrerTxn.mail_sent = false;
                     referrerTxn.txn_date_time = new Date();
 
-                    await transactionalEntityManager.save(referrerTxn);
+                    await transactionalEntityManager.connection
+                        .getRepository(ReferrerTxn)
+                        .save(referrerTxn);
                 }
 
-                await transactionalEntityManager.save(cashbackTxn);
+                await transactionalEntityManager.connection
+                    .getRepository(CashbackTxn)
+                    .save(cashbackTxn);
             })
             .then(async () => {
                 return res
@@ -128,7 +162,9 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
                     .json({ message: "Postback Log created successfully" });
             });
     } catch (error) {
-        return res.status(400).json(error);
+        console.log(error);
+
+        return res.status(400).send(error);
     }
 };
 

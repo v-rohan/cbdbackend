@@ -16,7 +16,7 @@ module.exports = (app: Express, passport: any) => {
     var router = Router();
 
     // Middleware
-    router.use(passport.authenticate("jwt", { session: false }));
+    router.use(passport.authenticate(["jwt", "anonymous"], { session: false }));
     router.use(AdminCheckAllowUnSafe);
 
     // Postback log Routes

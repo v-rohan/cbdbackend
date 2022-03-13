@@ -33,6 +33,7 @@ const AdminCheckAllowUnSafe = (
     response: Response,
     next: NextFunction
 ) => {
+    console.log(request.method, request.isAuthenticated(), request.user);
     if (
         request.method == "POST" || request.method == "PUT" || request.method == "OPTIONS" ||
         (request.isAuthenticated() && request.user.role === "admin")

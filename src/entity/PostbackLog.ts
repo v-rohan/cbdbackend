@@ -20,7 +20,7 @@ export class PostbackLog {
   )
   network_id: AffiliateNetwork;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   network_campaign_id: string;
 
   @Column({ nullable: false, unique: true })
