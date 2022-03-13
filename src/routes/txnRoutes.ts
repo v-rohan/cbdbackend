@@ -6,9 +6,11 @@ import {
     deleteMockTxn,
     getMockTxn,
     getMockTxns,
+    migrateMockTxns,
     mockTxnUploadCsv,
     postMockTxn,
     postMockTxns,
+    putMockTxn,
 } from "../controller/Transactions/MockTxnController";
 import {
     deleteSalesTxn,
@@ -74,7 +76,11 @@ module.exports = (app: Express, passport: any) => {
         .route("/mock/:id")
         .get(getMockTxn)
         .post(postMockTxn)
-        .delete(deleteMockTxn);
+        .delete(deleteMockTxn)
+        .put(putMockTxn);
+
+    // Migrate Mock Txns to Sales and Cashback Txns
+    router.post("/mockmigratetxns", migrateMockTxns);
 
     // SalesTxn Routes
     router.route("/sales").get(getSalesTxns).post(postSalesTxns);

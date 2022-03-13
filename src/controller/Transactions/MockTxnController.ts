@@ -6,6 +6,7 @@ import { parseStream } from "fast-csv";
 import { MockTxn } from "../../entity/Transactions/MockTxn";
 import { AffiliateNetwork } from "../../entity/AffiliateNetwork";
 import MigrateMockTxns from "../../tasks/migrateMockTxns";
+import { IGetUserAuthInfoRequest } from "../../types";
 
 const mockTxnRowProcessor = (row: Object) => {
     // let networkId = await getRepository(AffiliateNetwork).findOne({ where: { name: row['network_id'] } });
@@ -78,6 +79,7 @@ const mockTxnUploadCsv = async (
     res: Response,
     next: NextFunction
 ) => {
+    console.log(req.body.csv);
     csvProcessor(req.file.path).then(async (data: Array<Object>) => {
         const MockTxnRepo = getRepository(MockTxn);
         var errorLog = [];
@@ -154,6 +156,21 @@ const deleteMockTxn = async (
     res.status(204).send();
 };
 
+const putMockTxn = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    var mock = await getRepository(MockTxn).findOneOrFail(req.params.id);
+    mock = { ...mock, ...req.body };
+    try {
+        await getRepository(MockTxn).save(mock);
+    } catch (err) {
+        res.status(400).json(err);
+    }
+    res.status(200).json(mock);
+}
+
 const transferMockTxns = async (
     req: Request,
     res: Response,
@@ -167,6 +184,16 @@ const transferMockTxns = async (
     }
 };
 
+const migrateMockTxns = async (req: IGetUserAuthInfoRequest, res: Response) => {
+    MigrateMockTxns().then((data) => {
+        if (data === 1) {
+            res.status(200).json({"message": "OK"});
+        } else {
+            res.status(500).json({"message": "NOT OK"});
+        }
+    })
+}
+
 export {
     getMockTxns,
     postMockTxns,
@@ -174,5 +201,7 @@ export {
     getMockTxn,
     postMockTxn,
     deleteMockTxn,
+    putMockTxn,
     transferMockTxns,
+    migrateMockTxns,
 };

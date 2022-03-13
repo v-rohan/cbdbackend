@@ -18,19 +18,34 @@ const MigrateMockTxns = async () => {
             let salesTxn: SalesTxn;
             let cashbackTxn: CashbackTxn;
             var referrerTxn: ReferrerTxn;
+            var click: Clicks;
+            try {
+                click = await getRepository(Clicks).findOneOrFail({
+                    where: { id: Number(mockTxn.aff_sub1) },
+                    relations: ["store", "user"]
+                });
+            } catch (err) {
+                console.log(err);
+                return { message: "Click not found" };
+            }
+
             try {
                 salesTxn = await getRepository(SalesTxn).findOneOrFail({
-                    where: { aff_sub1: mockTxn.aff_sub1 },
+                    where: { aff_sub1: String(mockTxn.aff_sub1) },
                 });
                 cashbackTxn = await getRepository(CashbackTxn).findOneOrFail({
-                    where: { click_id: mockTxn.aff_sub1 },
-                });
-                referrerTxn = await getRepository(ReferrerTxn).findOneOrFail({
-                    where: { user: click.user.referralUser },
+                    where: { click_id: click },
                 });
             } catch (err) {
                 salesTxn = new SalesTxn();
                 cashbackTxn = new CashbackTxn();
+            }
+
+            try {
+                referrerTxn = await getRepository(ReferrerTxn).findOneOrFail({
+                    where: { user: click.user.referralUser },
+                });
+            } catch (err) {
                 referrerTxn = new ReferrerTxn();
             }
 
@@ -39,7 +54,7 @@ const MigrateMockTxns = async () => {
             delete newMockTxn["created_at"];
             delete newMockTxn["updated_at"];
 
-            salesTxn.commission_amount = salesTxn.base_commission;
+            salesTxn.commission_amount = newMockTxn.base_commission;
 
             salesTxn.status = newMockTxn.status;
             if (newMockTxn.status == StatusOpts.delayed) {
@@ -50,14 +65,6 @@ const MigrateMockTxns = async () => {
                 referrerTxn.status = AcceptedStatusOpts[salesTxn.status];
             }
 
-            try {
-                var click = await getRepository(Clicks).findOneOrFail({
-                    where: { id: Number(mockTxn.aff_sub1) },
-                });
-            } catch (err) {
-                console.log(err);
-                return { message: "Click not found" };
-            }
 
             cashbackTxn.click_id = click;
             cashbackTxn.user = click.user;
@@ -68,31 +75,32 @@ const MigrateMockTxns = async () => {
 
             await getManager().transaction(async (transaction) => {
                 Object.keys(
-                    await transaction.connection.getMetadata(SalesTxn)
-                        .propertiesMap
-                )
+                    await transaction.connection.getMetadata(SalesTxn).propertiesMap)
                     .filter((key: any) => key in newMockTxn)
                     .forEach((keyto: any) => {
-                        console.log("HELLO", keyto);
                         salesTxn[keyto] = newMockTxn[keyto];
                     });
+                salesTxn.sale_status = salesTxn.status
 
                 Object.keys(
-                    await transaction.connection.getMetadata(CashbackTxn)
-                        .propertiesMap
-                )
+                    await transaction.connection.getMetadata(CashbackTxn).propertiesMap)
                     .filter((key: any) => key in newMockTxn)
                     .forEach((keyto: any) => {
-                        console.log("HELLO", keyto);
                         cashbackTxn[keyto] = newMockTxn[keyto];
                     });
-                await transaction.save(salesTxn);
-                await transaction.save(cashbackTxn);
-                if (click.user.referralUser != null) {
+                await transaction.connection.getRepository(SalesTxn).save(salesTxn);
+                await transaction.connection.getRepository(CashbackTxn).save(cashbackTxn);
+
+                if (click.user.referralUser !== null) {
                     referrerTxn.sale_id = cashbackTxn.sale_id;
-                    referrerTxn.user = await getRepository(User).findOne({
-                        where: { id: click.user.referralUser },
-                    });
+                    try {
+                        referrerTxn.user = await getRepository(User).findOneOrFail({
+                            where: { id: click.user.referralUser },
+                        });
+                    } catch (err) {
+                        console.log("fuk ho giya");
+                        return err;
+                    }
                     referrerTxn.shopper = click.user;
                     referrerTxn.store = click.store;
                     referrerTxn.sale_amount = cashbackTxn.sale_amount;
@@ -100,8 +108,7 @@ const MigrateMockTxns = async () => {
                     referrerTxn.referrer_amount = cashbackTxn.cashback * 0.1;
                     referrerTxn.mail_sent = false;
                     referrerTxn.txn_date_time = new Date();
-
-                    await transaction.save(referrerTxn);
+                    await transaction.connection.getRepository(ReferrerTxn).save(referrerTxn);
                 }
                 if (
                     cashbackTxn.status == AcceptedStatusOpts.confirmed &&
@@ -112,13 +119,14 @@ const MigrateMockTxns = async () => {
                         .findOneOrFail({ shortlink: click.ref });
 
                     sne.earning += cashbackTxn.cashback;
-                    await transaction.save(sne);
+                    await transaction.connection.getRepository(SnE).save(sne);
                 }
             });
         } catch (err) {
             return err;
         }
     });
+    return 1;
 };
 
 export default MigrateMockTxns;
