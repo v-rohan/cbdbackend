@@ -98,7 +98,6 @@ const MigrateMockTxns = async () => {
                             where: { id: click.user.referralUser },
                         });
                     } catch (err) {
-                        console.log("fuk ho giya");
                         return err;
                     }
                     referrerTxn.shopper = click.user;
