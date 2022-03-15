@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getRepository } from "typeorm";
+import { Double, getRepository } from "typeorm";
 import { PostbackLog } from "../entity/PostbackLog";
 import { getManager } from "typeorm";
 import { SalesTxn } from "../entity/Transactions/SalesTxn";
@@ -9,6 +9,7 @@ import { Clicks } from "../entity/Clicks";
 import { AcceptedStatusOpts, StatusOpts } from "../entity/Transactions/Common";
 import { SnE } from "../entity/SnE";
 import { User } from "../entity/User";
+import { Settings } from "../entity/Settings";
 
 const getAllLogs = async (req: Request, res: Response) => {
     const logs = await getRepository(PostbackLog).find();
@@ -73,11 +74,19 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
                     .getRepository(PostbackLog)
                     .save(log);
 
-                console.log(Object.keys(await transactionalEntityManager.connection
-                    .getMetadata(SalesTxn).propertiesMap))
-                
-                Object.keys(await transactionalEntityManager.connection
-                    .getMetadata(SalesTxn).propertiesMap)
+                console.log(
+                    Object.keys(
+                        await transactionalEntityManager.connection.getMetadata(
+                            SalesTxn
+                        ).propertiesMap
+                    )
+                );
+
+                Object.keys(
+                    await transactionalEntityManager.connection.getMetadata(
+                        SalesTxn
+                    ).propertiesMap
+                )
                     .filter((key: any) => key in req.query)
                     .forEach((keyto: any) => {
                         console.log("HELLO", keyto);
@@ -90,15 +99,20 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
                     StatusOpts[
                         `${click.network.sale_statuses[`${req.query.status}`]}`
                     ];
-                salesTxn.sale_status = `${click.network.sale_statuses[`${req.query.status}`]}`
+                salesTxn.sale_status = `${
+                    click.network.sale_statuses[`${req.query.status}`]
+                }`;
                 await transactionalEntityManager.connection
                     .getRepository(SalesTxn)
                     .save(salesTxn);
 
                 console.log(cashbackTxn);
 
-                Object.keys(await transactionalEntityManager.connection
-                    .getMetadata(CashbackTxn).propertiesMap)
+                Object.keys(
+                    await transactionalEntityManager.connection.getMetadata(
+                        CashbackTxn
+                    ).propertiesMap
+                )
                     .filter((key: any) => key in req.query)
                     .forEach((key: any) => {
                         cashbackTxn[key] = req.query[key];
@@ -135,21 +149,28 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
                 }
 
                 if (click.user.referralUser != null) {
-                    referrerTxn.sale_id = cashbackTxn.sale_id;
-                    referrerTxn.user = await getRepository(User).findOne({
-                        where: { id: click.user.referralUser },
-                    });
-                    referrerTxn.shopper = click.user;
-                    referrerTxn.store = click.store;
-                    referrerTxn.sale_amount = cashbackTxn.sale_amount;
-                    referrerTxn.currency = "INR";
-                    referrerTxn.referrer_amount = cashbackTxn.cashback * 0.1;
-                    referrerTxn.mail_sent = false;
-                    referrerTxn.txn_date_time = new Date();
+                    var settings = await getRepository(Settings).find()[0];
+                    if (settings.referralEnabled) {
+                        referrerTxn.sale_id = cashbackTxn.sale_id;
+                        referrerTxn.user = await getRepository(User).findOne({
+                            where: { id: click.user.referralUser },
+                        });
+                        referrerTxn.shopper = click.user;
+                        referrerTxn.store = click.store;
+                        referrerTxn.sale_amount = cashbackTxn.sale_amount;
+                        referrerTxn.currency = "INR";
+                        referrerTxn.referrer_amount =
+                            (cashbackTxn.cashback *
+                                settings.referralPercent *
+                                1.0) /
+                            100.0;
+                        referrerTxn.mail_sent = false;
+                        referrerTxn.txn_date_time = new Date();
 
-                    await transactionalEntityManager.connection
-                        .getRepository(ReferrerTxn)
-                        .save(referrerTxn);
+                        await transactionalEntityManager.connection
+                            .getRepository(ReferrerTxn)
+                            .save(referrerTxn);
+                    }
                 }
 
                 await transactionalEntityManager.connection
