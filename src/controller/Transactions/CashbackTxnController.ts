@@ -9,7 +9,7 @@ const getCashbackTxns = async (
     next: NextFunction
 ) => {
     var txns = await getRepository(CashbackTxn).find({
-        relations: ["user", "store", "network_id"],
+        relations: ["user", "store", "network_id", "click_id"],
     });
     res.set({
         "Access-Control-Expose-Headers": "Content-Range",
@@ -36,7 +36,7 @@ const getCashbackTxn = async (
     next: NextFunction
 ) => {
     var txn = await getRepository(CashbackTxn).findOne(req.params.id, {
-        relations: ["store", "network_id"],
+        relations: ["user", "store", "network_id", "click_id"],
     });
     res.status(200).json(txn);
 };
