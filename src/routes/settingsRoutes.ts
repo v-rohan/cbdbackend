@@ -39,9 +39,10 @@ module.exports = (app: Express, passport) => {
             try {
                 var settings = new Settings();
                 settings = getRepository(Settings).find()[0];
-                if (!settings) {
-                    settings = new Settings();
-                }
+                res.set({
+                    "Access-Control-Expose-Headers": "Content-Range",
+                    "Content-Range": `X-Total-Count: 1`,
+                });
                 res.status(200).send(settings);
             } catch (e) {
                 console.log(e);
