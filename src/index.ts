@@ -60,6 +60,8 @@ createConnection()
         app.use("/banner",require("./routes/bannerRoutes")(app, passport));
         app.use("/account", require("./routes/accountRoutes")(app, passport));
         app.use("/bankimage", require("./routes/bankImageRoutes")(app, passport));
+        app.use("/settings", require("./routes/settingsRoutes")(app, passport));
+
         
         // Serve media files
         app.use("/media", express.static("media"));
