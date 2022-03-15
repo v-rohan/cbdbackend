@@ -21,6 +21,7 @@ module.exports = (app: Express, passport: any) => {
     router.use(AdminCheck);
 
     router.route("/").get(getPayoutRequests);
+    router.route("/apiLog").get(getBankPayouts);
     router
         .route("/:id")
         .get(getPayoutRequestById)

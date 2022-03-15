@@ -190,9 +190,9 @@ const getPaytmWalletPayouts = async (
     });
     res.set({
         "Access-Control-Expose-Headers": "Content-Range",
-        "Content-Range": `X-Total-Count: ${1} - ${paytmWalletPayouts.length} / ${
+        "Content-Range": `X-Total-Count: ${1} - ${
             paytmWalletPayouts.length
-        }`,
+        } / ${paytmWalletPayouts.length}`,
     });
     return res.status(200).json({ paytmWalletPayouts });
 };
