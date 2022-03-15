@@ -36,7 +36,7 @@ createConnection()
         app.use(morgan("tiny"));
         app.use(bodyParser.json());
         app.use(cors());
-        
+
         passport.use(new AnonymousStrategy());
 
         // register express routes from defined application routes
@@ -45,7 +45,10 @@ createConnection()
         require("./routes/sneRoutes")(app, passport);
         require("./routes/paymentModes")(app, passport);
         require("./routes/missingClaimsRoutes")(app, passport);
-        app.use("/payoutrequests", require("./routes/userRequestRoutes")(app, passport));
+        app.use(
+            "/payoutrequests",
+            require("./routes/userRequestRoutes")(app, passport)
+        );
         app.use(
             "/networks",
             require("./routes/affiliateNetworkRoutes")(app, passport)
@@ -57,12 +60,14 @@ createConnection()
             require("./routes/cashbackRatesRoutes")(app, passport)
         );
         app.use("/txn", require("./routes/txnRoutes")(app, passport));
-        app.use("/banner",require("./routes/bannerRoutes")(app, passport));
+        app.use("/banner", require("./routes/bannerRoutes")(app, passport));
         app.use("/account", require("./routes/accountRoutes")(app, passport));
-        app.use("/bankimage", require("./routes/bankImageRoutes")(app, passport));
-        app.use("/settings", require("./routes/settingsRoutes")(app, passport));
+        app.use(
+            "/bankimage",
+            require("./routes/bankImageRoutes")(app, passport)
+        );
+        require("./routes/settingsRoutes")(app, passport);
 
-        
         // Serve media files
         app.use("/media", express.static("media"));
         // app.use(handleError);
