@@ -168,7 +168,8 @@ const getStoreCategoryById = async (req: Request, res: Response) => {
             where: { cat_id: Number(req.params.id) },
             relations: ["stores"],
         });
-        return res.status(200).json(category);
+        const updatedCategory = { ...category, id: category.cat_id };
+        return res.status(200).json(updatedCategory);
     } catch (error) {
         return res.status(404).json({ error: "Category not found" });
     }
