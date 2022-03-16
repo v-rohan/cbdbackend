@@ -37,6 +37,12 @@ module.exports = (app: Express, passport) => {
                                 }
                             });
                         });
+                        res.set({
+                            "Access-Control-Expose-Headers": "Content-Range",
+                            "Content-Range": `X-Total-Count: ${1} - ${
+                                a.length
+                            } / ${a.length}`,
+                        });
                         res.status(200).send(a);
                     });
             } catch (e) {
@@ -65,6 +71,12 @@ module.exports = (app: Express, passport) => {
                                 }
                             });
                         });
+                        res.set({
+                            "Access-Control-Expose-Headers": "Content-Range",
+                            "Content-Range": `X-Total-Count: ${1} - ${
+                                a.length
+                            } / ${a.length}`,
+                        });
                         res.status(200).send(a);
                     });
             } catch (e) {
@@ -92,6 +104,12 @@ module.exports = (app: Express, passport) => {
                         if (cashbackTxn.status === AcceptedStatusOpts.confirmed)
                             user.earning += cashbackTxn.cashback;
                     });
+                });
+                res.set({
+                    "Access-Control-Expose-Headers": "Content-Range",
+                    "Content-Range": `X-Total-Count: ${1} - ${users.length} / ${
+                        users.length
+                    }`,
                 });
                 res.status(200).send(users);
             } catch (e) {
@@ -241,6 +259,11 @@ module.exports = (app: Express, passport) => {
                     data.commission.total -
                     data.referral.total -
                     data.bonus.total;
+
+                res.set({
+                    "Access-Control-Expose-Headers": "Content-Range",
+                    "Content-Range": `X-Total-Count: ${1} - ${1} / ${1}`,
+                });
 
                 res.status(200).send(data);
             } catch (e) {
