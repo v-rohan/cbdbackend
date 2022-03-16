@@ -146,13 +146,17 @@ const getStoreCategories = async (req: Request, res: Response) => {
         const categories = await getRepository(StoreCategory).find({
             relations: ["stores"],
         });
+        const updatedCategories = categories.map((category) => ({
+            ...category,
+            id: category.cat_id,
+        }));
         res.set({
             "Access-Control-Expose-Headers": "Content-Range",
             "Content-Range": `X-Total-Count: ${1} - ${categories.length} / ${
                 categories.length
             }`,
         });
-        return res.status(200).json(categories);
+        return res.status(200).json(updatedCategories);
     } catch (error) {
         return res.status(400).json(error);
     }
