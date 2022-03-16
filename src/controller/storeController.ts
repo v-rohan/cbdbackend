@@ -247,6 +247,7 @@ const deleteStoreCategory = async (req: Request, res: Response) => {
                 .json({ message: "Category has been deleted successfully" });
         }
     } catch (err) {
+        console.log(err);
         return res.status(400).json(err);
     }
 };
