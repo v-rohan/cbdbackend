@@ -238,7 +238,7 @@ const updateStoreCategory = async (req: Request, res: Response) => {
 const deleteStoreCategory = async (req: Request, res: Response) => {
     try {
         const category = await getRepository(StoreCategory).findOneOrFail({
-            where: { id: Number(req.params.id) },
+            where: { cat_id: Number(req.params.id) },
         });
         if (category) {
             await getRepository(StoreCategory).remove(category);
