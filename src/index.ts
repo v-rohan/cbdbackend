@@ -67,7 +67,7 @@ createConnection()
             require("./routes/bankImageRoutes")(app, passport)
         );
         require("./routes/settingsRoutes")(app, passport);
-        require("./routes/businessRoutes")(app, passport);
+        require("./routes/businessReports")(app, passport);
         // Serve media files
         app.use("/media", express.static("media"));
         // app.use(handleError);
