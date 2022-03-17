@@ -7,7 +7,7 @@ import * as morgan from "morgan";
 const AnonymousStrategy = require("passport-anonymous").Strategy;
 
 import { User } from "./entity/User";
-import { port, secretOrKey } from "./config";
+import { port, secretOrKey, msg91_apikey } from "./config";
 
 var session = require("express-session");
 var passport = require("passport");

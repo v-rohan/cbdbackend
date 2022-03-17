@@ -80,9 +80,9 @@ const getCouponCategories = async (req: Request, res: Response) => {
         const couponCategories = await getRepository(CouponCategory).find();
         res.set({
             "Access-Control-Expose-Headers": "Content-Range",
-            "Content-Range": `X-Total-Count: ${1} - ${couponCategories.length} / ${
+            "Content-Range": `X-Total-Count: ${1} - ${
                 couponCategories.length
-            }`,
+            } / ${couponCategories.length}`,
         });
         return res.status(200).json(couponCategories);
     } catch (err) {
@@ -111,6 +111,7 @@ const createCouponCategory = async (req: Request, res: Response) => {
         await getRepository(CouponCategory).save(couponCategory);
         return res.status(201).json(couponCategory);
     } catch (err) {
+        console.log(err);
         res.status(400).json(err);
     }
 };
