@@ -6,7 +6,7 @@ export class CouponCategory {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ type: "boolean", nullable: true })
+    @Column({ type: "boolean", default: false, nullable: true })
     featured: boolean;
 
     @Column({ type: "integer", nullable: true })
