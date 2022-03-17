@@ -28,24 +28,27 @@ module.exports = (app: Express, passport: any) => {
         storage: fileStorageEngine("coupon"),
     });
 
-    router
-        .route("/coupon")
-        .get(getCoupons)
-        .post(uploadCouponCategory.single("featured_image_url"), createCoupon);
+    router.route("/coupon").get(getCoupons).post(createCoupon);
     router
         .route("/coupon/:id")
         .get(getCouponById)
-        .put(uploadCouponCategory.single("featured_image_url"), updateCoupon)
+        .put(updateCoupon)
         .delete(deleteCoupon);
 
     router
         .route("/couponcategory")
         .get(getCouponCategories)
-        .post(createCouponCategory);
+        .post(
+            uploadCouponCategory.single("featured_image_url"),
+            createCouponCategory
+        );
     router
         .route("/couponcategory/:id")
         .get(getCouponCategoryById)
-        .post(updateCouponCategory)
+        .put(
+            uploadCouponCategory.single("featured_image_url"),
+            updateCouponCategory
+        )
         .delete(deleteCouponCategory);
 
     return router;

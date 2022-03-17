@@ -17,7 +17,7 @@ const getCoupons = async (req: Request, res: Response) => {
 const createCoupon = async (req: Request, res: Response) => {
     try {
         let coupon = new Coupon();
-        coupon = { ...req.body, featured_image_url: req.file.path };
+        coupon = { ...req.body };
         await getRepository(Coupon).save(coupon);
         return res.status(201).json(coupon);
     } catch (error) {
@@ -95,7 +95,7 @@ const getCouponCategoryById = async (req: Request, res: Response) => {
 const createCouponCategory = async (req: Request, res: Response) => {
     try {
         let couponCategory = new CouponCategory();
-        couponCategory = { ...req.body };
+        couponCategory = { ...req.body, featured_image_url: req.file.path };
         await getRepository(CouponCategory).save(couponCategory);
         return res.status(201).json(couponCategory);
     } catch (err) {
@@ -111,8 +111,12 @@ const updateCouponCategory = async (req: Request, res: Response) => {
             where: { id: Number(req.params.id) },
         });
         if (couponCategory) {
+            let data;
+            if (req.file.path)
+                data = { ...req.body, featured_image_url: req.file.path };
+            else data = { ...req.body };
             getRepository(CouponCategory).merge(couponCategory, {
-                ...req.body,
+                ...data,
             });
         }
         const updatedCouponCategory = await getRepository(CouponCategory).save(
