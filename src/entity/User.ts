@@ -5,6 +5,8 @@ import {
     OneToMany,
     CreateDateColumn,
     ManyToOne,
+    OneToOne,
+    JoinColumn,
 } from "typeorm";
 import { Clicks } from "./Clicks";
 import { PaymentMode } from "./Payment/PaymentMode";
@@ -77,4 +79,26 @@ export class User {
 
     @CreateDateColumn()
     user_registered: Date;
+
+    // @OneToOne(() => Verify, (verify) => verify.id)
+    // verify: Verify;
+}
+
+
+@Entity()
+export class Verify {
+    @PrimaryGeneratedColumn()
+    id: number;
+
+    @OneToOne(() => User, (user) => user.id, {
+        cascade: true,
+        // onDelete: "NO ACTION",
+        // onUpdate: "NO ACTION",
+        // nullable: false,
+    })
+    @JoinColumn()
+    user: User;
+
+    @Column({ type: 'varchar', length: 128, nullable: false })
+    verify_hash: string;
 }

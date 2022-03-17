@@ -1,15 +1,17 @@
 import { amqp, queue } from "../config";
-import * as amqplib from 'amqplib';
+import * as amqplib from 'amqplib/callback_api';
 
-const publishMail = async (mail: Object) => {
+const publishMail = (mail: Object) => {
     amqplib.connect(amqp, (err: Error, connection: any) => {
         if (err) {
-            console.error(err.stack);
+            console.error(err);
+            return;
         }
         // Create channel
         connection.createChannel((err: Error, channel: any) => {
             if (err) {
-                console.error(err.stack);
+                console.error(err);
+                return;
             }
             // Ensure queue for messages
             channel.assertQueue(queue, {
@@ -17,7 +19,8 @@ const publishMail = async (mail: Object) => {
                 durable: true
             }, (err: Error) => {
                 if (err) {
-                    console.error(err.stack);
+                    console.error(err);
+                    return;
                 }
                 // Create a function to send objects to the queue
                 // Javascript object is converted to JSON and then into a Buffer
@@ -30,7 +33,8 @@ const publishMail = async (mail: Object) => {
                     }
                 };
                 // push messages to queue
-                sender(mail, () => console.log("Email Sending Queued"));
+                sender(mail, () => {console.log("Mail Queued"); return;});
+                return;
             });
         });
     });

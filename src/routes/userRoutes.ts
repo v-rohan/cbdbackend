@@ -1,6 +1,6 @@
 import { getManager, getRepository } from "typeorm";
 import { NextFunction, Request, Response, Express } from "express";
-import { User, UserRole } from "../entity/User";
+import { User, UserRole, Verify } from "../entity/User";
 import { secretOrKey } from "../config";
 import { IGetUserAuthInfoRequest } from "../types";
 import { generateLink, passowrdhasher } from "../services";
@@ -8,14 +8,11 @@ import { BonusTxn } from "../entity/Transactions/BonusTxn";
 import { AdminCheck } from "../middleware/AuthMiddleware";
 import multer = require("multer");
 import fetch from "node-fetch";
-import { amqp, queue, mailgun_apikey, mailgun_url } from "../config";
-import * as amqplib from "amqplib/callback_api";
-import * as nodemailer from "nodemailer";
 import { publishMail } from "../tasks/publishMail";
 
-var jwt = require("jsonwebtoken");
-
 var bcrypt = require("bcryptjs");
+var crypto = require("crypto");
+var jwt = require("jsonwebtoken");
 
 module.exports = (app: Express, passport) => {
     require("../passport/jwt")(passport);
@@ -75,6 +72,27 @@ module.exports = (app: Express, passport) => {
         }
     )
 
+    app.get("/verifymail/:hash",
+    async (req: Request, res: Response) => {
+        var hash = req.params.hash;
+        var verify: Verify;
+        try {
+            verify = await getRepository(Verify).findOneOrFail({
+                where: {verify_hash: hash},
+                relations: ["user"]
+            })
+        } catch (err) {
+            return res.status(400).json("Wrong Verify String provided")
+        }
+        if (verify) {
+            await getRepository(User).update(verify.user.id, {
+                    is_email_verified: true,
+                    // email_verified_at: new Date()
+                })
+            return res.status(200).json("Email Verified");
+        }
+        return res.status(400).json("Wrong Verify String provided");
+    })
 
     //signup
     app.post(
@@ -129,12 +147,28 @@ module.exports = (app: Express, passport) => {
                                 throw error;
                             });
                     })
-                    .then(() => {
+                    .then(async () => {
                         publishMail({
-                            "from": "mailgun@cashbackduniya.com",
+                            "from": "support@cashbackduniya.com",
                             "to": newUser.email.toString(),
                             "subject": "New Registration",
                             "text": "Thank You for registering."
+                        })
+                        var hash = crypto.createHash('sha256').update(newUser.email).digest('hex');
+                        var verify = new Verify();
+                        verify.user = newUser;
+                        verify.verify_hash = hash;
+                        try {
+                            await getRepository(Verify).save(verify);
+                        } catch (err) {
+                            console.error(err);
+                            return;
+                        }
+                        publishMail({
+                            "from": "support@cashbackduniya.com",
+                            "to": newUser.email.toString(),
+                            "subject": "Email Verification",
+                            "text": `Follow this link to verify your email address ${process.env.BACKEND_URL}/verifymail/${verify.verify_hash}/`
                         })
                         response.sendStatus(200);
                     })
