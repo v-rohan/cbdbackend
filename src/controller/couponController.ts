@@ -8,6 +8,12 @@ const getCoupons = async (req: Request, res: Response) => {
         const coupon = await getRepository(Coupon).find({
             relations: ["categories", "store_id", "network_id"],
         });
+        res.set({
+            "Access-Control-Expose-Headers": "Content-Range",
+            "Content-Range": `X-Total-Count: ${1} - ${coupon.length} / ${
+                coupon.length
+            }`,
+        });
         return res.status(200).json(coupon);
     } catch (error) {
         return res.status(400).json(error);
@@ -72,6 +78,12 @@ const deleteCoupon = async (req: Request, res: Response) => {
 const getCouponCategories = async (req: Request, res: Response) => {
     try {
         const couponCategories = await getRepository(CouponCategory).find();
+        res.set({
+            "Access-Control-Expose-Headers": "Content-Range",
+            "Content-Range": `X-Total-Count: ${1} - ${couponCategories.length} / ${
+                couponCategories.length
+            }`,
+        });
         return res.status(200).json(couponCategories);
     } catch (err) {
         return res.status(400).json(err);
