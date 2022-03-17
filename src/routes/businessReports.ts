@@ -264,12 +264,12 @@ module.exports = (app: Express, passport) => {
 
                 arr.push(
                     data.sales,
-                    data.bonus,
-                    data.cashback,
                     data.commission,
-                    data.paid,
+                    data.cashback,
+                    data.referral,
+                    data.bonus,
                     data.profit,
-                    data.referral
+                    data.paid,
                 );
 
                 res.set({
