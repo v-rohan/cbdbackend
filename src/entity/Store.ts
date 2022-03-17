@@ -17,6 +17,7 @@ import { SnE } from "./SnE";
 import { StoreCategory } from "./StoreCategory";
 import { CashbackTxn } from "./Transactions/CashbackTxn";
 import { ReferrerTxn } from "./Transactions/ReferrerTxn";
+import { SalesTxn } from "./Transactions/SalesTxn";
 
 export enum CashbackType {
     CASHBACK = "Cashback",
@@ -140,6 +141,9 @@ export class Store {
 
     @OneToMany(() => CashbackTxn, (cashbackTxn) => cashbackTxn.store)
     cashbackTxns: CashbackTxn[];
+
+    @OneToMany(() => SalesTxn, (salesTxn) => salesTxn.store)
+    salesTxns: SalesTxn[];
 
     @OneToMany(() => ReferrerTxn, (refTxn) => refTxn.store)
     refTxns: ReferrerTxn[];

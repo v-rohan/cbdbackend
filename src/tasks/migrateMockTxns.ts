@@ -56,6 +56,8 @@ const MigrateMockTxns = async () => {
             delete newMockTxn["updated_at"];
 
             salesTxn.commission_amount = newMockTxn.base_commission;
+            salesTxn.user = click.user;
+            salesTxn.store = click.store;
 
             salesTxn.status = newMockTxn.status;
             if (newMockTxn.status == StatusOpts.delayed) {

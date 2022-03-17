@@ -95,6 +95,8 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
 
                 salesTxn.commission_amount = Number(req.query.base_commission);
                 salesTxn.transaction_id = String(req.query.transaction_id);
+                salesTxn.user = click.user;
+                salesTxn.store = click.store;
                 salesTxn.status =
                     StatusOpts[
                         `${click.network.sale_statuses[`${req.query.status}`]}`

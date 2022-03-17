@@ -2,11 +2,14 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    JoinColumn,
     ManyToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from "typeorm";
 import { AffiliateNetwork } from "../AffiliateNetwork";
+import { Store } from "../Store";
+import { User } from "../User";
 import { StatusOpts } from "./Common";
 
 @Entity()
@@ -20,6 +23,11 @@ export class SalesTxn {
     })
     network_id: AffiliateNetwork;
 
+
+    @ManyToOne(() => User, { onDelete: "NO ACTION", onUpdate: "CASCADE" })
+    @JoinColumn([{ name: "user", referencedColumnName: "id" }])
+    user: User;
+
     @Column({ nullable: true })
     network_campaign_id: string;
 
@@ -31,6 +39,12 @@ export class SalesTxn {
 
     @Column()
     order_id: string;
+
+    @ManyToOne(() => Store, (store) => store.salesTxns, {
+        onDelete: "NO ACTION",
+        onUpdate: "NO ACTION",
+    })
+    store: Store;
 
     @Column({ type: "date", nullable: true })
     click_date: string;
