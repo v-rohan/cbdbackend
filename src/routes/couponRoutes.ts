@@ -1,4 +1,6 @@
 import { Express, Router } from "express";
+import multer = require("multer");
+
 import {
     createCoupon,
     createCouponCategory,
@@ -12,6 +14,7 @@ import {
     updateCouponCategory,
 } from "../controller/couponController";
 import { AdminCheckAllowSafe } from "../middleware/AuthMiddleware";
+import fileStorageEngine from "../multerStorageEngine";
 
 module.exports = (app: Express, passport: any) => {
     require("../passport/jwt")(passport);
@@ -21,11 +24,18 @@ module.exports = (app: Express, passport: any) => {
     router.use(passport.authenticate("jwt", { session: false }));
     router.use(AdminCheckAllowSafe);
 
-    router.route("/coupon").get(getCoupons).post(createCoupon);
+    const uploadCouponCategory = multer({
+        storage: fileStorageEngine("coupon"),
+    });
+
+    router
+        .route("/coupon")
+        .get(getCoupons)
+        .post(uploadCouponCategory.single("featured_image_url"), createCoupon);
     router
         .route("/coupon/:id")
         .get(getCouponById)
-        .put(updateCoupon)
+        .put(uploadCouponCategory.single("featured_image_url"), updateCoupon)
         .delete(deleteCoupon);
 
     router

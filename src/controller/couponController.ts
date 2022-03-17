@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getRepository } from "typeorm";
+import { DeepPartial, getRepository } from "typeorm";
 import { Coupon } from "../entity/Coupon";
 import { CouponCategory } from "../entity/CouponCategory";
 
@@ -17,7 +17,7 @@ const getCoupons = async (req: Request, res: Response) => {
 const createCoupon = async (req: Request, res: Response) => {
     try {
         let coupon = new Coupon();
-        coupon = { ...req.body };
+        coupon = { ...req.body, featured_image_url: req.file.path };
         await getRepository(Coupon).save(coupon);
         return res.status(201).json(coupon);
     } catch (error) {
@@ -42,7 +42,11 @@ const updateCoupon = async (req: Request, res: Response) => {
             where: { id: Number(req.params.id) },
         });
         if (coupon) {
-            getRepository(Coupon).merge(coupon, { ...req.body });
+            let data;
+            if (req.file.path)
+                data = { ...req.body, featured_image_url: req.file.path };
+            else data = { ...req.body };
+            getRepository(Coupon).merge(coupon, data);
             const updatedCoupon = await getRepository(Coupon).save(coupon);
             return res.status(200).json(updatedCoupon);
         }
