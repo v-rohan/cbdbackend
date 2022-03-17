@@ -288,6 +288,7 @@ module.exports = (app: Express, passport) => {
                 data.profit.total =
                     Number(data.commission.total) -
                     Number(data.referral.total) -
+                    Number(data.cashback.total) - 
                     Number(data.bonus.total);
 
                 arr.push(
