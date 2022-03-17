@@ -225,13 +225,13 @@ module.exports = (app: Express, passport) => {
 
                 bonuses.forEach((bonus: BonusTxn) => {
                     if (bonus.status === AcceptedStatusOpts.confirmed) {
-                        data.bonus.confirmed += bonus.amount;
+                        data.bonus.confirmed += Number(bonus.amount);
                     }
                     if (bonus.status === AcceptedStatusOpts.declined) {
-                        data.bonus.declined += bonus.amount;
+                        data.bonus.declined += Number(bonus.amount);
                     }
                     if (bonus.status === AcceptedStatusOpts.pending) {
-                        data.bonus.pending += bonus.amount;
+                        data.bonus.pending += Number(bonus.amount);
                     }
                 });
 
