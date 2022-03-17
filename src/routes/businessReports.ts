@@ -180,6 +180,8 @@ module.exports = (app: Express, passport) => {
                     },
                 };
 
+                var arr = [];
+
                 sales.forEach((sale: SalesTxn) => {
                     if (sale.status === StatusOpts.confirmed) {
                         data.sales.confirmed += sale.sale_amount;
@@ -260,12 +262,22 @@ module.exports = (app: Express, passport) => {
                     data.referral.total -
                     data.bonus.total;
 
+                arr.push(
+                    data.sales,
+                    data.bonus,
+                    data.cashback,
+                    data.commission,
+                    data.paid,
+                    data.profit,
+                    data.referral
+                );
+
                 res.set({
                     "Access-Control-Expose-Headers": "Content-Range",
                     "Content-Range": `X-Total-Count: ${1} - ${7} / ${7}`,
                 });
 
-                res.status(200).send(data);
+                res.status(200).send(arr);
             } catch (e) {
                 res.status(500).send(e);
             }
