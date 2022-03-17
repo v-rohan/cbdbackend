@@ -45,6 +45,7 @@
       "paytmchecksum": "^1.5.0",
       "pg": "^8.4.0",
       "reflect-metadata": "^0.1.10",
+      "sendotp": "^1.2.9",
       "typeorm": "0.2.41"
    },
    "scripts": {

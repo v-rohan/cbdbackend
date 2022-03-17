@@ -1,7 +1,7 @@
 import { getManager, getRepository } from "typeorm";
 import { NextFunction, Request, Response, Express } from "express";
 import { User, UserRole, Verify } from "../entity/User";
-import { secretOrKey } from "../config";
+import { msg91_apikey, secretOrKey } from "../config";
 import { IGetUserAuthInfoRequest } from "../types";
 import { generateLink, passowrdhasher } from "../services";
 import { BonusTxn } from "../entity/Transactions/BonusTxn";
@@ -14,7 +14,7 @@ var bcrypt = require("bcryptjs");
 var crypto = require("crypto");
 var jwt = require("jsonwebtoken");
 
-module.exports = (app: Express, passport) => {
+module.exports = (app: Express, passport, sendotp) => {
     require("../passport/jwt")(passport);
     require("../passport/google")(passport);
 
@@ -92,6 +92,73 @@ module.exports = (app: Express, passport) => {
             return res.status(200).json("Email Verified");
         }
         return res.status(400).json("Wrong Verify String provided");
+    })
+
+    app.get('/sendotp',
+    passport.authenticate("jwt", { session: false }),
+    async (req: IGetUserAuthInfoRequest, res: Response) => {
+        var mob = req.user.mobile;
+        if (mob.length === 10) {
+            mob = "91" + mob;
+        }
+
+        const otpsent = await fetch(`https://api.msg91.com/api/v5/otp?template_id=5fd5ba69644eaa49af6dd21c&mobile=${mob}&authkey=${msg91_apikey}`)
+
+        if (otpsent) {
+            var jsondata = await otpsent.json();
+            if (jsondata.type === 'success') {
+                return res.status(200).json({"message": "OTP Sent"});
+            } else {
+                return res.status(400).json({"message": "Couldn't send OTP"});
+            }
+        }
+        return res.status(400).json({"message": "Couldn't send OTP"});
+    })
+
+    app.get('/resendotp',
+    passport.authenticate("jwt", {session: false}),
+    async (req: IGetUserAuthInfoRequest, res: Response) => {
+        var mob = req.user.mobile;
+        if (mob.length === 10) {
+            mob = "91" + mob;
+        }
+
+        const resendotp = await fetch(`https://api.msg91.com/api/v5/otp/retry?authkey=${msg91_apikey}&retrytype=text&mobile=${mob}`)
+
+        if (resendotp) {
+            var jsondata = await resendotp.json();
+            if (jsondata.type === 'success') {
+                return res.status(200).json({"message": "OTP Resent"})
+            } else {
+                return res.status(400).json({"message": "Couldn't resend OTP"})
+            }
+        }
+        return res.status(400).json({"message": "Couldn't resend OTP"})
+    })
+
+    app.post('/verifyotp',
+    passport.authenticate("jwt", {session: false}),
+    async (req: IGetUserAuthInfoRequest, res: Response) => {
+        var mob = req.user.mobile;
+        if (mob.length === 10) {
+            mob = "91" + mob;
+        }
+        var otp = req.body.otp; 
+        
+        const verifyotp = await fetch(`https://api.msg91.com/api/v5/otp/verify?authkey=${msg91_apikey}&mobile=${mob}&otp=${otp}`)
+
+        if (verifyotp) {
+            var jsondata = await verifyotp.json();
+            if (jsondata.type === 'success') {
+                await getRepository(User).update(req.user.id, {
+                    is_mobile_verified: true
+                })
+                return res.status(200).json({"message": "OTP Verified"})
+            } else {
+                return res.status(400).json({"message": "Couldn't verify OTP"})
+            }
+        }
+        return res.status(400).json({"message": "Couldn't verify OTP"})
     })
 
     //signup
