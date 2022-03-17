@@ -102,7 +102,7 @@ module.exports = (app: Express, passport, sendotp) => {
             mob = "91" + mob;
         }
 
-        const otpsent = await fetch(`https://api.msg91.com/api/v5/otp?template_id=5fd5ba69644eaa49af6dd21c&mobile=${mob}&authkey=${msg91_apikey}`)
+        const otpsent = await fetch(`https://api.msg91.com/api/v5/otp?template_id=5fd5ba69644eaa49af6dd21c&mobile=${mob}&authkey=${msg91_apikey}&otp_length=6`)
 
         if (otpsent) {
             var jsondata = await otpsent.json();
