@@ -130,6 +130,8 @@ module.exports = (app: Express, passport) => {
 
                 var data = {
                     sales: {
+                        id: 1,
+                        header: "Sales",
                         pending: 0,
                         confirmed: 0,
                         delayed: 0,
@@ -137,6 +139,8 @@ module.exports = (app: Express, passport) => {
                         total: 0,
                     },
                     commission: {
+                        id: 2,
+                        header: "Commission",
                         pending: 0,
                         confirmed: 0,
                         delayed: 0,
@@ -144,6 +148,8 @@ module.exports = (app: Express, passport) => {
                         total: 0,
                     },
                     cashback: {
+                        id: 3,
+                        header: "Cashback",
                         pending: 0,
                         confirmed: 0,
                         delayed: 0,
@@ -151,6 +157,8 @@ module.exports = (app: Express, passport) => {
                         total: 0,
                     },
                     referral: {
+                        id: 4,
+                        header: "Referral",
                         pending: 0,
                         confirmed: 0,
                         delayed: 0,
@@ -158,6 +166,8 @@ module.exports = (app: Express, passport) => {
                         total: 0,
                     },
                     bonus: {
+                        id: 5,
+                        header: "Bonus",
                         pending: 0,
                         confirmed: 0,
                         delayed: 0,
@@ -165,6 +175,8 @@ module.exports = (app: Express, passport) => {
                         total: 0,
                     },
                     profit: {
+                        id: 6,
+                        header: "Profit",
                         pending: 0,
                         confirmed: 0,
                         delayed: 0,
@@ -172,6 +184,8 @@ module.exports = (app: Express, passport) => {
                         total: 0,
                     },
                     paid: {
+                        id: 7,
+                        header: "Paid",
                         pending: 0,
                         confirmed: 0,
                         delayed: 0,
@@ -269,7 +283,7 @@ module.exports = (app: Express, passport) => {
                     data.referral,
                     data.bonus,
                     data.profit,
-                    data.paid,
+                    data.paid
                 );
 
                 res.set({
