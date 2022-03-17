@@ -262,7 +262,7 @@ module.exports = (app: Express, passport) => {
 
                 res.set({
                     "Access-Control-Expose-Headers": "Content-Range",
-                    "Content-Range": `X-Total-Count: ${1} - ${1} / ${1}`,
+                    "Content-Range": `X-Total-Count: ${1} - ${7} / ${7}`,
                 });
 
                 res.status(200).send(data);
