@@ -94,10 +94,10 @@ module.exports = (app: Express, passport, sendotp) => {
         return res.status(400).json("Wrong Verify String provided");
     })
 
-    app.get('/sendotp',
+    app.get('/sendotp/:mob',
     passport.authenticate("jwt", { session: false }),
     async (req: IGetUserAuthInfoRequest, res: Response) => {
-        var mob = req.user.mobile;
+        var mob = req.params.mob;
         if (mob.length === 10) {
             mob = "91" + mob;
         }
@@ -115,10 +115,10 @@ module.exports = (app: Express, passport, sendotp) => {
         return res.status(400).json({"message": "Couldn't send OTP"});
     })
 
-    app.get('/resendotp',
+    app.get('/resendotp/:mob',
     passport.authenticate("jwt", {session: false}),
     async (req: IGetUserAuthInfoRequest, res: Response) => {
-        var mob = req.user.mobile;
+        var mob = req.params.mob;
         if (mob.length === 10) {
             mob = "91" + mob;
         }
@@ -139,7 +139,7 @@ module.exports = (app: Express, passport, sendotp) => {
     app.post('/verifyotp',
     passport.authenticate("jwt", {session: false}),
     async (req: IGetUserAuthInfoRequest, res: Response) => {
-        var mob = req.user.mobile;
+        var mob = req.body.mob;
         if (mob.length === 10) {
             mob = "91" + mob;
         }
