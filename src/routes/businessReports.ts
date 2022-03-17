@@ -198,44 +198,58 @@ module.exports = (app: Express, passport) => {
 
                 sales.forEach((sale: SalesTxn) => {
                     if (sale.status === StatusOpts.confirmed) {
-                        data.sales.confirmed += sale.sale_amount;
-                        data.commission.confirmed += sale.commission_amount;
+                        data.sales.confirmed += Number(sale.sale_amount);
+                        data.commission.confirmed += Number(
+                            sale.commission_amount
+                        );
                     }
                     if (sale.status === StatusOpts.declined) {
-                        data.sales.declined += sale.sale_amount;
-                        data.commission.declined += sale.commission_amount;
+                        data.sales.declined += Number(sale.sale_amount);
+                        data.commission.declined += Number(
+                            sale.commission_amount
+                        );
                     }
                     if (sale.status === StatusOpts.delayed) {
-                        data.sales.delayed += sale.sale_amount;
-                        data.commission.delayed += sale.commission_amount;
+                        data.sales.delayed += Number(sale.sale_amount);
+                        data.commission.delayed += Number(
+                            sale.commission_amount
+                        );
                     }
                     if (sale.status === StatusOpts.pending) {
-                        data.sales.pending += sale.sale_amount;
-                        data.commission.pending += sale.commission_amount;
+                        data.sales.pending += Number(sale.sale_amount);
+                        data.commission.pending += Number(
+                            sale.commission_amount
+                        );
                     }
                 });
 
                 cashbacks.forEach((cashback: CashbackTxn) => {
                     if (cashback.status === AcceptedStatusOpts.confirmed) {
-                        data.cashback.confirmed += cashback.cashback;
+                        data.cashback.confirmed += Number(cashback.cashback);
                     }
                     if (cashback.status === AcceptedStatusOpts.declined) {
-                        data.cashback.declined += cashback.cashback;
+                        data.cashback.declined += Number(cashback.cashback);
                     }
                     if (cashback.status === AcceptedStatusOpts.pending) {
-                        data.cashback.pending += cashback.cashback;
+                        data.cashback.pending += Number(cashback.cashback);
                     }
                 });
 
                 referrals.forEach((referral: ReferrerTxn) => {
                     if (referral.status === AcceptedStatusOpts.confirmed) {
-                        data.referral.confirmed += referral.referrer_amount;
+                        data.referral.confirmed += Number(
+                            referral.referrer_amount
+                        );
                     }
                     if (referral.status === AcceptedStatusOpts.declined) {
-                        data.referral.declined += referral.referrer_amount;
+                        data.referral.declined += Number(
+                            referral.referrer_amount
+                        );
                     }
                     if (referral.status === AcceptedStatusOpts.pending) {
-                        data.referral.pending += referral.referrer_amount;
+                        data.referral.pending += Number(
+                            referral.referrer_amount
+                        );
                     }
                 });
 
@@ -252,29 +266,29 @@ module.exports = (app: Express, passport) => {
                 });
 
                 data.sales.total =
-                    data.sales.confirmed +
-                    data.sales.pending +
-                    data.sales.delayed;
+                    Number(data.sales.confirmed) +
+                    Number(data.sales.pending) +
+                    Number(data.sales.delayed);
                 data.cashback.total =
-                    data.cashback.confirmed +
-                    data.cashback.pending +
-                    data.cashback.delayed;
+                    Number(data.cashback.confirmed) +
+                    Number(data.cashback.pending) +
+                    Number(data.cashback.delayed);
                 data.commission.total =
-                    data.commission.confirmed +
-                    data.commission.pending +
-                    data.commission.delayed;
+                    Number(data.commission.confirmed) +
+                    Number(data.commission.pending) +
+                    Number(data.commission.delayed);
                 data.referral.total =
-                    data.referral.confirmed +
-                    data.referral.pending +
-                    data.referral.delayed;
+                    Number(data.referral.confirmed) +
+                    Number(data.referral.pending) +
+                    Number(data.referral.delayed);
                 data.bonus.total =
-                    data.bonus.confirmed +
-                    data.bonus.pending +
-                    data.bonus.delayed;
+                    Number(data.bonus.confirmed) +
+                    Number(data.bonus.pending) +
+                    Number(data.bonus.delayed);
                 data.profit.total =
-                    data.commission.total -
-                    data.referral.total -
-                    data.bonus.total;
+                    Number(data.commission.total) -
+                    Number(data.referral.total) -
+                    Number(data.bonus.total);
 
                 arr.push(
                     data.sales,
