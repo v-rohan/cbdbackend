@@ -12,6 +12,7 @@ const getAllStores = async (req: Request, res: Response) => {
             // "refTxns",
             // "snelinks",
             "categories",
+            "network_id",
             "coupons",
             // "clicks_id",
         ],
