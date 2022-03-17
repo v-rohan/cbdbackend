@@ -68,6 +68,7 @@ createConnection()
         );
         require("./routes/settingsRoutes")(app, passport);
         require("./routes/businessReports")(app, passport);
+        require("./routes/couponRoutes")(app, passport);
         // Serve media files
         app.use("/media", express.static("media"));
         // app.use(handleError);
