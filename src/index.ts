@@ -5,7 +5,6 @@ import * as bodyParser from "body-parser";
 import { Request, Response } from "express";
 import * as morgan from "morgan";
 const AnonymousStrategy = require("passport-anonymous").Strategy;
-const SendOtp = require('sendotp');
 
 import { User } from "./entity/User";
 import { port, secretOrKey, msg91_apikey } from "./config";
@@ -38,12 +37,10 @@ createConnection()
         app.use(bodyParser.json());
         app.use(cors());
 
-        var sendotp = new SendOtp(msg91_apikey, 'Enter {{otp}} to verify your CashbackDuniya.com account and enjoy full account access without restriction.')
-
         passport.use(new AnonymousStrategy());
 
         // register express routes from defined application routes
-        require("./routes/userRoutes")(app, passport, sendotp);
+        require("./routes/userRoutes")(app, passport);
         require("./routes/clickRoutes")(app, passport);
         require("./routes/sneRoutes")(app, passport);
         require("./routes/paymentModes")(app, passport);
