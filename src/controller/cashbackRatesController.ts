@@ -4,7 +4,9 @@ import { CashbackRates } from "../entity/CashbackRates";
 
 const getCashbackRates = async (req: Request, res: Response) => {
     try {
-        const cbRates = await getRepository(CashbackRates).find();
+        const cbRates = await getRepository(CashbackRates).find({
+            relations: ["store"],
+        });
         res.set({
             "Access-Control-Expose-Headers": "Content-Range",
             "Content-Range": `X-Total-Count: ${1} - ${cbRates.length} / ${
@@ -40,14 +42,15 @@ const getCashbackRatesByStoreId = async (req: Request, res: Response) => {
 };
 
 const getCashbackRateById = async (req: Request, res: Response) => {
-  try {
-      const cbRates = await getRepository(CashbackRates).find({
-          where: { id: Number(req.params.id) },
-      });
-      return res.status(200).json(cbRates);
-  } catch (error) {
-      return res.status(400).json({ error });
-  }
+    try {
+        const cbRates = await getRepository(CashbackRates).find({
+            where: { id: Number(req.params.id) },
+            relations: ["store"],
+        });
+        return res.status(200).json(cbRates);
+    } catch (error) {
+        return res.status(400).json({ error });
+    }
 };
 
 const updateCashbackRateById = async (req: Request, res: Response) => {
