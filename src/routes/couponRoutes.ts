@@ -30,12 +30,6 @@ module.exports = (app: Express, passport: any) => {
 
     router.route("/").get(getCoupons).post(createCoupon);
     router
-        .route("/:id")
-        .get(getCouponById)
-        .put(updateCoupon)
-        .delete(deleteCoupon);
-
-    router
         .route("/couponcategory")
         .get(getCouponCategories)
         .post(
@@ -50,6 +44,12 @@ module.exports = (app: Express, passport: any) => {
             updateCouponCategory
         )
         .delete(deleteCouponCategory);
+    router
+        .route("/:id")
+        .get(getCouponById)
+        .put(updateCoupon)
+        .delete(deleteCoupon);
+
 
     return router;
 };
