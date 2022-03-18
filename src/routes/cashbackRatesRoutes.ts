@@ -2,6 +2,7 @@ import { Express, Router } from "express";
 import {
     getCashbackRates,
     createCashbackRate,
+    getCashbackRateById,
     deleteCashbackRateById,
     getCashbackRatesByStoreId,
     updateCashbackRateById,
@@ -22,6 +23,7 @@ module.exports = (app: Express, passport: any) => {
     router.route("/").get(getCashbackRates).post(createCashbackRate);
     router
         .route("/:id")
+        .get(getCashbackRateById)
         .put(updateCashbackRateById)
         .delete(deleteCashbackRateById);
     router.route("/store/:id").get(getCashbackRatesByStoreId);

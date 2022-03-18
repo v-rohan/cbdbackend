@@ -39,6 +39,17 @@ const getCashbackRatesByStoreId = async (req: Request, res: Response) => {
     }
 };
 
+const getCashbackRateById = async (req: Request, res: Response) => {
+  try {
+      const cbRates = await getRepository(CashbackRates).find({
+          where: { id: Number(req.params.id) },
+      });
+      return res.status(200).json(cbRates);
+  } catch (error) {
+      return res.status(400).json({ error });
+  }
+};
+
 const updateCashbackRateById = async (req: Request, res: Response) => {
     try {
         const cbRates = await getRepository(CashbackRates).findOneOrFail({
@@ -73,6 +84,7 @@ const deleteCashbackRateById = async (req: Request, res: Response) => {
 export {
     getCashbackRates,
     createCashbackRate,
+    getCashbackRateById,
     deleteCashbackRateById,
     getCashbackRatesByStoreId,
     updateCashbackRateById,
