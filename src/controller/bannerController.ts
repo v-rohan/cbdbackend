@@ -6,6 +6,12 @@ import { IGetUserAuthInfoRequest } from "../types";
 const getBanner = async (req: Request, res: Response) => {
     try {
         const banner = await getRepository(Banner).find();
+        res.set({
+            "Access-Control-Expose-Headers": "Content-Range",
+            "Content-Range": `X-Total-Count: ${1} - ${banner.length} / ${
+                banner.length
+            }`,
+        });
         return res.status(200).json(banner);
     } catch (error) {
         return res.status(400).json(error);
