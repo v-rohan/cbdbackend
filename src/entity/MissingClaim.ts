@@ -5,6 +5,7 @@ import {
     Column,
     CreateDateColumn,
     UpdateDateColumn,
+    Entity,
 } from "typeorm";
 import { AffiliateNetwork } from "./AffiliateNetwork";
 
@@ -30,7 +31,7 @@ enum MissingClaimStatus {
     answered = "answered",
     closed = "closed",
 }
-
+@Entity()
 export class MissingClaim {
     @PrimaryGeneratedColumn()
     id: number;
