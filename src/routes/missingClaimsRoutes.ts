@@ -17,10 +17,12 @@ module.exports = (app: Express, passport: any) => {
 
     router.use(passport.authenticate("jwt", { session: false }));
 
-    router.route("/submitclaim").post(IsAuthenticated, submitClaim);
-    router.route("/viewclaims").get(getClaimByUser);
+    router.route("/viewclaims").get(AdminCheck, getClaimByUser);
     router.route("/viewclaims/:id").get(AdminCheck, getClaimById);
-    router.route("/missingclaims").get(AdminCheck, getAllClaims);
+    router
+        .route("/missingclaims")
+        .get(AdminCheck, getAllClaims)
+        .post(IsAuthenticated, submitClaim);
     router
         .route("/missingclaims/:id")
         .get(getClaimById)

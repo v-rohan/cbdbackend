@@ -44,7 +44,11 @@ createConnection()
         require("./routes/clickRoutes")(app, passport);
         require("./routes/sneRoutes")(app, passport);
         require("./routes/paymentModes")(app, passport);
-        require("./routes/missingClaimsRoutes")(app, passport);
+        ;
+        app.use(
+            "/",
+            require("./routes/missingClaimsRoutes")(app, passport)
+        )
         app.use(
             "/payoutrequests",
             require("./routes/userRequestRoutes")(app, passport)
