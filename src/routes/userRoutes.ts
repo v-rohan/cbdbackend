@@ -217,10 +217,14 @@ module.exports = (app: Express, passport, sendotp) => {
                     })
                     .then(async () => {
                         publishMail({
-                            "from": "support@cashbackduniya.com",
-                            "to": newUser.email.toString(),
-                            "subject": "New Registration",
-                            "text": "Thank You for registering."
+                            template: 'welcome',
+                            message: {
+                                to: newUser.email.toString(),
+                            },
+                            locals: {
+                                first_name: newUser.first_name,
+                                last_name: newUser.last_name,
+                            },
                         })
                         var hash = crypto.createHash('sha256').update(newUser.email).digest('hex');
                         var verify = new Verify();
@@ -233,10 +237,15 @@ module.exports = (app: Express, passport, sendotp) => {
                             return;
                         }
                         publishMail({
-                            "from": "support@cashbackduniya.com",
-                            "to": newUser.email.toString(),
-                            "subject": "Email Verification",
-                            "text": `Follow this link to verify your email address ${process.env.BACKEND_URL}/verifymail/${verify.verify_hash}/`
+                            template: 'verifyemail',
+                            message: {
+                                to: newUser.email.toString(),
+                            },
+                            locals: {
+                                first_name: newUser.first_name,
+                                last_name: newUser.last_name,
+                                verify_link: `${process.env.BACKEND_URL}/verifymail/${verify.verify_hash}/`,
+                            },
                         })
                         response.sendStatus(200);
                     })

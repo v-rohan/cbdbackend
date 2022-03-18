@@ -2,6 +2,7 @@ import { amqp, queue, mailer_pass } from "./config";
 import * as amqplib from "amqplib/callback_api";
 import * as nodemailer from 'nodemailer';
 import * as sgTransport from 'nodemailer-sendgrid-transport';
+const Email = require('email-templates');
 
 // Setup Nodemailer transport
 var options = {
@@ -9,7 +10,16 @@ var options = {
         api_key: mailer_pass
     }
 }
+
 const transport = nodemailer.createTransport(sgTransport(options));
+
+const email = new Email({
+    message: {
+      from: 'support@cashbackduniya.com'
+    },
+    send: true,
+    transport: transport
+  });
 
 // Create connection to AMQP server
 amqplib.connect(amqp, (err, connection) => {
@@ -43,16 +53,15 @@ amqplib.connect(amqp, (err, connection) => {
                 // Decode message contents
                 let message = JSON.parse(data.content.toString('utf8'));
                 // Send the message using the previously set up Nodemailer transport
-                transport.sendMail(message, (err, info) => {
-                    if (err) {
-                        console.error(err.stack);
-                        // put the failed message item back to queue
-                        return channel.nack(data);
-                    }
-                    console.log('Delivered message to %s', message.to);
-                    // remove message item from the queue
+                email.send(message)
+                .then(() => {
+                    console.log('Delivered message to %s', message.message.to);
                     channel.ack(data);
-                });
+                })
+                .catch((err) => {
+                    console.error(err.stack);
+                    return channel.nack(data);
+                })
             });
         });
     });
