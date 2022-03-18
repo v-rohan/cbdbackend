@@ -12,7 +12,7 @@ const getAllClaims = async (req: IGetUserAuthInfoRequest, res: Response) => {
             claims.length
         }`,
     });
-    return res.status(200).json({ claims });
+    return res.status(200).send(claims);
 };
 
 const getClaimById = async (req: IGetUserAuthInfoRequest, res: Response) => {
