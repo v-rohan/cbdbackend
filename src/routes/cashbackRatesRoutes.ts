@@ -1,5 +1,6 @@
 import { Express, Router } from "express";
 import {
+    getCashbackRates,
     createCashbackRate,
     deleteCashbackRateById,
     getCashbackRatesByStoreId,
@@ -18,7 +19,7 @@ module.exports = (app: Express, passport: any) => {
     router.use(AdminCheck);
 
     // Postback log Routes
-    router.route("/").post(createCashbackRate);
+    router.route("/").get(getCashbackRates).post(createCashbackRate);
     router
         .route("/:id")
         .put(updateCashbackRateById)
