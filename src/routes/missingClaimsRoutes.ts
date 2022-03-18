@@ -20,11 +20,11 @@ module.exports = (app: Express, passport: any) => {
     router.route("/viewclaims").get(AdminCheck, getClaimByUser);
     router.route("/viewclaims/:id").get(AdminCheck, getClaimById);
     router
-        .route("/missingclaims")
+        .route("/")
         .get(AdminCheck, getAllClaims)
         .post(IsAuthenticated, submitClaim);
     router
-        .route("/missingclaims/:id")
+        .route("/:id")
         .get(getClaimById)
         .put(AdminCheck, updateClaimStaus);
 

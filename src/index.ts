@@ -46,7 +46,7 @@ createConnection()
         require("./routes/paymentModes")(app, passport);
         ;
         app.use(
-            "/",
+            "/missingclaims",
             require("./routes/missingClaimsRoutes")(app, passport)
         )
         app.use(
