@@ -173,7 +173,7 @@ const getBankPayouts = async (req: IGetUserAuthInfoRequest, res: Response) => {
             payoutRequests.length
         }`,
     });
-    return res.status(200).json({ payoutRequests });
+    return res.status(200).json(payoutRequests);
 };
 
 const getPaytmWalletPayouts = async (
