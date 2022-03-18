@@ -28,9 +28,9 @@ module.exports = (app: Express, passport: any) => {
         storage: fileStorageEngine("coupon"),
     });
 
-    router.route("/coupon").get(getCoupons).post(createCoupon);
+    router.route("/").get(getCoupons).post(createCoupon);
     router
-        .route("/coupon/:id")
+        .route("/:id")
         .get(getCouponById)
         .put(updateCoupon)
         .delete(deleteCoupon);
