@@ -5,7 +5,13 @@ import { CashbackTxn } from "../entity/Transactions/CashbackTxn";
 import { IGetUserAuthInfoRequest } from "../types";
 
 const getAllClaims = async (req: IGetUserAuthInfoRequest, res: Response) => {
-    const claims = getRepository(MissingClaim).find();
+    const claims = await getRepository(MissingClaim).find();
+    res.set({
+        "Access-Control-Expose-Headers": "Content-Range",
+        "Content-Range": `X-Total-Count: ${1} - ${claims.length} / ${
+            claims.length
+        }`,
+    });
     return res.status(200).json({ claims });
 };
 
