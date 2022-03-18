@@ -87,7 +87,7 @@ module.exports = (app: Express, passport, sendotp) => {
         if (verify) {
             await getRepository(User).update(verify.user.id, {
                     is_email_verified: true,
-                    // email_verified_at: new Date()
+                    email_verified_at: new Date()
                 })
             return res.status(200).json("Email Verified");
         }
@@ -151,7 +151,8 @@ module.exports = (app: Express, passport, sendotp) => {
             var jsondata = await verifyotp.json();
             if (jsondata.type === 'success') {
                 await getRepository(User).update(req.user.id, {
-                    is_mobile_verified: true
+                    is_mobile_verified: true,
+                    mobile_verified_at: new Date(),
                 })
                 return res.status(200).json({"message": "OTP Verified"})
             } else {
