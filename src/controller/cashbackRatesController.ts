@@ -43,7 +43,7 @@ const getCashbackRatesByStoreId = async (req: Request, res: Response) => {
 
 const getCashbackRateById = async (req: Request, res: Response) => {
     try {
-        const cbRates = await getRepository(CashbackRates).find({
+        const cbRates = await getRepository(CashbackRates).findOneOrFail({
             where: { id: Number(req.params.id) },
             relations: ["store"],
         });
