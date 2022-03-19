@@ -23,8 +23,8 @@ module.exports = (app: Express, passport: any) => {
         storage: fileStorageEngine("claims"),
     });
 
-    router.route("/viewclaims").get(AdminCheck, getClaimByUser);
-    router.route("/viewclaims/:id").get(AdminCheck, getClaimById);
+    router.route("/viewclaims").get(IsAuthenticated, getClaimByUser);
+    router.route("/viewclaims/:id").get(IsAuthenticated, getClaimById);
     router
         .route("/")
         .get(AdminCheck, getAllClaims)
