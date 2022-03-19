@@ -97,25 +97,23 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
                 salesTxn.transaction_id = String(req.query.transaction_id);
                 salesTxn.user = click.user;
                 salesTxn.store = click.store;
-                var ss = await JSON.parse(click.network.sale_statuses);
-                salesTxn.status = StatusOpts[`${ss[`${req.query.status}`]}`];
+		var ss = JSON.parse(click.network.sale_statuses);
+                salesTxn.status =
+                    StatusOpts[
+                        `${ss[`${req.query.status}`]}`
+                    ];
+           
+		Object.keys(ss).forEach((ele) => {
+			console.log(ele)
+			if(ele === req.query.status) {
+			   console.log("maralo");
+			}
+		})
+                console.log(click.network.sale_statuses, req.query.status, ss[`${req.query.status}`]);
 
-                Object.keys(ss).forEach((ele) => {
-                    console.log(ele);
-                    if (ele === req.query.status) {
-                        console.log("maralo");
-                    }
-                });
-                console.log(
-                    click.network.sale_statuses,
-                    req.query.status,
-                    ss[`${req.query.status}`]
-                );
-                salesTxn.sale_status = salesTxn.status;
-
-                // salesTxn.sale_status = `${
-                //     click.network.sale_statuses[`${req.query.status}`]
-                // }`;
+                salesTxn.sale_status = `${
+                    click.network.sale_statuses[`${req.query.status}`]
+                }`;
                 await transactionalEntityManager.connection
                     .getRepository(SalesTxn)
                     .save(salesTxn);
@@ -140,7 +138,7 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
                     100;
                 cashbackTxn.txn_date_time = new Date();
 
-                console.log(AcceptedStatusOpts[salesTxn.status]);
+		console.log(AcceptedStatusOpts[salesTxn.status]);
 
                 if (salesTxn.status == StatusOpts.delayed) {
                     cashbackTxn.status = AcceptedStatusOpts.pending;
