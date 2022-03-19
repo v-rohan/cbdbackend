@@ -73,6 +73,9 @@ export class MissingClaim {
     })
     order_amount: number;
 
+    @Column({ type: "text", nullable: true })
+    image: string;
+
     @Column({ type: "date", nullable: true, default: null })
     transaction_date: Date;
 

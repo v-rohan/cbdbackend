@@ -32,8 +32,8 @@ export class PostbackLog {
   @Column({ nullable: true})
   order_id: string;
 
-  @Column({ type: "timestamptz", nullable: false })
-  sale_date: Date;
+  @Column({ nullable: true })
+  sale_date: string;
 
   @Column({ type: "decimal", nullable: false })
   sale_amount: number;

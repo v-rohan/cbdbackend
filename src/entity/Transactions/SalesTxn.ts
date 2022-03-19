@@ -49,7 +49,7 @@ export class SalesTxn {
     @Column({ type: "date", nullable: true })
     click_date: string;
 
-    @Column({ type: "date", nullable: true })
+    @Column({ nullable: true })
     sale_date: string;
 
     @Column({ type: "decimal", nullable: false })
