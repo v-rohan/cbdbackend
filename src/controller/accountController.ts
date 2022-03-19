@@ -85,15 +85,15 @@ const calculateWallet = async (
     cashTxns.forEach((txn) => {
         if (txn.store.cashback_type === CashbackType.CASHBACK) {
             if (txn.status === "pending") {
-                pendingAmount += txn.cashback;
+                pendingAmount += Number(txn.cashback);
             } else if (txn.status === "confirmed") {
-                comfirmedAmount += txn.cashback;
+                comfirmedAmount += Number(txn.cashback);
             }
         } else {
             if (txn.status === "pending") {
-                rewardAmountPending += txn.cashback;
+                rewardAmountPending += Number(txn.cashback);
             } else if (txn.status === "confirmed") {
-                rewardAmount += txn.cashback;
+                rewardAmount += Number(txn.cashback);
             }
         }
     });
@@ -114,19 +114,19 @@ const calculateWallet = async (
 
     referrerTxns.forEach((txn) => {
         if (txn.status === "pending") {
-            rewardAmountPending += txn.referrer_amount;
+            rewardAmountPending += Number(txn.referrer_amount);
         }
         if (txn.status === "confirmed") {
-            rewardAmount += txn.referrer_amount;
+            rewardAmount += Number(txn.referrer_amount);
         }
     });
 
     bonusTxns.forEach((txn) => {
         if (txn.status === "pending") {
-            rewardAmountPending += txn.amount;
+            rewardAmountPending += Number(txn.amount);
         }
         if (txn.status === "confirmed") {
-            rewardAmount += txn.amount;
+            rewardAmount += Number(txn.amount);
         }
     });
 
@@ -142,8 +142,8 @@ const calculateWallet = async (
     let payoutAmount = 0;
     let payoutAmtReward = 0;
     payouts.forEach((payout) => {
-        payoutAmount += payout.cashback_amount;
-        payoutAmtReward += payout.reward_amount;
+        payoutAmount += Number(payout.cashback_amount);
+        payoutAmtReward += Number(payout.reward_amount);
     });
 
     const walletAmount =
