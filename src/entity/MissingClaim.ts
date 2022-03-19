@@ -82,6 +82,9 @@ export class MissingClaim {
     @Column({ type: "varchar", length: 500, nullable: true, default: null })
     user_message: string;
 
+    @Column({ type: "varchar", length: 255, nullable: true })
+    image: string;
+
     @Column({ type: "varchar", length: 500, nullable: true, default: null })
     admin_note: string;
 

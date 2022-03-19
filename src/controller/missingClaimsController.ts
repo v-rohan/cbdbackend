@@ -53,6 +53,7 @@ const submitClaim = async (req: IGetUserAuthInfoRequest, res: Response) => {
         newClaim.transaction_date = cashbackTxn.txn_date_time;
         newClaim.platform = req.body.platform;
         newClaim.user_message = req.body.message;
+        newClaim.image = req.file.path;
 
         await getRepository(MissingClaim).save(newClaim);
     } catch (error) {

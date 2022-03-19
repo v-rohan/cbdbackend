@@ -8,6 +8,8 @@ import {
     submitClaim,
 } from "../controller/missingClaimsController";
 import { AdminCheck, IsAuthenticated } from "../middleware/AuthMiddleware";
+import multer = require("multer");
+import fileStorageEngine from "../multerStorageEngine";
 
 module.exports = (app: Express, passport: any) => {
     require("../passport/jwt")(passport);
@@ -17,16 +19,21 @@ module.exports = (app: Express, passport: any) => {
 
     router.use(passport.authenticate("jwt", { session: false }));
 
+    const missingClaimsUpload = multer({
+        storage: fileStorageEngine("claims"),
+    });
+
     router.route("/viewclaims").get(AdminCheck, getClaimByUser);
     router.route("/viewclaims/:id").get(AdminCheck, getClaimById);
     router
         .route("/")
         .get(AdminCheck, getAllClaims)
-        .post(IsAuthenticated, submitClaim);
-    router
-        .route("/:id")
-        .get(getClaimById)
-        .put(AdminCheck, updateClaimStaus);
+        .post(
+            IsAuthenticated,
+            missingClaimsUpload.single("image"),
+            submitClaim
+        );
+    router.route("/:id").get(getClaimById).put(AdminCheck, updateClaimStaus);
 
     return router;
 };
