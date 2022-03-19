@@ -194,21 +194,27 @@ const getPaytmWalletPayouts = async (
     req: IGetUserAuthInfoRequest,
     res: Response
 ) => {
-    const paytmWalletPayouts: Array<PayoutRequest> = await getRepository(
-        PayoutRequest
-    ).find({
-        where: {
-            payment_mode: { method_code: Mode.paytm },
-        },
-        relations: ["payment_mode", "user_id"],
-    });
-    res.set({
-        "Access-Control-Expose-Headers": "Content-Range",
-        "Content-Range": `X-Total-Count: ${1} - ${
-            paytmWalletPayouts.length
-        } / ${paytmWalletPayouts.length}`,
-    });
-    return res.status(200).json(paytmWalletPayouts);
+    try {
+        const paytmWalletPayouts: Array<PayoutRequest> = await getRepository(
+            PayoutRequest
+        ).find({
+            where: {
+                payment_mode: { method_code: Mode.paytm },
+            },
+            relations: ["payment_mode", "user_id"],
+        });
+        console.log(paytmWalletPayouts);
+        res.set({
+            "Access-Control-Expose-Headers": "Content-Range",
+            "Content-Range": `X-Total-Count: ${1} - ${
+                paytmWalletPayouts.length
+            } / ${paytmWalletPayouts.length}`,
+        });
+        return res.status(200).json(paytmWalletPayouts);
+    } catch (err) {
+        console.log(err);
+        res.status(400).json({ err });
+    }
 };
 
 export {
