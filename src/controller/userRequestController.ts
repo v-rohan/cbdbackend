@@ -24,7 +24,7 @@ const bulkTransfer = async (req: IGetUserAuthInfoRequest, res: Response) => {
         let paytmParams: any = {
             subwalletGuid: process.env.PAYTM_SUBWALLET_GUID,
             orderId: payoutRequest.payment_id,
-            amount: (+cshbk) + (+rwrd),
+            amount: +cshbk + +rwrd,
         };
         console.log(paytmParams);
         var path: string;
@@ -121,9 +121,7 @@ const getPayoutRequestById = async (
             where: { id: Number(payoutRequestId) },
             relations: ["payment_mode", "user_id"],
         });
-        return res.status(200).json({
-            payoutRequest,
-        });
+        return res.status(200).json(payoutRequest);
     } catch (err) {
         return res.status(500);
     }
@@ -155,7 +153,7 @@ const deletePayoutRequestById = async (
         const payoutRequest: PayoutRequest = await getRepository(
             PayoutRequest
         ).findOneOrFail({ where: { id: Number(req.params.id) } });
-        await getRepository(PayoutRequest).delete(payoutRequest);
+        await getRepository(PayoutRequest).remove(payoutRequest);
         return res
             .status(204)
             .json({ message: "Payout Request Deleted Successfully" });
