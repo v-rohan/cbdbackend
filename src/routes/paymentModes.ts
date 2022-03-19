@@ -76,7 +76,7 @@ module.exports = (app: Express, passport) => {
                     })
                     .then(async (modes) => {
                         for(var i = 0; i < modes.length; i++) {
-                            if (modes[i].method_code == "bank")
+                            if (modes[i].method_code == "bank") {
                                 try {
                                     var bankImg = await getRepository(BankImage).findOneOrFail({
                                         where: {ifsc_prefix: modes[i].inputs["ifsc_code"].substring(0,4)}
@@ -84,6 +84,7 @@ module.exports = (app: Express, passport) => {
                                     modes[i]["image"] = bankImg.image;
                                 } catch (err) {
                                     console.log(err);
+                                }
                             } else {
                                 try {
                                     var bankImg = await getRepository(BankImage).findOneOrFail({

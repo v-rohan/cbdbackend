@@ -72,7 +72,7 @@ const MigrateMockTxns = async () => {
             cashbackTxn.user = click.user;
             cashbackTxn.store = click.store;
             cashbackTxn.cashback =
-                Number(Number(cashbackTxn.sale_amount) * Number(click.store.cashback_percent)) / 100;
+                    (Number(cashbackTxn.sale_amount) * Number(click.store.cashback_percent)) / 100;
             cashbackTxn.txn_date_time = new Date();
 
             await getManager().transaction(async (transaction) => {
