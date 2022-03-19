@@ -12,6 +12,9 @@ import {
 @Entity()
 export class Notification {
 
+    @PrimaryGeneratedColumn()
+    id: number;
+
     @Column({ type: "text", nullable: true })
     title: string;
 
