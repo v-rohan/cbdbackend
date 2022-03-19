@@ -17,11 +17,12 @@ module.exports = (app: Express, passport: any) => {
 
     // Middleware
     router.use(passport.authenticate(["jwt", "anonymous"], { session: false }));
-    router.use(AdminCheckAllowUnSafe);
+    
 
     // Postback log Routes
-    router.route("/").get(getAllLogs)
+    router.route("/").get(AdminCheckAllowUnSafe, getAllLogs)
     router.route("/postback").get(createOrUpdatePostbackLog);
+    router.use(AdminCheckAllowUnSafe);
     router
         .route("/:id")
         .get(getLogById)
