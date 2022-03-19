@@ -1,6 +1,6 @@
 import { Response } from "express";
 import { getRepository } from "typeorm";
-import { Mode } from "../entity/Payment/PaymentMode";
+import { Mode, PaymentMode } from "../entity/Payment/PaymentMode";
 import { PayoutRequest, StatusOpts } from "../entity/Payment/PayoutRequest";
 import { IGetUserAuthInfoRequest } from "../types";
 
@@ -104,27 +104,31 @@ const getPayoutRequests = async (
     req: IGetUserAuthInfoRequest,
     res: Response
 ) => {
-    const payoutRequests: PayoutRequest[] = await getRepository(
-        PayoutRequest
-    ).find({
-        relations: ["payment_mode", "user_id"],
-    });
-    console.log(payoutRequests);
-    res.set({
-        "Access-Control-Expose-Headers": "Content-Range",
-        "Content-Range": `X-Total-Count: ${1} - ${payoutRequests.length} / ${
-            payoutRequests.length
-        }`,
-    });
-    return res.status(200).json(payoutRequests);
+    try {
+        const payoutRequests: PayoutRequest[] = await getRepository(
+            PayoutRequest
+        ).find({
+            relations: ["payment_mode", "user_id"],
+        });
+        res.set({
+            "Access-Control-Expose-Headers": "Content-Range",
+            "Content-Range": `X-Total-Count: ${1} - ${
+                payoutRequests.length
+            } / ${payoutRequests.length}`,
+        });
+        return res.status(200).json(payoutRequests);
+    } catch (err) {
+        console.log(err);
+        return res.json(400).json({ err });
+    }
 };
 
 const getPayoutRequestById = async (
     req: IGetUserAuthInfoRequest,
     res: Response
 ) => {
-    const payoutRequestId = req.params.id;
     try {
+        const payoutRequestId = req.params.id;
         const payoutRequest: PayoutRequest = await getRepository(
             PayoutRequest
         ).findOneOrFail({
@@ -203,7 +207,6 @@ const getPaytmWalletPayouts = async (
             },
             relations: ["payment_mode", "user_id"],
         });
-        console.log(paytmWalletPayouts);
         res.set({
             "Access-Control-Expose-Headers": "Content-Range",
             "Content-Range": `X-Total-Count: ${1} - ${
