@@ -62,7 +62,7 @@ export class PostbackLog {
   @Column({ nullable: true })
   aff_sub5: string;
 
-  @Column({ nullable: false, unique: true })
+  @Column({ nullable: true, unique: false })
   sale_id: string;
 
   @Column({ nullable: true })
