@@ -461,7 +461,9 @@ const payoutsByUserByMonth = async (req: IGetUserAuthInfoRequest, res: Response)
                 where: {ifsc_prefix: "PYTM"}
             })
         }
-        payouts[i]["image"] = bankImg.image;
+        if (bankImg.image) {
+            payouts[i]["image"] = bankImg.image;
+        }
     }
     const monthlyPayouts = Object.values(payouts.reduce(txnReducer, {}))
     return res.status(200).json(monthlyPayouts);
