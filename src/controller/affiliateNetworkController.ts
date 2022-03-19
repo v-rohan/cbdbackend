@@ -23,7 +23,7 @@ const getNetworkById = async (req: Request, res: Response) => {
             where: { id: Number(req.params.id) },
         });
         var a = network
-        a.sale_statuses = JSON.stringify(a.sale_statuses);
+        //a.sale_statuses = JSON.stringify(a.sale_statuses);
         return res.status(200).json(a);
     } catch (error) {
         return res.status(404).json({ error: "Affiliate Network not found" });

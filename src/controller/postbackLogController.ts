@@ -99,7 +99,7 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
                 salesTxn.transaction_id = String(req.query.transaction_id);
                 salesTxn.user = click.user;
                 salesTxn.store = click.store;
-                var ss = JSON.parse(JSON.parse(click.network.sale_statuses));
+                var ss = JSON.parse(click.network.sale_statuses);
                 console.log(ss);
                 salesTxn.status = StatusOpts[`${ss[`${req.query.status}`]}`];
 
