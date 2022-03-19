@@ -38,7 +38,12 @@ module.exports = (app: Express, passport) => {
                 var notifs = await getRepository(Notification).find({
                     order: { created: "DESC" },
                 });
-
+                response.set({
+                    "Access-Control-Expose-Headers": "Content-Range",
+                    "Content-Range": `X-Total-Count: ${1} - ${notifs.length} / ${
+                        notifs.length
+                    }`,
+                });
                 response.status(200).send(notifs);
             } catch (error) {
                 response.status(403).send(error);
