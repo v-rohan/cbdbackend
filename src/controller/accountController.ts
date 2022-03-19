@@ -451,9 +451,13 @@ const payoutsByUserByMonth = async (req: IGetUserAuthInfoRequest, res: Response)
     for (var i = 0; i < payouts.length; i++) {
         var bankImg;
         if (payouts[i].payment_mode.method_code === "bank") {
-            bankImg = await getRepository(BankImage).findOneOrFail({
-                where: {ifsc_prefix: payouts[i].payment_mode.inputs["ifsc_code"].substring(0,4)}
-            })
+            try {
+                bankImg = await getRepository(BankImage).findOneOrFail({
+                    where: {ifsc_prefix: payouts[i].payment_mode.inputs["ifsc_code"].substring(0,4)}
+                })
+            } catch (err) {
+                console.log(err)
+            }
         } else {
             bankImg = await getRepository(BankImage).findOneOrFail({
                 where: {ifsc_prefix: "PYTM"}
