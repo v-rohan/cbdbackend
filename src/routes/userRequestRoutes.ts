@@ -22,14 +22,14 @@ module.exports = (app: Express, passport: any) => {
 
     router.route("/").get(getPayoutRequests);
     router.route("/apiLog").get(getBankPayouts);
+    router.post("/bulkTransfer", bulkTransfer);
+    router.route("/bankpayouts").get(getBankPayouts);
+    router.route("/paytmwalletpayouts").get(getPaytmWalletPayouts);
     router
         .route("/:id")
         .get(getPayoutRequestById)
         .put(updatePayoutRequestById)
         .delete(deletePayoutRequestById);
-    router.post("/bulkTransfer", bulkTransfer);
-    router.route("/bankpayouts").get(getBankPayouts);
-    router.route("/paytmwalletpayouts").get(getPaytmWalletPayouts);
 
     return router;
 };
