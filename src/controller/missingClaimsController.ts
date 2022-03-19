@@ -56,6 +56,7 @@ const submitClaim = async (req: IGetUserAuthInfoRequest, res: Response) => {
         newClaim.image = req.file.path;
 
         await getRepository(MissingClaim).save(newClaim);
+        res.status(201).json({"message": "Missing Claim Created"});
     } catch (error) {
         res.status(404).json({ message: "Cashback Transaction not found" });
     }
