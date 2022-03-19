@@ -23,7 +23,7 @@ const MigrateMockTxns = async () => {
             try {
                 click = await getRepository(Clicks).findOneOrFail({
                     where: { id: Number(mockTxn.aff_sub1) },
-                    relations: ["store", "user"],
+                    relations: ["network", "store", "user"],
                 });
             } catch (err) {
                 console.log(err);
