@@ -461,7 +461,7 @@ const payoutsByUserByMonth = async (req: IGetUserAuthInfoRequest, res: Response)
                 where: {ifsc_prefix: "PYTM"}
             })
         }
-        if (bankImg.image) {
+        if (bankImg) {
             payouts[i]["image"] = bankImg.image;
         }
     }
