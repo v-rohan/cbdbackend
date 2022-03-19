@@ -211,7 +211,7 @@ const getLogById = async (req: Request, res: Response) => {
     try {
         const log = await getRepository(PostbackLog).findOneOrFail({
             where: { id: Number(req.params.id) },
-            relations: ["affiliateNetwork"],
+            relations: ["network_id"],
         });
         return res.status(200).json(log);
     } catch (error) {
