@@ -32,7 +32,7 @@ export class PostbackLog {
   @Column({ nullable: true})
   order_id: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   sale_date: string;
 
   @Column({ type: "decimal", nullable: false })
