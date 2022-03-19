@@ -31,9 +31,10 @@ module.exports = (app: Express, passport) => {
                             store.commission = 0;
                             store.salesTxns.forEach((salesTxn) => {
                                 if (salesTxn.status === StatusOpts.confirmed) {
-                                    store.sales += salesTxn.sale_amount;
-                                    store.commission +=
-                                        salesTxn.commission_amount;
+                                    store.sales += Number(salesTxn.sale_amount);
+                                    store.commission += Number(
+                                        salesTxn.commission_amount
+                                    );
                                 }
                             });
                         });
@@ -65,9 +66,12 @@ module.exports = (app: Express, passport) => {
                             network.commission = 0;
                             network.salesTxns.forEach((salesTxn) => {
                                 if (salesTxn.status === StatusOpts.confirmed) {
-                                    network.sales += salesTxn.sale_amount;
-                                    network.commission +=
-                                        salesTxn.commission_amount;
+                                    network.sales += Number(
+                                        salesTxn.sale_amount
+                                    );
+                                    network.commission += Number(
+                                        salesTxn.commission_amount
+                                    );
                                 }
                             });
                         });
@@ -102,7 +106,7 @@ module.exports = (app: Express, passport) => {
                     });
                     cashbackTxns.forEach((cashbackTxn: CashbackTxn) => {
                         if (cashbackTxn.status === AcceptedStatusOpts.confirmed)
-                            user.earning += cashbackTxn.cashback;
+                            user.earning += Number(cashbackTxn.cashback);
                     });
                 });
                 res.set({
@@ -288,7 +292,7 @@ module.exports = (app: Express, passport) => {
                 data.profit.total =
                     Number(data.commission.total) -
                     Number(data.referral.total) -
-                    Number(data.cashback.total) - 
+                    Number(data.cashback.total) -
                     Number(data.bonus.total);
 
                 arr.push(
