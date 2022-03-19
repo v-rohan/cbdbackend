@@ -97,7 +97,7 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
                 salesTxn.transaction_id = String(req.query.transaction_id);
                 salesTxn.user = click.user;
                 salesTxn.store = click.store;
-                var ss = JSON.parse(click.network.sale_statuses);
+                var ss = await JSON.parse(click.network.sale_statuses);
                 salesTxn.status = StatusOpts[`${ss[`${req.query.status}`]}`];
 
                 Object.keys(ss).forEach((ele) => {
