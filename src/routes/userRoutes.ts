@@ -424,12 +424,59 @@ module.exports = (app: Express, passport, sendotp) => {
                     .find()
                     .then((users) => {
                         users.forEach((item)=> delete item['password'])
+                        response.set({
+                            "Access-Control-Expose-Headers": "Content-Range",
+                            "Content-Range": `X-Total-Count: ${1} - ${users.length} / ${
+                                users.length
+                            }`,
+                        });
                         response.status(200).json(users);
                     })
                     .catch((error) => {
                         response.status(500).send(error);
                     });
             } else response.status(200).json(request.user);
+        }
+    );
+    app.put(
+        "/user/:id",
+        passport.authenticate("jwt", { session: false }),
+        AdminCheck,
+        async (request: IGetUserAuthInfoRequest, response: Response) => {
+            var user = new User();
+            try {
+                user = await getRepository(User).findOneOrFail(
+                    request.params.id
+                );
+                user = { ...user, ...request.body };
+                getRepository(User)
+                    .save(user)
+                    .then((user) => {
+                        response.status(201).send(user);
+                    })
+                    .catch((error) => {
+                        response.status(400).send(error);
+                    });
+            } catch (error) {
+                response.status(400).send(error);
+            }
+        }
+    );
+
+    app.get(
+        "/user/:id",
+        passport.authenticate("jwt", { session: false }),
+        AdminCheck,
+        async (request: IGetUserAuthInfoRequest, response: Response) => {
+            var user = new User();
+            try {
+                user = await getRepository(User).findOneOrFail(
+                    request.params.id
+                );
+                response.status(200).send(user);
+            } catch (error) {
+                response.status(400).send(error);
+            }
         }
     );
 
