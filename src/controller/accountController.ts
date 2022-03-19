@@ -187,14 +187,14 @@ const withdraw = async (req: IGetUserAuthInfoRequest, res: Response) => {
     if (payout.payment_mode.method_code === "paytm") {
         if (amountToWithdraw <= rewardAmount) {
             payout.reward_amount = Number(amountToWithdraw);
-            payout.cashback_amount = 0;
+            payout.cashback_amount = Number(0);
         } else {
             payout.reward_amount = Number(rewardAmount);
             payout.cashback_amount = Number(amountToWithdraw) - Number(rewardAmount);
         }
     } else {
         payout.cashback_amount = Number(amountToWithdraw);
-        payout.reward_amount = 0;
+        payout.reward_amount = Number(0);
     }
     payout.payment_id = generatePaymentId();
 
