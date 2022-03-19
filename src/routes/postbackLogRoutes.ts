@@ -20,7 +20,8 @@ module.exports = (app: Express, passport: any) => {
     router.use(AdminCheckAllowUnSafe);
 
     // Postback log Routes
-    router.route("/").get(getAllLogs).post(createOrUpdatePostbackLog);
+    router.route("/").get(getAllLogs)
+    router.route("/postback").get(createOrUpdatePostbackLog);
     router
         .route("/:id")
         .get(getLogById)
