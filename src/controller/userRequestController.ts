@@ -19,10 +19,12 @@ const bulkTransfer = async (req: IGetUserAuthInfoRequest, res: Response) => {
             return;
         }
         // Make PAYTM API Call
+        var cshbk = payoutRequest.cashback_amount;
+        var rwrd = payoutRequest.reward_amount;
         let paytmParams: any = {
             subwalletGuid: process.env.PAYTM_SUBWALLET_GUID,
             orderId: payoutRequest.payment_id,
-            amount: Number(Number(payoutRequest.cashback_amount) + Number(payoutRequest.reward_amount)),
+            amount: Number(cshbk) + Number(rwrd),
         };
         console.log(paytmParams);
         var path: string;
