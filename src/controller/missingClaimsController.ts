@@ -30,7 +30,7 @@ const getClaimByUser = async (req: IGetUserAuthInfoRequest, res: Response) => {
     const claims = await getRepository(MissingClaim).find({
         where: { user_id: { id: req.user.id } },
     });
-    return res.status(200).json({ claims });
+    return res.status(200).json(claims);
 };
 
 const submitClaim = async (req: IGetUserAuthInfoRequest, res: Response) => {
