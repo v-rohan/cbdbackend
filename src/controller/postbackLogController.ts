@@ -12,7 +12,9 @@ import { User } from "../entity/User";
 import { Settings } from "../entity/Settings";
 
 const getAllLogs = async (req: Request, res: Response) => {
-    const logs = await getRepository(PostbackLog).find();
+    const logs = await getRepository(PostbackLog).find({
+        relations: ["network_id"],
+    });
     res.set({
         "Access-Control-Expose-Headers": "Content-Range",
         "Content-Range": `X-Total-Count: ${1} - ${logs.length} / ${
@@ -101,9 +103,12 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
                     StatusOpts[
                         `${click.network.sale_statuses[`${req.query.status}`]}`
                     ];
-                
 
-                console.log(click.network.sale_statuses, req.query.status, click.network.sale_statuses[`${req.query.status}`]);
+                console.log(
+                    click.network.sale_statuses,
+                    req.query.status,
+                    click.network.sale_statuses[`${req.query.status}`]
+                );
                 salesTxn.sale_status = `${
                     click.network.sale_statuses[`${req.query.status}`]
                 }`;
