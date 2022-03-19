@@ -16,6 +16,7 @@ media/category/**
 media/users/**
 media/bankimgs/**
 media/store/**
+media/coupon/**
 
 rabbitmq-data/
 rabbitmq-log/

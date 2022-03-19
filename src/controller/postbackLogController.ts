@@ -76,13 +76,13 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
                     .getRepository(PostbackLog)
                     .save(log);
 
-                console.log(
-                    Object.keys(
-                        await transactionalEntityManager.connection.getMetadata(
-                            SalesTxn
-                        ).propertiesMap
-                    )
-                );
+                // console.log(
+                //     Object.keys(
+                //         await transactionalEntityManager.connection.getMetadata(
+                //             SalesTxn
+                //         ).propertiesMap
+                //     )
+                // );
 
                 Object.keys(
                     await transactionalEntityManager.connection.getMetadata(
@@ -91,7 +91,7 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
                 )
                     .filter((key: any) => key in req.query)
                     .forEach((keyto: any) => {
-                        console.log("HELLO", keyto);
+                        //console.log("HELLO", keyto);
                         salesTxn[keyto] = req.query[keyto];
                     });
 
@@ -99,16 +99,22 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
                 salesTxn.transaction_id = String(req.query.transaction_id);
                 salesTxn.user = click.user;
                 salesTxn.store = click.store;
-                salesTxn.status =
-                    StatusOpts[
-                        `${click.network.sale_statuses[`${req.query.status}`]}`
-                    ];
+                var ss = await JSON.parse(click.network.sale_statuses);
+                console.log(ss);
+                salesTxn.status = StatusOpts[`${ss[`${req.query.status}`]}`];
 
+                Object.keys(ss).forEach((ele) => {
+                    console.log(ele);
+                    if (ele === req.query.status) {
+                        console.log("maralo");
+                    }
+                });
                 console.log(
                     click.network.sale_statuses,
                     req.query.status,
-                    click.network.sale_statuses[`${req.query.status}`]
+                    ss[`${req.query.status}`]
                 );
+
                 salesTxn.sale_status = `${
                     click.network.sale_statuses[`${req.query.status}`]
                 }`;
@@ -135,6 +141,8 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
                     (cashbackTxn.sale_amount * click.store.cashback_percent) /
                     100;
                 cashbackTxn.txn_date_time = new Date();
+
+                console.log(AcceptedStatusOpts[salesTxn.status]);
 
                 if (salesTxn.status == StatusOpts.delayed) {
                     cashbackTxn.status = AcceptedStatusOpts.pending;
