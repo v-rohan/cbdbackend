@@ -111,10 +111,11 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
                     req.query.status,
                     ss[`${req.query.status}`]
                 );
+                salesTxn.sale_status = salesTxn.status;
 
-                salesTxn.sale_status = `${
-                    click.network.sale_statuses[`${req.query.status}`]
-                }`;
+                // salesTxn.sale_status = `${
+                //     click.network.sale_statuses[`${req.query.status}`]
+                // }`;
                 await transactionalEntityManager.connection
                     .getRepository(SalesTxn)
                     .save(salesTxn);
