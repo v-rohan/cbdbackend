@@ -101,6 +101,9 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
                     StatusOpts[
                         `${click.network.sale_statuses[`${req.query.status}`]}`
                     ];
+                
+
+                console.log(click.network.sale_statuses, req.query.status, click.network.sale_statuses[`${req.query.status}`]);
                 salesTxn.sale_status = `${
                     click.network.sale_statuses[`${req.query.status}`]
                 }`;
