@@ -18,69 +18,73 @@ const bulkTransfer = async (req: IGetUserAuthInfoRequest, res: Response) => {
         if (payoutRequest.status === "completed") {
             return;
         }
-            // Make PAYTM API Call
-            let paytmParams: any = {
-                subwalletGuid: process.env.PAYTM_SUBWALLET_GUID,
-                orderId: payoutRequest.payment_id,
-                amount: (+Number(payoutRequest.cashback_amount)) + Number(payoutRequest.reward_amount),
-            };
-            console.log(paytmParams);
-            var path: string;
-
-            if (payoutRequest.payment_mode.method_code === Mode.paytm) {
-                // Make PAYTM WALLET TRANSFER call
-                paytmParams = {
-                    ...paytmParams,
-                    beneficiaryPhoneNo: payoutRequest.payment_mode.account,
-                };
-                path = `/bpay/api/v1/disburse/order/wallet/${process.env.PAYTM_SOLUTION}`;
-            } else {
-                // Make PAYTM BANK TRANSFER call
-                paytmParams = {
-                    ...paytmParams,
-                    beneficiaryAccount: payoutRequest.payment_mode.account,
-                    beneficiaryIFSC: payoutRequest.payment_mode.inputs["ifsc_code"],
-                    purpose: "OTHERS",
-                };
-                path = "/bpay/api/v1/disburse/order/bank";
+        // Make PAYTM API Call
+        let paytmParams: any = {
+            subwalletGuid: process.env.PAYTM_SUBWALLET_GUID,
+            orderId: payoutRequest.payment_id,
+            amount: (+Number(payoutRequest.cashback_amount)) + Number(payoutRequest.reward_amount),
+        };
+        var path: string;
+        if (payoutRequest.status !== StatusOpts.created) {
+            path = `/bpay/api/v1/disburse/order/query`;
+            paytmParams = {
+                orderId: payoutRequest.payment_id
             }
-            var post_data = JSON.stringify(paytmParams);
-
-            const x_checksum = await Paytm.generateSignature(
-                post_data,
-                process.env.PAYTM_MERCHANT_KEY
-            );
-            var x_mid = process.env.PAYTM_MID;
-
-            const response = await fetch(`${process.env.PAYTM_HOST}${path}`, {
-                method: "POST",
-                body: post_data,
-                headers: {
-                    "Content-Type": "application/json",
-                    "x-mid": x_mid,
-                    "x-checksum": x_checksum,
-                    "Content-Length": post_data.length.toString(),
-                },
-            });
-            const api_response = (await response.json()) as {
-                status: string;
-                statusCode: string;
-                statusMessage: string;
+        } else if (payoutRequest.payment_mode.method_code === Mode.paytm) {
+            // Make PAYTM WALLET TRANSFER call
+            paytmParams = {
+                ...paytmParams,
+                beneficiaryPhoneNo: payoutRequest.payment_mode.account,
             };
-            payoutRequest.api_response = api_response;
-            payoutRequest.api_status = api_response.status;
-            payoutRequest.note = api_response.statusMessage;
-            if (
-                api_response.status === "FAILURE" ||
-                api_response.status === "CANCELLED"
-            ) {
-                payoutRequest.status = StatusOpts.declined;
-            } else if (api_response.status === "SUCCESS") {
-                payoutRequest.status = StatusOpts.completed;
-            } else {
-                payoutRequest.status = StatusOpts.processing;
-            }
-            await PayoutReqRepo.save(payoutRequest);
+            path = `/bpay/api/v1/disburse/order/wallet/${process.env.PAYTM_SOLUTION}`;
+        } else {
+            // Make PAYTM BANK TRANSFER call
+            paytmParams = {
+                ...paytmParams,
+                beneficiaryAccount: payoutRequest.payment_mode.account,
+                beneficiaryIFSC: payoutRequest.payment_mode.inputs["ifsc_code"],
+                purpose: "OTHERS",
+            };
+            path = "/bpay/api/v1/disburse/order/bank";
+        }
+        var post_data = JSON.stringify(paytmParams);
+
+        const x_checksum = await Paytm.generateSignature(
+            post_data,
+            process.env.PAYTM_MERCHANT_KEY
+        );
+        var x_mid = process.env.PAYTM_MID;
+
+        const response = await fetch(`${process.env.PAYTM_HOST}${path}`, {
+            method: "POST",
+            body: post_data,
+            headers: {
+                "Content-Type": "application/json",
+                "x-mid": x_mid,
+                "x-checksum": x_checksum,
+                "Content-Length": post_data.length.toString(),
+            },
+        });
+        const api_response = (await response.json()) as {
+            status: string;
+            statusCode: string;
+            statusMessage: string;
+        };
+        console.log(api_response);
+        payoutRequest.api_response = api_response;
+        payoutRequest.api_status = api_response.status;
+        payoutRequest.note = api_response.statusMessage;
+        if (
+            api_response.status === "FAILURE" ||
+            api_response.status === "CANCELLED"
+        ) {
+            payoutRequest.status = StatusOpts.declined;
+        } else if (api_response.status === "SUCCESS") {
+            payoutRequest.status = StatusOpts.completed;
+        } else {
+            payoutRequest.status = StatusOpts.processing;
+        }
+        await PayoutReqRepo.save(payoutRequest);
     });
     return res.status(200).json({
         success: true,
