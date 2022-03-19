@@ -30,7 +30,7 @@ const getStoreById = async (req: Request, res: Response) => {
     try {
         const st = await getRepository(Store).findOneOrFail({
             where: { id: Number(req.params.id) },
-            relations: ["categories", "coupons", "network_id"],
+            relations: ["categories", "coupons", "network_id", "cashbackRates"],
         });
         const updatedStore = getRepository(Store).update(st.id, {
             ...st,
