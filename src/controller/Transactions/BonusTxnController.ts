@@ -1,5 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import { Between, getRepository, LessThanOrEqual, MoreThanOrEqual } from "typeorm";
+import {
+    Between,
+    getRepository,
+    LessThanOrEqual,
+    MoreThanOrEqual,
+} from "typeorm";
 import { BonusTxn } from "../../entity/Transactions/BonusTxn";
 import { CashbackTxn } from "../../entity/Transactions/CashbackTxn";
 import { AcceptedStatusOpts } from "../../entity/Transactions/Common";
@@ -10,13 +15,13 @@ const getBonusTxns = async (
     res: Response,
     next: NextFunction
 ) => {
-    var txns = await getRepository(BonusTxn).find();
+    var txns = await getRepository(BonusTxn).find({ relations: ["user"] });
     res.set({
         "Access-Control-Expose-Headers": "Content-Range",
         "Content-Range": `X-Total-Count: ${1} - ${txns.length} / ${
             txns.length
         }`,
-    })
+    });
     res.status(200).json(txns);
 };
 
@@ -30,12 +35,11 @@ const postBonusTxn = async (
     res.status(201).json(newTxn);
 };
 
-const getBonusTxn = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    var txn = await getRepository(BonusTxn).findOne(req.params.id);
+const getBonusTxn = async (req: Request, res: Response, next: NextFunction) => {
+    var txn = await getRepository(BonusTxn).findOne({
+        where: { id: Number(req.params.id) },
+        relations: ["user"],
+    });
     res.status(200).json(txn);
 };
 
