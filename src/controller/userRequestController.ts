@@ -200,7 +200,7 @@ const getPaytmWalletPayouts = async (
             paytmWalletPayouts.length
         } / ${paytmWalletPayouts.length}`,
     });
-    return res.status(200).json({ paytmWalletPayouts });
+    return res.status(200).json(paytmWalletPayouts);
 };
 
 export {
