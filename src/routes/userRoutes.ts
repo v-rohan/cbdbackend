@@ -429,7 +429,13 @@ module.exports = (app: Express, passport, sendotp) => {
                     .catch((error) => {
                         response.status(500).send(error);
                     });
-            } else response.status(200).json(request.user);
+            } else {
+                var user = await getRepository(User).findOneOrFail({where: {id: request.user.id}})
+                if (!user.image) {
+                    user.image = 'media/users/defimg.png'
+                }
+                response.status(200).json(user);
+            }
         }
     );
 
