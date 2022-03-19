@@ -69,6 +69,18 @@ export class User {
     is_mobile_verified: boolean;
 
     @Column({ nullable: true, default: false })
+    is_profile_complete: boolean;
+
+    @Column({ unique: false, nullable: true })
+    city: string;
+
+    @Column({ nullable: true, default: null })
+    date_of_birth: Date;
+
+    @Column({ nullable: true, default: null })
+    gender: string;
+
+    @Column({ nullable: true, default: false })
     is_user_banned: boolean;
 
     @Column({ nullable: true, default: null })
@@ -84,7 +96,6 @@ export class User {
     // verify: Verify;
 }
 
-
 @Entity()
 export class Verify {
     @PrimaryGeneratedColumn()
@@ -99,6 +110,6 @@ export class Verify {
     @JoinColumn()
     user: User;
 
-    @Column({ type: 'varchar', length: 128, nullable: false })
+    @Column({ type: "varchar", length: 128, nullable: false })
     verify_hash: string;
 }
