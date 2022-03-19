@@ -18,21 +18,11 @@ const bulkTransfer = async (req: IGetUserAuthInfoRequest, res: Response) => {
         if (payoutRequest.status === "completed") {
             return;
         }
-        for(var i = 0; i < 2; i++) {
-            var csbk: string;
-            if (i == 0) {
-                csbk = "cashback_amount"
-            } else {
-                csbk = "reward_amount"
-                if (payoutRequest.reward_amount === 0) {
-                    continue;
-                }
-            }
             // Make PAYTM API Call
             let paytmParams: any = {
                 subwalletGuid: process.env.PAYTM_SUBWALLET_GUID,
                 orderId: payoutRequest.payment_id,
-                amount: payoutRequest[csbk],
+                amount: (+Number(payoutRequest.cashback_amount)) + Number(payoutRequest.reward_amount),
             };
             console.log(paytmParams);
             var path: string;
@@ -91,7 +81,6 @@ const bulkTransfer = async (req: IGetUserAuthInfoRequest, res: Response) => {
                 payoutRequest.status = StatusOpts.processing;
             }
             await PayoutReqRepo.save(payoutRequest);
-        }
     });
     return res.status(200).json({
         success: true,
