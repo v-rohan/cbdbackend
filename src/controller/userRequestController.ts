@@ -24,7 +24,7 @@ const bulkTransfer = async (req: IGetUserAuthInfoRequest, res: Response) => {
         let paytmParams: any = {
             subwalletGuid: process.env.PAYTM_SUBWALLET_GUID,
             orderId: payoutRequest.payment_id,
-            amount: Number(cshbk) + Number(rwrd),
+            amount: parseInt(String(cshbk)) + parseInt(String(rwrd)),
         };
         console.log(paytmParams);
         var path: string;
