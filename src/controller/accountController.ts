@@ -164,9 +164,11 @@ const getAmountStatus = async (req: IGetUserAuthInfoRequest, res: Response) => {
 
 const withdraw = async (req: IGetUserAuthInfoRequest, res: Response) => {
     const paymentModeId = Number(req.body.payment_mode);
-    const { walletAmount, rewardAmount } = await calculateWallet(req.user);
+    var { walletAmount, rewardAmount } = await calculateWallet(req.user);
+    walletAmount = Number(walletAmount);
+    rewardAmount = Number(rewardAmount)
 
-    var amountToWithdraw = req.body.amount;
+    var amountToWithdraw = Number(req.body.amount);
     if (amountToWithdraw < 100)
         return res
             .status(400)
@@ -184,14 +186,14 @@ const withdraw = async (req: IGetUserAuthInfoRequest, res: Response) => {
     });
     if (payout.payment_mode.method_code === "paytm") {
         if (amountToWithdraw <= rewardAmount) {
-            payout.reward_amount = amountToWithdraw;
+            payout.reward_amount = Number(amountToWithdraw);
             payout.cashback_amount = 0;
         } else {
-            payout.reward_amount = rewardAmount;
-            payout.cashback_amount = amountToWithdraw - rewardAmount;
+            payout.reward_amount = Number(rewardAmount);
+            payout.cashback_amount = Number(amountToWithdraw) - Number(rewardAmount);
         }
     } else {
-        payout.cashback_amount = amountToWithdraw;
+        payout.cashback_amount = Number(amountToWithdraw);
         payout.reward_amount = 0;
     }
     payout.payment_id = generatePaymentId();
