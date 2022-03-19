@@ -82,9 +82,7 @@ module.exports = (app: Express, passport) => {
                                         where: {ifsc_prefix: modes[i].inputs["ifsc_code"].substring(0,4)}
                                     })
                                     modes[i]["image"] = bankImg.image;
-                                } catch (err) {
-                                    console.log(err);
-                                }
+                                } catch (err) {}
                             } else {
                                 try {
                                     var bankImg = await getRepository(BankImage).findOneOrFail({
