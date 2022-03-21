@@ -244,7 +244,7 @@ const getSneLinksByUserByMonth = async (
     req: IGetUserAuthInfoRequest,
     res: Response
 ) => {
-    const clicks = await getRepository(SnE).find({
+    const links = await getRepository(SnE).find({
         where: {
             user: req.user,
         },
@@ -253,8 +253,8 @@ const getSneLinksByUserByMonth = async (
             createdAt: "DESC",
         },
     });
-    const monthlyClicks = Object.values(
-        clicks.reduce((r, element) => {
+    const monthlyLinks = Object.values(
+        links.reduce((r, element) => {
             let dateObj = new Date(element.createdAt);
             let monthyear =
                 dateObj
@@ -266,15 +266,15 @@ const getSneLinksByUserByMonth = async (
             if (!r[monthyear]) {
                 r[monthyear] = {
                     monthyear,
-                    clicks: [element],
+                    links: [element],
                 };
             } else {
-                r[monthyear].clicks.push(element);
+                r[monthyear].links.push(element);
             }
             return r;
         }, {})
     );
-    return res.status(200).json(monthlyClicks);
+    return res.status(200).json(monthlyLinks);
 };
 
 const getCashbackTxnsByUserByMonth = async (
