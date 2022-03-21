@@ -310,9 +310,9 @@ const evaluateBonusTxns = async (user: User) => {
                 });
                 var sum = 0;
                 referredCashbackTxns.forEach((txn) => {
-                    sum += txn.cashback;
+                    sum += Number(txn.cashback);
                 });
-                if (sum >= 500) {
+                if (Number(sum) >= 500) {
                     bonusTxns[i].status = AcceptedStatusOpts.confirmed;
                     bonusTxns[i]["earned"] = 500;
                 } else if (bonusTxns[i].expires_on >= new Date()) {
