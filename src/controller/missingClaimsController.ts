@@ -5,7 +5,9 @@ import { CashbackTxn } from "../entity/Transactions/CashbackTxn";
 import { IGetUserAuthInfoRequest } from "../types";
 
 const getAllClaims = async (req: IGetUserAuthInfoRequest, res: Response) => {
-    const claims = await getRepository(MissingClaim).find();
+    const claims = await getRepository(MissingClaim).find({
+        relations: ["user_id", "click_id", "store_id", "network_id"]
+    });
     res.set({
         "Access-Control-Expose-Headers": "Content-Range",
         "Content-Range": `X-Total-Count: ${1} - ${claims.length} / ${
@@ -19,6 +21,7 @@ const getClaimById = async (req: IGetUserAuthInfoRequest, res: Response) => {
     try {
         const claim = getRepository(MissingClaim).findOneOrFail({
             where: { id: Number(req.params.id) },
+            relations: ["user_id", "click_id", "store_id", "network_id"]
         });
         return res.status(200).json({ claim });
     } catch (error) {
@@ -29,6 +32,7 @@ const getClaimById = async (req: IGetUserAuthInfoRequest, res: Response) => {
 const getClaimByUser = async (req: IGetUserAuthInfoRequest, res: Response) => {
     const claims = await getRepository(MissingClaim).find({
         where: { user_id: { id: req.user.id } },
+        relations: ["user_id", "click_id", "store_id", "network_id"]
     });
     return res.status(200).json(claims);
 };
