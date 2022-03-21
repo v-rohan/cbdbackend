@@ -373,7 +373,7 @@ const evaluateBonusTxns = async (user: User) => {
                 });
                 var sum = 0;
                 cashbacks.forEach(async (txn) => {
-                    sum += txn.cashback;
+                    sum += Number(txn.cashback);
                 });
 
                 if (sum >= bonusTxns[i].amount) {
