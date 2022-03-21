@@ -12,6 +12,7 @@ import { User } from "../entity/User";
 import { AcceptedStatusOpts } from "../entity/Transactions/Common";
 import { BankImage } from "../entity/BankImages";
 import e = require("express");
+import { SnE } from "../entity/SnE";
 
 const charSet: string =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -207,6 +208,43 @@ const getClicksByUserByMonth = async (
     res: Response
 ) => {
     const clicks = await getRepository(Clicks).find({
+        where: {
+            user: req.user,
+        },
+        relations: ["store"],
+        order: {
+            createdAt: "DESC",
+        },
+    });
+    const monthlyLinks = Object.values(
+        clicks.reduce((r, element) => {
+            let dateObj = new Date(element.createdAt);
+            let monthyear =
+                dateObj
+                    .toLocaleString("en-us", { month: "long" })
+                    .substring(0, 3)
+                    .toUpperCase() +
+                " " +
+                dateObj.getFullYear();
+            if (!r[monthyear]) {
+                r[monthyear] = {
+                    monthyear,
+                    clicks: [element],
+                };
+            } else {
+                r[monthyear].clicks.push(element);
+            }
+            return r;
+        }, {})
+    );
+    return res.status(200).json(monthlyLinks);
+};
+
+const getSneLinksByUserByMonth = async (
+    req: IGetUserAuthInfoRequest,
+    res: Response
+) => {
+    const clicks = await getRepository(SnE).find({
         where: {
             user: req.user,
         },
@@ -477,6 +515,7 @@ export {
     getCashbackTxnsByUserByMonth,
     getRewardTxnByUserByMonth,
     claimBonus,
+    getSneLinksByUserByMonth,
     getBonusTxnByUser,
     payoutsByUserByMonth
 };
