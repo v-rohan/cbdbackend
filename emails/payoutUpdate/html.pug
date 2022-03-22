@@ -1,0 +1,18 @@
+html
+    body(style='alignItems: center; font-size: 14px; font-family: Poppins;')
+        div(style='border-radius: 10px; background-color: #F8FAFC;height: 131px; width: 100%; display: flex; justify-content: center; align-items: center;')
+            img(src='https://res.cloudinary.com/dvqz0kpht/image/upload/v1647620071/CB/cbdbanner_j9o4bm.png' style='height: 131px; width: 760px;')
+
+        p Hello #{first_name} #{last_name},
+
+        p This is to update you about your payment request ID: #{pid}
+
+        if note
+            p Note: #{note}
+        p Payment Released On: #{date}
+        p Please check your account for more details.
+
+        p Thanks, <br> Cashback Duniya
+
+        div(style='border-radius: 10px; background-color: #F8FAFC;height: 120px; width: 100%; display: flex; justify-content: center; align-items: center;')
+            p(style='margin: 55px; text-align:center; font-size: 12px; color: #B8B9B9; align-self: center;') © 2022 Cashback Duniya. All rights reserved.

@@ -1,7 +1,8 @@
 import { Response } from "express";
 import { getRepository } from "typeorm";
-import { MissingClaim } from "../entity/MissingClaim";
+import { MissingClaim, MissingClaimStatus } from "../entity/MissingClaim";
 import { CashbackTxn } from "../entity/Transactions/CashbackTxn";
+import { publishMail } from "../tasks/publishMail";
 import { IGetUserAuthInfoRequest } from "../types";
 
 const getAllClaims = async (req: IGetUserAuthInfoRequest, res: Response) => {
@@ -60,6 +61,20 @@ const submitClaim = async (req: IGetUserAuthInfoRequest, res: Response) => {
         newClaim.image = req.file.path;
 
         await getRepository(MissingClaim).save(newClaim);
+        publishMail({
+            template: 'claimCreated',
+            message: {
+                to: newClaim.user_id.email.toString(),
+            },
+            locals: {
+                first_name: newClaim.user_id.first_name,
+                last_name: newClaim.user_id.last_name,
+                store: newClaim.store_id.name,
+                date: (new Date()).toDateString(),
+                cbtxnid: cashbackTxn.id,
+                txnAmount: cashbackTxn.cashback,
+            },
+        })
         res.status(201).json({"message": "Missing Claim Created"});
     } catch (error) {
         res.status(404).json({ message: "Cashback Transaction not found" });
@@ -71,9 +86,29 @@ const updateClaimStaus = async (
     res: Response
 ) => {
     try {
-        const claim = await getRepository(MissingClaim).findOneOrFail({
+        var claim = await getRepository(MissingClaim).findOneOrFail({
             where: { id: req.params.id },
+            relations: ["user_id"]
         });
+        var status = claim.status;
+        claim = {...claim, ...req.body}
+        await getRepository(MissingClaim).save(claim);
+        if (claim.status != status) {
+            publishMail({
+                template: 'claimUpdate',
+                message: {
+                    to: claim.user_id.email.toString(),
+                },
+                locals: {
+                    first_name: claim.user_id.first_name,
+                    last_name: claim.user_id.last_name,
+                    date: claim.updated_at,
+                    status: claim.status.toUpperCase(),
+                    note: claim.admin_note
+                }
+            })
+        }
+        return res.status(200).json({"message": "Updated Claim"})
     } catch (error) {}
 };
 

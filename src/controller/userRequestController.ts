@@ -5,6 +5,7 @@ import { PayoutRequest, StatusOpts } from "../entity/Payment/PayoutRequest";
 import { IGetUserAuthInfoRequest } from "../types";
 
 import fetch from "node-fetch";
+import { publishMail } from "../tasks/publishMail";
 const Paytm = require("paytmchecksum");
 
 const bulkTransfer = async (req: IGetUserAuthInfoRequest, res: Response) => {
@@ -81,10 +82,22 @@ const bulkTransfer = async (req: IGetUserAuthInfoRequest, res: Response) => {
             payoutRequest.status = StatusOpts.declined;
         } else if (api_response.status === "SUCCESS") {
             payoutRequest.status = StatusOpts.completed;
+            payoutRequest.paid_at = (new Date()).toISOString();
         } else {
             payoutRequest.status = StatusOpts.processing;
         }
         await PayoutReqRepo.save(payoutRequest);
+        publishMail({
+            template: 'payoutUpdate',
+            message: {
+                to: payoutRequest.user_id.email.toString(),
+            },
+            locals: {
+                pid: payoutRequest.payment_id,
+                note: payoutRequest.note,
+                date: payoutRequest.paid_at,
+            },
+        })
     });
     return res.status(200).json({
         success: true,

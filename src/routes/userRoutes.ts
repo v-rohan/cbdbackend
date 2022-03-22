@@ -247,6 +247,35 @@ module.exports = (app: Express, passport, sendotp) => {
                                 verify_link: `${process.env.BACKEND_URL}/verifymail/${verify.verify_hash}/`,
                             },
                         })
+                        publishMail({
+                            template: 'bonus',
+                            message: {
+                                to: newUser.email.toString(),
+                            },
+                            locals: {
+                                first_name: newUser.first_name,
+                                last_name: newUser.last_name,
+                                bonusType: bonus.bonus_code,
+                                date: (new Date()).toDateString(),
+                                bonAmount: bonus.amount,
+                                status: bonus.amount,
+                            }
+                        })
+                        if (request.body.ref) {
+                            publishMail({
+                                template: 'referral',
+                                message: {
+                                    to: bonus2.user.email.toString(),
+                                },
+                                locals: {
+                                    first_name: bonus2.user.first_name,
+                                    last_name: bonus2.user.last_name,
+                                    date: (new Date()).toDateString(),
+                                    bonus: 25,
+                                    status: bonus2.status.toUpperCase()
+                                }
+                            })
+                        }
                         response.sendStatus(200);
                     })
                     .catch((error) => {

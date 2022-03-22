@@ -13,6 +13,7 @@ import { AcceptedStatusOpts } from "../entity/Transactions/Common";
 import { BankImage } from "../entity/BankImages";
 import e = require("express");
 import { SnE } from "../entity/SnE";
+import { publishMail } from "../tasks/publishMail";
 
 const charSet: string =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -200,6 +201,20 @@ const withdraw = async (req: IGetUserAuthInfoRequest, res: Response) => {
     payout.payment_id = generatePaymentId();
 
     await getRepository(PayoutRequest).save(payout);
+    publishMail({
+        template: '',
+        message: {
+            to: req.user.email.toString(),
+        },
+        locals: {
+            first_name: req.user.first_name,
+            last_name: req.user.last_name,
+            pid: payout.payment_id,
+            pm: payout.payment_mode.name,
+            amount: Number(payout.cashback_amount) + Number(payout.reward_amount),
+            pm_deets: payout.payment_mode.account,
+        },
+    })
     return res.status(200).json({ message: "Payout request sent" });
 };
 
@@ -350,13 +365,33 @@ const evaluateBonusTxns = async (user: User) => {
                 referredCashbackTxns.forEach((txn) => {
                     sum += Number(txn.cashback);
                 });
-                if (Number(sum) >= 500) {
-                    bonusTxns[i].status = AcceptedStatusOpts.confirmed;
-                    bonusTxns[i]["earned"] = 500;
-                } else if (bonusTxns[i].expires_on >= new Date()) {
+                if (bonusTxns[i].expires_on >= new Date()) {
                     bonusTxns[i]["earned"] = sum;
-                } else if (bonusTxns[i].expires_on < new Date()) {
-                    bonusTxns[i].status = AcceptedStatusOpts.declined;
+                } else {
+                    if (Number(sum) >= 500) {
+                        bonusTxns[i].status = AcceptedStatusOpts.confirmed;
+                        bonusTxns[i]["earned"] = 500;
+                    } else if (bonusTxns[i].expires_on < new Date()) {
+                        bonusTxns[i].status = AcceptedStatusOpts.declined;
+                    }
+                    await getRepository(BonusTxn).update(
+                        bonusTxns[i].id,
+                        {status: bonusTxns[i].status}
+                    ).then(() => {
+                        publishMail({
+                            template: 'referral',
+                            message: {
+                                to: bonusTxns[i].user.email.toString(),
+                            },
+                            locals: {
+                                first_name: bonusTxns[i].user.first_name,
+                                last_name: bonusTxns[i].user.last_name,
+                                date: (new Date()).toDateString(),
+                                bonus: 25,
+                                status: bonusTxns[i].status.toUpperCase()
+                            }
+                        })
+                    })
                 }
             } else {
                 const cashbacks = await getRepository(CashbackTxn).find({
@@ -376,14 +411,34 @@ const evaluateBonusTxns = async (user: User) => {
                     sum += Number(txn.cashback);
                 });
 
-                if (sum >= bonusTxns[i].amount) {
-                    bonusTxns[i].status = AcceptedStatusOpts.confirmed;
-                    bonusTxns[i]["earned"] = 500;
-                    await getRepository(BonusTxn).save({ id: bonusTxns[i].id });
-                } else if (bonusTxns[i].expires_on > new Date()) {
+                if (bonusTxns[i].expires_on > new Date()) {
                     bonusTxns[i]["earned"] = sum;
+                    await getRepository(BonusTxn).save({ id: bonusTxns[i].id });
                 } else {
-                    bonusTxns[i].status = AcceptedStatusOpts.declined;
+                    if (sum >= bonusTxns[i].amount) {
+                        bonusTxns[i].status = AcceptedStatusOpts.confirmed;
+                        bonusTxns[i]["earned"] = 500;
+                    } else {
+                        bonusTxns[i].status = AcceptedStatusOpts.declined;
+                    }
+                    await getRepository(BonusTxn).update(
+                        bonusTxns[i].id,
+                        {status: bonusTxns[i].status}
+                    ).then(() => {
+                        publishMail({
+                            template: 'bonus',
+                            message: {
+                                to: bonusTxns[i].user.email.toString(),
+                            },
+                            locals: {
+                                first_name: bonusTxns[i].user.first_name,
+                                last_name: bonusTxns[i].user.last_name,
+                                date: (new Date()).toDateString(),
+                                bonus: 25,
+                                status: bonusTxns[i].status.toUpperCase()
+                            }
+                        })
+                    })
                 }
             }
         }

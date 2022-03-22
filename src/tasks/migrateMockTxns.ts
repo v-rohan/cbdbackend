@@ -9,6 +9,7 @@ import { ReferrerTxn } from "../entity/Transactions/ReferrerTxn";
 import { SnE } from "../entity/SnE";
 import { User } from "../entity/User";
 import { Settings } from "../entity/Settings";
+import { publishMail } from "./publishMail";
 
 const MigrateMockTxns = async () => {
     const mockTxns = await getRepository(MockTxn).find({
@@ -36,6 +37,7 @@ const MigrateMockTxns = async () => {
                 });
                 cashbackTxn = await getRepository(CashbackTxn).findOneOrFail({
                     where: { click_id: click },
+                    relations: ['user', 'store']
                 });
             } catch (err) {
                 salesTxn = new SalesTxn();
@@ -137,6 +139,22 @@ const MigrateMockTxns = async () => {
                     sne.earning += cashbackTxn.cashback;
                     await transaction.connection.getRepository(SnE).save(sne);
                 }
+            }).then(() => {
+                publishMail({
+                    template: 'cashbackUpdate',
+                    message: {
+                        to: cashbackTxn.user.email.toString(),
+                    },
+                    locals: {
+                        first_name: cashbackTxn.user.first_name,
+                        last_name: cashbackTxn.user.last_name,
+                        store: cashbackTxn.store,
+                        date: cashbackTxn.txn_date_time,
+                        txnAmount: cashbackTxn.sale_amount,
+                        cbAmount: cashbackTxn.cashback,
+                        status: cashbackTxn.status.toUpperCase()
+                    },
+                })
             });
         } catch (err) {
             return err;

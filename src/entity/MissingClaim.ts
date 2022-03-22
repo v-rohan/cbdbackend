@@ -25,7 +25,7 @@ enum Platform {
     ios = "ios",
 }
 
-enum MissingClaimStatus {
+export enum MissingClaimStatus {
     open = "open",
     hold = "hold",
     answered = "answered",
