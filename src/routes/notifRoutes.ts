@@ -36,12 +36,13 @@ module.exports = (app: Express, passport) => {
             try {
                 var notifs = await getRepository(Notification).find({
                     order: { created: "DESC" },
+                    relations: ["store"],
                 });
                 response.set({
                     "Access-Control-Expose-Headers": "Content-Range",
-                    "Content-Range": `X-Total-Count: ${1} - ${notifs.length} / ${
+                    "Content-Range": `X-Total-Count: ${1} - ${
                         notifs.length
-                    }`,
+                    } / ${notifs.length}`,
                 });
                 response.status(200).send(notifs);
             } catch (error) {
@@ -82,9 +83,10 @@ module.exports = (app: Express, passport) => {
         async (request: IGetUserAuthInfoRequest, response: Response) => {
             var notif = new Notification();
             try {
-                notif = await getRepository(Notification).findOneOrFail(
-                    request.params.id
-                );
+                notif = await getRepository(Notification).findOneOrFail({
+                    where: { id: Number(request.params.id) },
+                    relations: ["store"],
+                });
                 response.status(200).send(notif);
             } catch (error) {
                 response.status(400).send(error);

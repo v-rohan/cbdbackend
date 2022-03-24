@@ -5,7 +5,9 @@ import { IGetUserAuthInfoRequest } from "../types";
 
 const getBanner = async (req: Request, res: Response) => {
     try {
-        const banner = await getRepository(Banner).find();
+        const banner = await getRepository(Banner).find({
+            relations: ["store"],
+        });
         res.set({
             "Access-Control-Expose-Headers": "Content-Range",
             "Content-Range": `X-Total-Count: ${1} - ${banner.length} / ${
