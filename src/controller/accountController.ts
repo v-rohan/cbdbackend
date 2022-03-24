@@ -202,7 +202,7 @@ const withdraw = async (req: IGetUserAuthInfoRequest, res: Response) => {
 
     await getRepository(PayoutRequest).save(payout);
     publishMail({
-        template: '',
+        template: 'payoutTracked',
         message: {
             to: req.user.email.toString(),
         },

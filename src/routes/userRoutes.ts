@@ -1,4 +1,4 @@
-import { getManager, getRepository } from "typeorm";
+import { getManager, getRepository, ILike, Like } from "typeorm";
 import { NextFunction, Request, Response, Express } from "express";
 import { User, UserRole, Verify } from "../entity/User";
 import { msg91_apikey, secretOrKey } from "../config";
@@ -102,6 +102,14 @@ module.exports = (app: Express, passport, sendotp) => {
             mob = "91" + mob;
         }
 
+        const sameNum = await getRepository(User).find({
+            where: {mobile: ILike(`%${mob}%`)}
+        })
+
+        if (sameNum.length > 0) {
+            return res.status(201).json({"message": "Number already in use."})
+        }
+
         const otpsent = await fetch(`https://api.msg91.com/api/v5/otp?template_id=5fd5ba69644eaa49af6dd21c&mobile=${mob}&authkey=${msg91_apikey}&otp_length=6`)
 
         if (otpsent) {
@@ -109,10 +117,10 @@ module.exports = (app: Express, passport, sendotp) => {
             if (jsondata.type === 'success') {
                 return res.status(200).json({"message": "OTP Sent"});
             } else {
-                return res.status(400).json({"message": "Couldn't send OTP"});
+                return res.status(202).json({"message": "Couldn't send OTP"});
             }
         }
-        return res.status(400).json({"message": "Couldn't send OTP"});
+        return res.status(202).json({"message": "Couldn't send OTP"});
     })
 
     app.get('/resendotp/:mob',
