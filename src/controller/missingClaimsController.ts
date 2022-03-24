@@ -20,7 +20,7 @@ const getClaimById = async (req: IGetUserAuthInfoRequest, res: Response) => {
         const claim = getRepository(MissingClaim).findOneOrFail({
             where: { id: Number(req.params.id) },
         });
-        return res.status(200).json({ claim });
+        return res.status(200).json(claim);
     } catch (error) {
         res.status(400).json({ error });
     }
