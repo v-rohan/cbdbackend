@@ -32,7 +32,6 @@ module.exports = (app: Express, passport) => {
     app.get(
         "/notification",
         passport.authenticate("jwt", { session: false }),
-        AdminCheck,
         async (request: IGetUserAuthInfoRequest, response: Response) => {
             try {
                 var notifs = await getRepository(Notification).find({

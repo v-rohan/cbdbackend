@@ -10,6 +10,7 @@ import { AcceptedStatusOpts, StatusOpts } from "../entity/Transactions/Common";
 import { SnE } from "../entity/SnE";
 import { User } from "../entity/User";
 import { Settings } from "../entity/Settings";
+import { publishMail } from "../tasks/publishMail";
 
 const getAllLogs = async (req: Request, res: Response) => {
     const logs = await getRepository(PostbackLog).find({
@@ -26,6 +27,7 @@ const getAllLogs = async (req: Request, res: Response) => {
 
 const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
     try {
+        var cbTrac = false, cbUpd = false;
         var log = new PostbackLog();
 
         try {
@@ -62,10 +64,15 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
         var cashbackTxn = new CashbackTxn();
         try {
             cashbackTxn = await getRepository(CashbackTxn).findOneOrFail({
-                click_id: click,
+                where: {click_id: click},
+                relations: ['user', 'store']
             });
+            if (cashbackTxn) {
+                cbUpd = true;
+            }
         } catch (err) {
             cashbackTxn = new CashbackTxn();
+            cbTrac = true;
         }
 
         await getManager()
@@ -100,7 +107,7 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
                 salesTxn.user = click.user;
                 salesTxn.store = click.store;
                 var ss = JSON.parse(click.network.sale_statuses);
-                console.log(ss);
+
                 salesTxn.status = StatusOpts[`${ss[`${req.query.status}`]}`];
 
                 Object.keys(ss).forEach((ele) => {
@@ -196,6 +203,21 @@ const createOrUpdatePostbackLog = async (req: Request, res: Response) => {
                     .save(cashbackTxn);
             })
             .then(async () => {
+                publishMail({
+                    template: 'cashbackUpdate',
+                    message: {
+                        to: cashbackTxn.user.email.toString(),
+                    },
+                    locals: {
+                        first_name: cashbackTxn.user.first_name,
+                        last_name: cashbackTxn.user.last_name,
+                        store: cashbackTxn.store,
+                        date: cashbackTxn.txn_date_time,
+                        txnAmount: cashbackTxn.sale_amount,
+                        cbAmount: cashbackTxn.cashback,
+                        status: cashbackTxn.status.toUpperCase()
+                    },
+                });
                 return res
                     .status(201)
                     .json({ message: "Postback Log created successfully" });
