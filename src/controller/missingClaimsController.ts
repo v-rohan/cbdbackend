@@ -7,7 +7,7 @@ import { IGetUserAuthInfoRequest } from "../types";
 
 const getAllClaims = async (req: IGetUserAuthInfoRequest, res: Response) => {
     const claims = await getRepository(MissingClaim).find({
-        relations: ["user_id", "click_id", "store_id", "network_id"]
+        relations: ["user_id", "click_id", "store_id", "network_id"],
     });
     res.set({
         "Access-Control-Expose-Headers": "Content-Range",
@@ -20,9 +20,9 @@ const getAllClaims = async (req: IGetUserAuthInfoRequest, res: Response) => {
 
 const getClaimById = async (req: IGetUserAuthInfoRequest, res: Response) => {
     try {
-        const claim = getRepository(MissingClaim).findOneOrFail({
+        const claim = await getRepository(MissingClaim).findOneOrFail({
             where: { id: Number(req.params.id) },
-            relations: ["user_id", "click_id", "store_id", "network_id"]
+            relations: ["user_id", "click_id", "store_id", "network_id"],
         });
         return res.status(200).json(claim);
     } catch (error) {
@@ -33,7 +33,7 @@ const getClaimById = async (req: IGetUserAuthInfoRequest, res: Response) => {
 const getClaimByUser = async (req: IGetUserAuthInfoRequest, res: Response) => {
     const claims = await getRepository(MissingClaim).find({
         where: { user_id: { id: req.user.id } },
-        relations: ["user_id", "click_id", "store_id", "network_id"]
+        relations: ["user_id", "click_id", "store_id", "network_id"],
     });
     return res.status(200).json(claims);
 };
@@ -62,7 +62,7 @@ const submitClaim = async (req: IGetUserAuthInfoRequest, res: Response) => {
 
         await getRepository(MissingClaim).save(newClaim);
         publishMail({
-            template: 'claimCreated',
+            template: "claimCreated",
             message: {
                 to: newClaim.user_id.email.toString(),
             },
@@ -70,12 +70,12 @@ const submitClaim = async (req: IGetUserAuthInfoRequest, res: Response) => {
                 first_name: newClaim.user_id.first_name,
                 last_name: newClaim.user_id.last_name,
                 store: newClaim.store_id.name,
-                date: (new Date()).toDateString(),
+                date: new Date().toDateString(),
                 cbtxnid: cashbackTxn.id,
                 txnAmount: cashbackTxn.cashback,
             },
-        })
-        res.status(201).json({"message": "Missing Claim Created"});
+        });
+        res.status(201).json({ message: "Missing Claim Created" });
     } catch (error) {
         res.status(404).json({ message: "Cashback Transaction not found" });
     }
@@ -88,14 +88,14 @@ const updateClaimStaus = async (
     try {
         var claim = await getRepository(MissingClaim).findOneOrFail({
             where: { id: req.params.id },
-            relations: ["user_id"]
+            relations: ["user_id"],
         });
         var status = claim.status;
-        claim = {...claim, ...req.body}
+        claim = { ...claim, ...req.body };
         await getRepository(MissingClaim).save(claim);
         if (claim.status != status) {
             publishMail({
-                template: 'claimUpdate',
+                template: "claimUpdate",
                 message: {
                     to: claim.user_id.email.toString(),
                 },
@@ -104,11 +104,11 @@ const updateClaimStaus = async (
                     last_name: claim.user_id.last_name,
                     date: claim.updated_at,
                     status: claim.status.toUpperCase(),
-                    note: claim.admin_note
-                }
-            })
+                    note: claim.admin_note,
+                },
+            });
         }
-        return res.status(200).json({"message": "Updated Claim"})
+        return res.status(200).json({ message: "Updated Claim" });
     } catch (error) {}
 };
 
