@@ -18,10 +18,6 @@ module.exports = (app: Express, passport) => {
                 return response.status(400).json({
                     message: "Please verify your email first",
                 });
-            } else if (user.is_mobile_verified === false) {
-                return response.status(400).json({
-                    message: "Please verify your phone first",
-                });
             }
             var click = new Clicks();
             click.user = request.user;
