@@ -167,6 +167,16 @@ const getAmountStatus = async (req: IGetUserAuthInfoRequest, res: Response) => {
 const withdraw = async (req: IGetUserAuthInfoRequest, res: Response) => {
     const paymentModeId = Number(req.body.payment_mode);
     var { walletAmount, rewardAmount } = await calculateWallet(req.user);
+    const user = await getRepository(User).findOne(req.user.id);
+    if (user.is_email_verified === false) {
+        return res.status(400).json({
+            message: "Please verify your email first",
+        });
+    } else if (user.is_mobile_verified === false) {
+        return res.status(400).json({
+            message: "Please verify your phone first",
+        });
+    }
     walletAmount = Number(walletAmount);
     rewardAmount = Number(rewardAmount)
 
