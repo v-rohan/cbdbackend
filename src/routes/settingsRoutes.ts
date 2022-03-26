@@ -54,6 +54,24 @@ module.exports = (app: Express, passport) => {
     );
 
     app.get(
+        "/settings/:id",
+        passport.authenticate("jwt", { session: false }),
+        AdminCheck,
+        async (req: IGetUserAuthInfoRequest, res: Response) => {
+            var settings = new Settings();
+            try {
+                settings = await getRepository(Settings).findOneOrFail(
+                    req.params.id
+                );
+                res.status(200).send(settings);
+            } catch (error) {
+                console.log(error);
+                res.status(500).send(error);
+            }
+        }
+    );
+
+    app.get(
         "/settings",
         passport.authenticate("jwt", { session: false }),
         AdminCheck,
