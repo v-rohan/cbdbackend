@@ -45,7 +45,9 @@ module.exports = (app: Express, passport) => {
                 const settings = await getRepository(Settings).find();
                 res.set({
                     "Access-Control-Expose-Headers": "Content-Range",
-                    "Content-Range": `X-Total-Count: 1`,
+                    "Content-Range": `X-Total-Count: ${1} - ${settings.length} / ${
+                        settings.length
+                    }`,
                 });
                 res.status(200).send(settings);
             } catch (e) {
