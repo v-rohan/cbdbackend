@@ -6,12 +6,19 @@ import { AdminCheck } from "../middleware/AuthMiddleware";
 import { request } from "http";
 import { Store } from "../entity/Store";
 import { Clicks } from "../entity/Clicks";
+import { User } from "../entity/User";
 
 module.exports = (app: Express, passport) => {
     app.post(
         "/click",
         passport.authenticate("jwt", { session: false }),
         async (request: IGetUserAuthInfoRequest, response: Response) => {
+            const user = await getRepository(User).findOne(request.user.id);
+            if (user.is_email_verified === false) {
+                return response.status(400).json({
+                    message: "Please verify your email first",
+                });
+            }
             var click = new Clicks();
             click.user = request.user;
             //  click = { ...click, ...request.body };
