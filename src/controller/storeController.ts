@@ -111,7 +111,7 @@ const updateStoreById = async (req: Request, res: Response) => {
             }
             var arr = [];
             if (req.body.categories) {
-                req.body.categories.forEach(async (category) => {
+                req.body.categories.split(',').forEach(async (category) => {
                     try {
                         arr.push(
                             await getRepository(StoreCategory).findOneOrFail({
