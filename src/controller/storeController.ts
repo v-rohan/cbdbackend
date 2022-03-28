@@ -64,7 +64,11 @@ const uploadStoreImage = async (req: Request, res: Response) => {
 const createStore = async (req: Request, res: Response) => {
     try {
         let st = new Store();
-        st = { ...st, ...req.body };
+        if (req.file.path) {
+            st = { ...st, ...req.body, image: req.file.path };
+        } else {
+            st = { ...st, ...req.body };
+        }
         var arr = [];
 
         let savedStore = await getRepository(Store)
@@ -99,7 +103,11 @@ const updateStoreById = async (req: Request, res: Response) => {
             where: { id: Number(req.params.id) },
         });
         if (st) {
-            st = { ...st, ...req.body };
+            if (req.file.path) {
+                st = { ...st, ...req.body, image: req.file.path };
+            } else {
+                st = { ...st, ...req.body };
+            }
             var arr = [];
             if (req.body.categories) {
                 req.body.categories.forEach(async (category) => {

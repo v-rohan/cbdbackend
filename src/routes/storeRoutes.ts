@@ -58,8 +58,8 @@ module.exports = (app: Express, passport: any) => {
     const uploadStore = multer({ storage: storeStorage });
 
     // Store Routes
-    router.route("/").get(getAllStores).post(createStore);
-    router.post("/upload", uploadStore.single("image"), uploadStoreImage);
+    router.route("/").get(getAllStores).post(uploadStore.single("image"), createStore);
+    // router.post("/upload", , uploadStoreImage);
 
     const categoryStorage = fileStorageEngine("category");
     const uploadCategory = multer({ storage: categoryStorage });
@@ -84,7 +84,7 @@ module.exports = (app: Express, passport: any) => {
     router
         .route("/:id")
         .get(getStoreById)
-        .put(updateStoreById)
+        .put(uploadStore.single("image"), updateStoreById)
         .delete(deleteStoreById);
 
     return router;
