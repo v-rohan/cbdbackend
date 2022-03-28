@@ -77,7 +77,7 @@ const createStore = async (req: Request, res: Response) => {
                 console.log(err);
                 throw err;
             });
-
+        console.log(req.body.categories);
         await JSON.parse(req.body.categories).forEach(async (category) => {
             try {
                 arr.push(
