@@ -45,11 +45,10 @@ createConnection()
         require("./routes/clickRoutes")(app, passport);
         require("./routes/sneRoutes")(app, passport);
         require("./routes/paymentModes")(app, passport);
-        ;
         app.use(
             "/missingclaims",
             require("./routes/missingClaimsRoutes")(app, passport)
-        )
+        );
         app.use(
             "/payoutrequests",
             require("./routes/userRequestRoutes")(app, passport)
@@ -73,6 +72,7 @@ createConnection()
         );
         require("./routes/settingsRoutes")(app, passport);
         require("./routes/businessReports")(app, passport);
+        app.use("/terms", require("./routes/termsRoutes")(app, passport));
         app.use("/coupon", require("./routes/couponRoutes")(app, passport));
         // Serve media files
         app.use("/media", express.static("media"));
