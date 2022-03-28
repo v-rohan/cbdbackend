@@ -93,6 +93,7 @@ const createStore = async (req: Request, res: Response) => {
         const updatedStore = await getRepository(Store).save(savedStore);
         return res.status(200).json(updatedStore);
     } catch (error) {
+        console.log(error)
         return res.status(400).json(error);
     }
 };
