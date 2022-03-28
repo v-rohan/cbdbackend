@@ -78,11 +78,11 @@ const createStore = async (req: Request, res: Response) => {
                 throw err;
             });
         console.log(req.body.categories);
-        await JSON.parse(req.body.categories).forEach(async (category) => {
+        req.body.categories.split(',').forEach(async (category) => {
             try {
                 arr.push(
                     await getRepository(StoreCategory).findOneOrFail({
-                        cat_id: category,
+                        cat_id: Number(category),
                     })
                 );
             } catch (err) {
