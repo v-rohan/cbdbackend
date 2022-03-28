@@ -133,6 +133,8 @@ const updateStoreById = async (req: Request, res: Response) => {
             return res.status(200).json(updatedStore);
         }
     } catch (err) {
+        console.log(err);
+        
         return res.status(400).json(err);
     }
 };
