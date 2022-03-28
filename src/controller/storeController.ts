@@ -104,7 +104,7 @@ const updateStoreById = async (req: Request, res: Response) => {
             where: { id: Number(req.params.id) },
         });
         if (st) {
-            if (req.file.path) {
+            if (req.file) {
                 st = { ...st, ...req.body, image: req.file.path };
             } else {
                 st = { ...st, ...req.body };
