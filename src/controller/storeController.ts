@@ -78,7 +78,7 @@ const createStore = async (req: Request, res: Response) => {
                 throw err;
             });
 
-        req.body.categories.forEach(async (category) => {
+        await JSON.parse(req.body.categories).forEach(async (category) => {
             try {
                 arr.push(
                     await getRepository(StoreCategory).findOneOrFail({
