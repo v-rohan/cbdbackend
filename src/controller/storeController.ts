@@ -78,7 +78,7 @@ const createStore = async (req: Request, res: Response) => {
                 throw err;
             });
         console.log(req.body.categories);
-        req.body.categories.split(',').forEach(async (category) => {
+        req.body.categories.split(",").forEach(async (category) => {
             try {
                 arr.push(
                     await getRepository(StoreCategory).findOneOrFail({
@@ -93,7 +93,7 @@ const createStore = async (req: Request, res: Response) => {
         const updatedStore = await getRepository(Store).save(savedStore);
         return res.status(200).json(updatedStore);
     } catch (error) {
-        console.log(error)
+        console.log(error);
         return res.status(400).json(error);
     }
 };
@@ -111,7 +111,7 @@ const updateStoreById = async (req: Request, res: Response) => {
             }
             var arr = [];
             if (req.body.categories) {
-                req.body.categories.split(',').forEach(async (category) => {
+                req.body.categories.split(",").forEach(async (category) => {
                     try {
                         arr.push(
                             await getRepository(StoreCategory).findOneOrFail({
@@ -134,7 +134,7 @@ const updateStoreById = async (req: Request, res: Response) => {
         }
     } catch (err) {
         console.log(err);
-        
+
         return res.status(400).json(err);
     }
 };
