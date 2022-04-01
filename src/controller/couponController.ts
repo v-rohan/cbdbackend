@@ -131,6 +131,9 @@ const updateCouponCategory = async (req: Request, res: Response) => {
             getRepository(CouponCategory).merge(couponCategory, {
                 ...data,
             });
+            if (req.body.featured === "true") {
+                couponCategory.featured = true;
+            }
         }
         const updatedCouponCategory = await getRepository(CouponCategory).save(
             couponCategory
