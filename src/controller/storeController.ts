@@ -71,6 +71,18 @@ const createStore = async (req: Request, res: Response) => {
         }
         var arr = [];
 
+        if (req.body.is_claimable === "true") {
+            st.is_claimable = true;
+        }
+
+        if (req.body.featured === "true") {
+            st.featured = true;
+        }
+
+        if (req.body.cashback_enabled === "true") {
+            st.cashback_enabled = true;
+        }
+
         let savedStore = await getRepository(Store)
             .save(st)
             .catch((err) => {
@@ -108,6 +120,17 @@ const updateStoreById = async (req: Request, res: Response) => {
                 st = { ...st, ...req.body, image: req.file.path };
             } else {
                 st = { ...st, ...req.body };
+            }
+            if (req.body.is_claimable === "true") {
+                st.is_claimable = true;
+            }
+
+            if (req.body.featured === "true") {
+                st.featured = true;
+            }
+
+            if (req.body.cashback_enabled === "true") {
+                st.cashback_enabled = true;
             }
             var arr = [];
             let savedStore = await getRepository(Store)
