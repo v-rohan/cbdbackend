@@ -110,26 +110,26 @@ const updateStoreById = async (req: Request, res: Response) => {
                 st = { ...st, ...req.body };
             }
             var arr = [];
-            if (req.body.categories) {
-                req.body.categories.split(",").forEach(async (category) => {
-                    try {
-                        arr.push(
-                            await getRepository(StoreCategory).findOneOrFail({
-                                cat_id: category,
-                            })
-                        );
-                    } catch (err) {
-                        console.log(err);
-                    }
-                });
-                st.categories = arr;
-            }
-            const updatedStore = await getRepository(Store)
+            let savedStore = await getRepository(Store)
                 .save(st)
                 .catch((err) => {
                     console.log(err);
                     throw err;
                 });
+            console.log(req.body.categories);
+            req.body.categories.split(",").forEach(async (category) => {
+                try {
+                    arr.push(
+                        await getRepository(StoreCategory).findOneOrFail({
+                            cat_id: Number(category),
+                        })
+                    );
+                } catch (err) {
+                    console.log(err);
+                }
+            });
+            savedStore.categories = arr;
+            const updatedStore = await getRepository(Store).save(savedStore);
             return res.status(200).json(updatedStore);
         }
     } catch (err) {
