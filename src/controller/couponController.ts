@@ -125,7 +125,7 @@ const updateCouponCategory = async (req: Request, res: Response) => {
         });
         if (couponCategory) {
             let data;
-            if (req.file.path)
+            if (req.file && req.file.path)
                 data = { ...req.body, featured_image_url: req.file.path };
             else data = { ...req.body };
             getRepository(CouponCategory).merge(couponCategory, {
